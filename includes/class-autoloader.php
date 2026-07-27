@@ -26,6 +26,8 @@ final class Directorist_Affiliate_Autoloader {
 		'Directorist_Affiliate_Payout'                  => 'includes/class-payout.php',
 		'Directorist_Affiliate_Email'                   => 'includes/class-email.php',
 		'Directorist_Affiliate_View'                    => 'includes/class-view.php',
+		'Directorist_Affiliate_Registration'            => 'includes/class-registration.php',
+		'Directorist_Affiliate_Ajax'                    => 'includes/class-ajax.php',
 		'Directorist_Affiliate_Shortcodes'              => 'includes/class-shortcodes.php',
 		'Directorist_Affiliate_Directorist_Integration' => 'includes/class-directorist-integration.php',
 		'Directorist_Affiliate_Admin'                   => 'admin/class-admin.php',

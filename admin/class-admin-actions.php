@@ -57,7 +57,7 @@ final class Directorist_Affiliate_Admin_Actions {
 	}
 
 	/**
-	 * Handle manual affiliate creation from admin.
+	 * Handle manual affiliate creation from admin (no-JS fallback).
 	 *
 	 * @return void
 	 */
@@ -68,56 +68,9 @@ final class Directorist_Affiliate_Admin_Actions {
 
 		check_admin_referer( 'directorist_affiliate_add_affiliate' );
 
-		$name               = isset( $_POST['name'] ) ? sanitize_text_field( wp_unslash( $_POST['name'] ) ) : '';
-		$email              = isset( $_POST['email'] ) ? sanitize_email( wp_unslash( $_POST['email'] ) ) : '';
-		$website            = isset( $_POST['website'] ) ? esc_url_raw( wp_unslash( $_POST['website'] ) ) : '';
-		$promotional_method = isset( $_POST['promotional_method'] ) ? sanitize_text_field( wp_unslash( $_POST['promotional_method'] ) ) : '';
-		$payout_email       = isset( $_POST['payout_email'] ) ? sanitize_email( wp_unslash( $_POST['payout_email'] ) ) : '';
-		$application_note   = isset( $_POST['application_note'] ) ? sanitize_textarea_field( wp_unslash( $_POST['application_note'] ) ) : '';
-		$status             = isset( $_POST['status'] ) ? sanitize_key( wp_unslash( $_POST['status'] ) ) : 'approved';
+		$result = $this->plugin->registration->process_admin( $_POST );
 
-		if ( ! $name || ! is_email( $email ) || ! is_email( $payout_email ) || ! in_array( $status, $this->plugin->affiliate->statuses(), true ) ) {
-			$this->redirect( 'directorist-affiliate-affiliates', array( 'directorist_affiliate_notice' => 'invalid_affiliate' ) );
-		}
-
-		$user = get_user_by( 'email', $email );
-
-		if ( $user ) {
-			$user_id = (int) $user->ID;
-		} else {
-			$user_id = $this->plugin->affiliate->register_user( $name, $email );
-
-			if ( is_wp_error( $user_id ) ) {
-				$this->redirect( 'directorist-affiliate-affiliates', array( 'directorist_affiliate_notice' => 'user_create_failed' ) );
-			}
-		}
-
-		if ( $this->plugin->affiliate->get_by_user_id( $user_id ) ) {
-			$this->redirect( 'directorist-affiliate-affiliates', array( 'directorist_affiliate_notice' => 'affiliate_exists' ) );
-		}
-
-		$affiliate_id = $this->plugin->affiliate->create(
-			array(
-				'user_id'            => $user_id,
-				'status'             => $status,
-				'payout_email'       => $payout_email,
-				'website'            => $website,
-				'promotional_method' => $promotional_method,
-				'application_note'   => $application_note,
-			)
-		);
-
-		if ( ! $affiliate_id ) {
-			$this->redirect( 'directorist-affiliate-affiliates', array( 'directorist_affiliate_notice' => 'affiliate_create_failed' ) );
-		}
-
-		$affiliate = $this->plugin->affiliate->get( $affiliate_id );
-
-		if ( $affiliate && in_array( $status, array( 'approved', 'rejected' ), true ) ) {
-			$this->plugin->email->application_status( $affiliate, $status );
-		}
-
-		$this->redirect( 'directorist-affiliate-affiliates', array( 'directorist_affiliate_notice' => 'affiliate_created' ) );
+		$this->redirect( 'directorist-affiliate-affiliates', array( 'directorist_affiliate_notice' => $result['notice'] ) );
 	}
 
 	/**
@@ -214,7 +167,7 @@ final class Directorist_Affiliate_Admin_Actions {
 	}
 
 	/**
-	 * Handle manual payout form.
+	 * Handle manual payout form (no-JS fallback).
 	 *
 	 * @return void
 	 */
@@ -229,50 +182,16 @@ final class Directorist_Affiliate_Admin_Actions {
 			? array_map( 'absint', wp_unslash( $_POST['referral_ids'] ) )
 			: array();
 
-		$grouped = array();
-		$totals  = array();
-
-		foreach ( $referral_ids as $referral_id ) {
-			$referral = $this->plugin->referral->get( $referral_id );
-
-			if ( ! $referral || 'approved' !== $referral->status ) {
-				continue;
-			}
-
-			$affiliate_id = (int) $referral->affiliate_id;
-
-			$grouped[ $affiliate_id ][] = $referral_id;
-			$totals[ $affiliate_id ]    = ( $totals[ $affiliate_id ] ?? 0.0 ) + (float) $referral->commission_amount;
-		}
-
-		$minimum = (float) $this->plugin->settings->get( 'minimum_payout', '0.00' );
-		$paid    = 0;
-		$skipped = 0;
-
-		foreach ( $grouped as $affiliate_id => $ids ) {
-			if ( $minimum > 0 && $totals[ $affiliate_id ] < $minimum ) {
-				$skipped++;
-				continue;
-			}
-
-			$affiliate = $this->plugin->affiliate->get( (int) $affiliate_id );
-			$payout_id = $this->plugin->payout->mark_paid(
-				(int) $affiliate_id,
-				$ids,
-				$affiliate ? $affiliate->payout_email : '',
-				__( 'Manual payout marked from admin.', 'directorist-affiliate' )
-			);
-
-			if ( $payout_id ) {
-				$paid++;
-			}
-		}
+		$result = $this->plugin->payout->mark_paid_bulk(
+			$referral_ids,
+			(float) $this->plugin->settings->get( 'minimum_payout', '0.00' )
+		);
 
 		$this->redirect(
 			'directorist-affiliate-payouts',
 			array(
-				'directorist_affiliate_paid'    => $paid,
-				'directorist_affiliate_skipped' => $skipped,
+				'directorist_affiliate_paid'    => $result['paid'],
+				'directorist_affiliate_skipped' => $result['skipped'],
 			)
 		);
 	}

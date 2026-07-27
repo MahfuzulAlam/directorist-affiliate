@@ -9,10 +9,17 @@ defined( 'ABSPATH' ) || exit;
 ?>
 <div class="directorist-affiliate-wrap">
 	<?php if ( ! empty( $message ) ) : ?>
-		<div class="directorist-affiliate-notice"><?php echo esc_html( $message ); ?></div>
+		<?php
+		$notice_class = 'directorist-affiliate-notice';
+
+		if ( ! empty( $message_type ) ) {
+			$notice_class .= ' directorist-affiliate-notice--' . sanitize_html_class( $message_type );
+		}
+		?>
+		<div class="<?php echo esc_attr( $notice_class ); ?>"><?php echo esc_html( $message ); ?></div>
 	<?php endif; ?>
 
-	<form class="directorist-affiliate-form" method="post">
+	<form class="directorist-affiliate-form" method="post" data-da-ajax="directorist_affiliate_register" data-da-success="hide">
 		<?php wp_nonce_field( 'directorist_affiliate_register', 'directorist_affiliate_nonce' ); ?>
 		<input type="hidden" name="directorist_affiliate_register" value="1" />
 

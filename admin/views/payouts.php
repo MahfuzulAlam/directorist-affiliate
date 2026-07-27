@@ -71,7 +71,7 @@ $export_url = wp_nonce_url(
 		</p>
 	<?php endif; ?>
 
-	<form method="post">
+	<form method="post" data-da-ajax="directorist_affiliate_mark_paid" data-da-success="reload">
 		<?php wp_nonce_field( 'directorist_affiliate_mark_paid' ); ?>
 		<input type="hidden" name="directorist_affiliate_mark_paid" value="1" />
 		<table class="widefat striped">

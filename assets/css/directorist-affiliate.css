@@ -215,6 +215,12 @@
 	color: #fff;
 }
 
+.directorist-affiliate-form button[type="submit"][disabled],
+.directorist-affiliate-admin-form button[type="submit"][disabled] {
+	opacity: 0.6;
+	cursor: wait;
+}
+
 /* Honeypot field — visually removed, still present for bots. */
 .directorist-affiliate-hp {
 	position: absolute !important;

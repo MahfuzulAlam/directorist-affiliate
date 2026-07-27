@@ -3,7 +3,7 @@
  * Plugin Name: Directorist - Affiliate
  * Plugin URI: https://directorist.com/
  * Description: Affiliate tracking and fixed-commission referrals for Directorist registrations and listing submissions.
- * Version: 0.2.0
+ * Version: 0.3.0
  * Requires at least: 5.8
  * Requires PHP: 7.4
  * Requires Plugins: directorist
@@ -19,7 +19,7 @@
 
 defined( 'ABSPATH' ) || exit;
 
-define( 'DIRECTORIST_AFFILIATE_VERSION', '0.2.0' );
+define( 'DIRECTORIST_AFFILIATE_VERSION', '0.3.0' );
 define( 'DIRECTORIST_AFFILIATE_DB_VERSION', '0.1.0' );
 define( 'DIRECTORIST_AFFILIATE_MIN_DIRECTORIST', '8.7.3' );
 define( 'DIRECTORIST_AFFILIATE_FILE', __FILE__ );

@@ -9,7 +9,7 @@ defined( 'ABSPATH' ) || exit;
 ?>
 <div class="wrap directorist-affiliate-admin">
 	<h1><?php esc_html_e( 'Affiliate Settings', 'directorist-affiliate' ); ?></h1>
-	<form method="post">
+	<form method="post" data-da-ajax="directorist_affiliate_save_settings">
 		<?php wp_nonce_field( 'directorist_affiliate_save_settings' ); ?>
 		<input type="hidden" name="directorist_affiliate_save_settings" value="1" />
 

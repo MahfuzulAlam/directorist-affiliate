@@ -19,12 +19,21 @@ final class Directorist_Affiliate_Payout {
 	private $referral;
 
 	/**
+	 * Affiliate repository.
+	 *
+	 * @var Directorist_Affiliate_Affiliate
+	 */
+	private $affiliate;
+
+	/**
 	 * Constructor.
 	 *
-	 * @param Directorist_Affiliate_Referral $referral Referral repository.
+	 * @param Directorist_Affiliate_Referral  $referral Referral repository.
+	 * @param Directorist_Affiliate_Affiliate $affiliate Affiliate repository.
 	 */
-	public function __construct( Directorist_Affiliate_Referral $referral ) {
-		$this->referral = $referral;
+	public function __construct( Directorist_Affiliate_Referral $referral, Directorist_Affiliate_Affiliate $affiliate ) {
+		$this->referral  = $referral;
+		$this->affiliate = $affiliate;
 	}
 
 	/**
@@ -110,6 +119,63 @@ final class Directorist_Affiliate_Payout {
 		do_action( 'directorist_affiliate_payout_recorded', $payout_id, $affiliate_id, $amount, $referral_ids );
 
 		return $payout_id;
+	}
+
+	/**
+	 * Mark a batch of approved referrals paid, one payout per affiliate.
+	 *
+	 * Affiliates whose selected total is below the minimum are skipped.
+	 *
+	 * @param int[] $referral_ids Referral IDs.
+	 * @param float $minimum Minimum payout per affiliate (0 = no minimum).
+	 *
+	 * @return array{paid:int,skipped:int}
+	 */
+	public function mark_paid_bulk( array $referral_ids, float $minimum = 0 ): array {
+		$referral_ids = array_filter( array_map( 'absint', $referral_ids ) );
+
+		$grouped = array();
+		$totals  = array();
+
+		foreach ( $referral_ids as $referral_id ) {
+			$referral = $this->referral->get( $referral_id );
+
+			if ( ! $referral || 'approved' !== $referral->status ) {
+				continue;
+			}
+
+			$affiliate_id = (int) $referral->affiliate_id;
+
+			$grouped[ $affiliate_id ][] = $referral_id;
+			$totals[ $affiliate_id ]    = ( $totals[ $affiliate_id ] ?? 0.0 ) + (float) $referral->commission_amount;
+		}
+
+		$paid    = 0;
+		$skipped = 0;
+
+		foreach ( $grouped as $affiliate_id => $ids ) {
+			if ( $minimum > 0 && $totals[ $affiliate_id ] < $minimum ) {
+				$skipped++;
+				continue;
+			}
+
+			$affiliate = $this->affiliate->get( (int) $affiliate_id );
+			$payout_id = $this->mark_paid(
+				(int) $affiliate_id,
+				$ids,
+				$affiliate ? $affiliate->payout_email : '',
+				__( 'Manual payout marked from admin.', 'directorist-affiliate' )
+			);
+
+			if ( $payout_id ) {
+				$paid++;
+			}
+		}
+
+		return array(
+			'paid'    => $paid,
+			'skipped' => $skipped,
+		);
 	}
 
 	/**

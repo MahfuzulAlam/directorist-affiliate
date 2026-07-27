@@ -6,14 +6,15 @@ Affiliate tracking and fixed-commission referral system for [Directorist](https:
 
 | Item | Value |
 | --- | --- |
-| Version | 0.2.0 (plugin) / 0.1.0 (DB schema) |
+| Version | 0.3.0 (plugin) / 0.1.0 (DB schema) |
 | Author | wpWax |
 | Requires | WordPress 5.8+, PHP 7.4+ |
 | Depends on | Directorist ≥ 8.7.3 (declared via `Requires Plugins: directorist`) |
 | Text domain | `directorist-affiliate` (no translations shipped yet) |
 | Commission model | Fixed amounts only, filterable via hooks (no order/payment integration) |
 | Payouts | Manual (recorded by admin; no gateway integration); per-affiliate minimum enforced on bulk payouts |
-| Assets | One shared stylesheet + one small vanilla JS file (copy-referral-link button) |
+| Assets | One shared stylesheet + one vanilla JS file (AJAX forms, copy-referral-link button) |
+| Forms | All four forms submit via AJAX (`admin-ajax.php`) with full no-JavaScript POST fallbacks |
 | User guide | [DOCUMENTATION.md](DOCUMENTATION.md) |
 
 ## How it works (big picture)
@@ -45,12 +46,16 @@ directorist-affiliate/
 ├── .gitignore
 ├── README.md                            # Technical reference (this file)
 ├── DOCUMENTATION.md                     # Site-owner user guide
+├── docs/
+│   └── images/                          # Screenshots/video thumbnail referenced by DOCUMENTATION.md
 ├── includes/
 │   ├── class-autoloader.php             # Classmap autoloader (lazy class loading)
 │   ├── class-plugin.php                 # Service container / dependency checks
 │   ├── class-activator.php              # dbDelta table creation + default options
 │   ├── class-deactivator.php            # flush_rewrite_rules only
 │   ├── class-view.php                   # Shared view/template renderer
+│   ├── class-registration.php           # Application processing (public + admin flows)
+│   ├── class-ajax.php                   # AJAX endpoints for all forms
 │   ├── class-settings.php               # Settings read/sanitize/save
 │   ├── class-affiliate.php              # Affiliate repository (CRUD, codes, user helper)
 │   ├── class-referral.php               # Referral repository (CRUD, sums, dedupe)
@@ -147,6 +152,8 @@ Four custom tables (all `dbDelta`-managed, version tracked in option `directoris
 | `Directorist_Affiliate_Email` | Plain-text `wp_mail` notices: new application → admin; approve/reject decision → affiliate; new referral recorded → affiliate. |
 | `Directorist_Affiliate_View` | Static template renderer (`output()` prints, `render()` returns a string) used by both admin screens and shortcodes. |
 | `Directorist_Affiliate_Autoloader` | Classmap `spl_autoload_register` loader; the map doubles as the plugin's class inventory. |
+| `Directorist_Affiliate_Registration` | Application processing shared by every entry point: `process_public()` (honeypot, validation, account creation, pending application) and `process_admin()` (status choice, user reuse). Callers do nonce/capability checks. |
+| `Directorist_Affiliate_Ajax` | `admin-ajax.php` endpoints for all four forms (`directorist_affiliate_register` incl. `nopriv`, `…_add_affiliate`, `…_save_settings`, `…_mark_paid`), returning JSON via `wp_send_json_*`. |
 
 ## Visit tracking details
 
@@ -191,6 +198,8 @@ Top-level menu **Directorist Affiliate** (`manage_options`, icon `dashicons-netw
 Screen rendering lives in `Directorist_Affiliate_Admin`; all mutations live in `Directorist_Affiliate_Admin_Actions`, run through `admin_init`, are capability-checked (`manage_options`) and nonce-verified (`check_admin_referer`), then redirect with a success/error notice.
 
 ## Frontend
+
+**Forms are AJAX-first with no-JS fallbacks.** Every form carries a `data-da-ajax` attribute; the shared JS intercepts submit, posts to `admin-ajax.php`, and shows the JSON response inline (invalid input no longer loses what was typed). Without JavaScript, forms fall back to normal POSTs: the front-end registration POST is processed **exactly once on `template_redirect`** (a once-guard prevents the double-processing that occurs when themes/SEO plugins render shortcodes multiple times per request — previously this could report "You already have an affiliate application" on a successful first submit), and admin POSTs are processed on `admin_init` as before. Both paths run the same `Registration`/`Payout` service methods.
 
 **Shortcodes**
 

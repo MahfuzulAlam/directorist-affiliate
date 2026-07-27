@@ -1,186 +1,300 @@
+<!--
+  ============================================================
+  AUTHOR NOTES (delete this comment block when the doc is final)
+
+  Media conventions used in this file:
+  • Image placeholders look like:
+      ![Alt text](docs/images/file-name.png)
+      <!- 📸 IMAGE PLACEHOLDER: what to capture ->
+    Drop the real screenshot into docs/images/ using the same
+    file name and the image appears automatically.
+  • Recommended screenshot width: 1280px (admin), 900px (front end).
+  • The video placeholder at the top links a thumbnail image to a
+    video URL — replace both when the walkthrough video is ready.
+  ============================================================
+-->
+
 # Directorist – Affiliate: User Guide
 
-This guide explains how to set up and run an affiliate program on your Directorist directory site. For technical/architecture details, see [README.md](README.md).
+Turn your visitors into promoters. This guide walks you through every screen of the **Directorist – Affiliate** extension — what you'll see, what to click, and what happens next. For code-level details, see [README.md](README.md).
 
-## Contents
-
-1. [What this extension does](#what-this-extension-does)
-2. [Requirements & installation](#requirements--installation)
-3. [Quick start (5 steps)](#quick-start-5-steps)
-4. [Settings explained](#settings-explained)
-5. [Setting up the affiliate pages](#setting-up-the-affiliate-pages)
-6. [The affiliate's experience](#the-affiliates-experience)
-7. [Managing affiliates](#managing-affiliates)
-8. [Managing referrals](#managing-referrals)
-9. [Paying your affiliates](#paying-your-affiliates)
-10. [Email notifications](#email-notifications)
-11. [Privacy & GDPR](#privacy--gdpr)
-12. [Developer reference](#developer-reference)
-13. [FAQ & troubleshooting](#faq--troubleshooting)
+[![Watch: Set up your affiliate program in 5 minutes](docs/images/video-walkthrough-thumbnail.png)](https://example.com/REPLACE-WITH-VIDEO-URL)
+<!-- 🎬 VIDEO PLACEHOLDER: 3–5 min walkthrough — install → settings → create pages → approve an affiliate → first payout. Replace the thumbnail image AND the link URL. -->
 
 ---
 
-## What this extension does
+## Contents
 
-It adds a complete affiliate/referral program to a Directorist site:
+1. [How the program works](#how-the-program-works)
+2. [Install & activate](#install--activate)
+3. [Quick start — first affiliate in 5 steps](#quick-start--first-affiliate-in-5-steps)
+4. [A tour of the admin screens](#a-tour-of-the-admin-screens)
+5. [Settings, section by section](#settings-section-by-section)
+6. [Creating the front-end pages](#creating-the-front-end-pages)
+7. [What your affiliates see](#what-your-affiliates-see)
+8. [Everyday workflows](#everyday-workflows)
+9. [Email notifications](#email-notifications)
+10. [Privacy & GDPR](#privacy--gdpr)
+11. [Developer reference](#developer-reference)
+12. [FAQ & troubleshooting](#faq--troubleshooting)
 
-- Visitors **apply to become affiliates** through a form on your site.
-- Approved affiliates get a **personal referral link** like `https://yoursite.com/?ref=their-code`.
-- When someone follows that link, the visit is tracked with a cookie (30 days by default).
-- If that visitor **registers an account** or **submits a listing**, the affiliate earns a **fixed commission** that you define.
-- You review referrals, approve the legitimate ones, and **record payouts manually** (bank transfer, PayPal, etc. — whatever you use outside WordPress). A CSV export helps you process payments in bulk.
+---
 
-There is no automatic money transfer — this extension tracks who earned what; you pay them through your own payment channel.
+## How the program works
 
-## Requirements & installation
+![Diagram: visitor clicks referral link, registers or submits a listing, admin approves and pays](docs/images/flow-overview.png)
+<!-- 📸 IMAGE PLACEHOLDER: simple 5-step flow graphic — Referral link → Tracked visit → Sign-up / listing → Admin approval → Payout -->
+
+1. Someone **applies** to be an affiliate on your site.
+2. You **approve** them — they get a personal referral link like `https://yoursite.com/?ref=their-code`.
+3. Visitors who follow that link are **tracked with a cookie** (30 days by default).
+4. When a tracked visitor **registers** or **submits a listing**, the affiliate earns a **fixed commission**.
+5. You **approve the referral** and **record the payout**. Money moves through your own channel (PayPal, bank, etc.) — the plugin keeps the books and gives you a CSV for batch payments.
+
+> 💡 **Tip:** Commissions are flat amounts you control. Nothing is ever paid automatically — you always review first.
+
+---
+
+## Install & activate
 
 | Requirement | Version |
 | --- | --- |
-| WordPress | 5.8 or newer |
-| PHP | 7.4 or newer |
-| Directorist | 8.7.3 or newer (must be active) |
+| WordPress | 5.8+ |
+| PHP | 7.4+ |
+| Directorist | 8.7.3+ (must be active) |
 
-1. Upload the `directorist-affiliate` folder to `wp-content/plugins/` (or install the ZIP via **Plugins → Add New → Upload Plugin**).
-2. Activate **Directorist - Affiliate** from the Plugins screen. Activation is blocked if Directorist is not active.
-3. On activation the plugin creates its four database tables and default settings automatically — no manual setup needed.
+1. Go to **Plugins → Add New → Upload Plugin**, choose the `directorist-affiliate` ZIP, and click **Install Now** — or copy the folder into `wp-content/plugins/`.
+2. Click **Activate**. If Directorist isn't active you'll be stopped with a clear message — activate Directorist first.
+3. Done. The plugin creates its database tables and defaults silently; a new **Directorist Affiliate** menu (🔗 network icon) appears in your admin sidebar.
 
-## Quick start (5 steps)
+![Screenshot: Plugins screen with Directorist – Affiliate activated](docs/images/install-plugins-screen.png)
+<!-- 📸 IMAGE PLACEHOLDER: wp-admin Plugins list showing "Directorist - Affiliate" active, with the new sidebar menu visible on the left -->
 
-1. **Configure commissions** — Go to **Directorist Affiliate → Settings**, set the fixed amount for registrations and/or listings, and save.
-2. **Create an "Become an Affiliate" page** — Add a page containing the shortcode `[directorist_affiliate_registration]`.
-3. **Create an "Affiliate Dashboard" page** — Add a page containing `[directorist_affiliate_dashboard]`. (Affiliates can also use the "Affiliate" tab that appears automatically in the Directorist user dashboard.)
-4. **Approve your first affiliate** — When someone applies, review them under **Directorist Affiliate → Affiliates** and click **Approve**. They'll be emailed and their referral link becomes active.
-5. **Moderate & pay** — Approve incoming referrals under **Referrals**, then record payouts under **Payouts**.
+---
 
-## Settings explained
+## Quick start — first affiliate in 5 steps
 
-**Directorist Affiliate → Settings**
+**Step 1 — Set your commission amounts.**
+Go to **Directorist Affiliate → Settings**. Enter a fixed amount for registrations and/or listings (e.g. `2.00` and `5.00`), then click **Save settings**. You'll see a green *"Settings saved."* confirmation without the page reloading.
+
+![Screenshot: Settings screen with commission amounts filled in](docs/images/quickstart-settings.png)
+<!-- 📸 IMAGE PLACEHOLDER: Settings page, Registration + Listing commission sections filled, success notice visible -->
+
+**Step 2 — Publish a "Become an Affiliate" page.**
+Create a page and add the shortcode `[directorist_affiliate_registration]`.
+
+**Step 3 — Publish an "Affiliate Area" page.**
+Create a second page with `[directorist_affiliate_dashboard]`. (The same dashboard also shows up automatically as an **Affiliate** tab in the Directorist user dashboard, so this page is optional but nice to link in menus.)
+
+**Step 4 — Approve your first applicant.**
+When someone applies, open **Directorist Affiliate → Affiliates**, review their row, and click **Approve**. Their status badge flips to green and they receive an email — their referral link is now live.
+
+**Step 5 — Watch referrals arrive, then pay.**
+Approve incoming rows on the **Referrals** screen, then batch-pay them on the **Payouts** screen.
+
+> 💡 **Tip:** Want to test the loop yourself? Open your site in a private browser window with `?ref=CODE`, register a test account, and watch the visit + referral appear in the admin.
+
+---
+
+## A tour of the admin screens
+
+Everything lives under the **Directorist Affiliate** sidebar menu.
+
+### Dashboard — your program at a glance
+
+![Screenshot: admin dashboard stat cards](docs/images/admin-dashboard.png)
+<!-- 📸 IMAGE PLACEHOLDER: Dashboard screen showing both card rows (Affiliates & traffic / Commissions) with non-zero numbers -->
+
+Two rows of stat cards:
+
+- **Affiliates & traffic** — total affiliates, pending applications (your review queue), total tracked visits, total referrals.
+- **Commissions** — pending (awaiting your review), approved (owed, unpaid), and paid totals.
+
+> 💡 **Tip:** A growing *Pending affiliates* or *Pending commission* number is your to-do list — check it a couple of times a week.
+
+### Affiliates — your partner roster
+
+![Screenshot: Affiliates screen with status badges and row actions](docs/images/admin-affiliates.png)
+<!-- 📸 IMAGE PLACEHOLDER: Affiliates table with a mix of Pending (amber), Approved (green), Rejected (red) badges; Add Affiliate panel visible above -->
+
+- **Add Affiliate panel** (top) — onboard a partner yourself: name, email, payout email, starting status (you can pre-approve trusted partners), website, promotional channel. Submitting shows an inline confirmation, then the list refreshes.
+- **The table** — each row shows a colored status badge (**amber** pending, **green** approved, **red** rejected, **gray** suspended), the referral code, totals for referrals and commission, and unpaid balance.
+- **Row actions** — **View details** (opens the full application: website, promotional channel, note), **Approve**, **Reject**, **Suspend**.
+
+> ⚠️ **Note:** Approve and Reject email the applicant. Suspend is silent — tracking simply stops counting for them.
+
+### Referrals — the money queue
+
+![Screenshot: Referrals screen with pending and approved rows](docs/images/admin-referrals.png)
+<!-- 📸 IMAGE PLACEHOLDER: Referrals table showing both referral types, status badges, and the Approve | Reject | Mark paid actions -->
+
+Every conversion lands here as a **Pending** row showing who earned it, the type (*user registration* or *listing submission*), the referred user, the listing (linked to its edit screen), and the amount.
+
+- **Approve** — the commission becomes payable and moves to the Payouts screen.
+- **Reject** — for fraud, refunds, or test data. Nothing is owed.
+- **Mark paid** — pays a single referral on the spot. Only works on **approved** rows; otherwise you'll see an error notice asking you to approve first (this keeps your payout history complete).
+
+### Visits — the traffic log
+
+![Screenshot: Visits screen](docs/images/admin-visits.png)
+<!-- 📸 IMAGE PLACEHOLDER: Visits table with landing pages, referrer URLs, IPs, and green "Yes" converted badges on a few rows -->
+
+The raw click log per affiliate: landing page, where the visitor came from, IP, date, and a green **Yes** badge once a visit converts. Scan it before approving big referral batches — dozens of visits from one IP is a red flag.
+
+### Payouts — pay day
+
+![Screenshot: Payouts screen with selected referrals and payout history](docs/images/admin-payouts.png)
+<!-- 📸 IMAGE PLACEHOLDER: Payouts screen — some checkboxes ticked in "Unpaid approved commissions", the minimum-payout hint line, and the Payout history table below -->
+
+Three things on one screen:
+
+1. **Export approved payouts CSV** (top button) — downloads every approved, unpaid referral with the affiliate's payout email, ready for your bank or PayPal batch tool.
+2. **Unpaid approved commissions** — tick the referrals you're paying and click **Mark selected as paid**. The plugin groups them into **one payout record per affiliate** and confirms inline (e.g. *"2 payouts recorded. 1 affiliate was skipped for being below the minimum payout."*), then refreshes.
+3. **Payout history** — a permanent ledger: who was paid, how much, when, and to which email.
+
+> 💡 **Tip:** Set a **Minimum payout amount** in Settings and the screen enforces it for you — affiliates under the threshold are skipped with a clear warning, never silently.
+
+### Settings
+
+Covered in full in the next section.
+
+---
+
+## Settings, section by section
+
+**Directorist Affiliate → Settings.** The form saves without a page reload and confirms with *"Settings saved."*
+
+![Screenshot: full settings screen](docs/images/settings-full.png)
+<!-- 📸 IMAGE PLACEHOLDER: entire Settings page scrolled to show all five sections -->
 
 ### General
 
-| Setting | What it does |
-| --- | --- |
-| **Enable affiliate system** | Master switch. When off, no visits are tracked and no commissions are recorded. |
-| **Referral URL parameter** | The query parameter used in referral links. Default `ref` → links look like `?ref=CODE`. Change it if another plugin already uses `ref`. Existing links with the old parameter stop working after a change. |
-| **Cookie duration** | How many days a referral cookie lasts. If a visitor converts within this window, the affiliate is credited. Default 30. |
-| **Anonymize visitor IP** | Stores visit IPs with the last octet removed (e.g. `203.0.113.0`). Recommended if you need GDPR-friendly logging. |
+| Setting | What it does | UX effect |
+| --- | --- | --- |
+| **Enable affiliate system** | Master switch | Off = no tracking, no commissions, links do nothing |
+| **Referral URL parameter** | The `?ref=` part of links (default `ref`) | Changing it breaks previously shared links — pick once, early |
+| **Cookie duration** | Days a referral is remembered (default 30) | Longer = more generous attribution window |
+| **Anonymize visitor IP** | Strips the last IP octet in the Visits log | Turn on for GDPR-friendly logging |
 
 ### Registration Commission
 
-| Setting | What it does |
-| --- | --- |
-| **Enable registration commission** | Pay affiliates when a referred visitor creates an account. |
-| **Fixed commission amount** | Flat amount per referred registration (e.g. `2.00`). |
+Enable/disable, plus the flat amount paid when a referred visitor creates an account.
 
 ### Listing Commission
 
-| Setting | What it does |
-| --- | --- |
-| **Enable listing commission** | Pay affiliates when a referred user adds a listing. |
-| **Fixed commission amount** | Flat amount per referred listing. |
-| **Commission trigger** | **On listing submission** credits the affiliate as soon as the listing is created (even if it awaits review). **On listing approval/publish** credits only when the listing is first published — safer against spam submissions. |
+Enable/disable, the flat amount, and the **Commission trigger**:
+
+- **On listing submission** — credit the moment a listing is created (even if it awaits moderation).
+- **On listing approval/publish** — credit only when it goes live. **Recommended** if you moderate listings; it keeps spam submissions from earning anything.
 
 ### Payout
 
-| Setting | What it does |
-| --- | --- |
-| **Minimum payout amount** | Per-affiliate threshold for bulk payouts. On the Payouts screen, an affiliate whose selected referrals total less than this is skipped (you'll see a notice). Set `0` to disable. |
-| **Payout instructions** | Free text shown to affiliates on their dashboard — e.g. "Payouts are sent via PayPal on the 1st of each month. Minimum $25." |
+- **Minimum payout amount** — per-affiliate threshold enforced on bulk payouts (`0` disables it).
+- **Payout instructions** — free text shown on every affiliate's dashboard. Tell them how and when you pay, e.g. *"PayPal, 1st of each month, $25 minimum."*
 
 ### Advanced
 
-| Setting | What it does |
-| --- | --- |
-| **Delete data on uninstall** | When enabled, deleting the plugin removes all affiliate tables, settings, and related user meta. Leave off to keep data through reinstalls. |
+- **Delete data on uninstall** — off by default. When on, deleting the plugin removes all tables, settings, and related user meta. Leave off if you might reinstall.
 
-## Setting up the affiliate pages
+---
 
-### Application form
+## Creating the front-end pages
 
-Create a page (e.g. "Become an Affiliate") and add:
+### The application page
 
-```
-[directorist_affiliate_registration]
-```
+Add `[directorist_affiliate_registration]` to any page:
 
-The form asks for name, email, website, promotional channel, payout email, and an optional note.
+![Screenshot: front-end application form](docs/images/frontend-registration-form.png)
+<!-- 📸 IMAGE PLACEHOLDER: the styled application form on the front end — two-column grid, required asterisks, Apply button -->
 
-- **Logged-out visitors**: a WordPress account is created for them automatically (they receive the standard set-password email). If their email already has an account, they're asked to log in first.
-- **Logged-in users**: the form pre-fills their name/email; submitting attaches the application to their account.
-- Each user can apply once. Applications start as **Pending**.
-- The form includes an invisible anti-spam honeypot; bot submissions are silently discarded.
+What visitors experience:
 
-### Affiliate dashboard
+- A clean two-column form: **Name**, **Email**, **Website**, **Promotional channel**, **Payout email**, and an optional note. Required fields are marked with a red asterisk.
+- Submitting happens **instantly, without a page reload** — the button switches to *"Submitting…"*, then either a green success notice replaces the form or a red notice explains what to fix (nothing they typed is lost).
+- **Logged-out visitors** get a WordPress account created automatically and receive the standard set-password email. If their email already has an account, they're asked to log in first.
+- **Logged-in users** see their name and email pre-filled.
+- One application per person; bots are filtered by an invisible honeypot.
 
-Create a page (e.g. "Affiliate Area") and add:
+![Screenshot: success message after applying](docs/images/frontend-registration-success.png)
+<!-- 📸 IMAGE PLACEHOLDER: the green "Your affiliate application was submitted and is pending review." notice shown in place of the form -->
 
-```
-[directorist_affiliate_dashboard]
-```
+### The affiliate dashboard page
 
-The same dashboard also appears automatically as an **Affiliate** tab inside the Directorist user dashboard, so this page is optional but gives affiliates a direct URL.
+Add `[directorist_affiliate_dashboard]` to a page — and/or rely on the **Affiliate** tab that appears automatically inside the Directorist user dashboard:
 
-## The affiliate's experience
+![Screenshot: Affiliate tab inside the Directorist user dashboard](docs/images/frontend-dashboard-tab.png)
+<!-- 📸 IMAGE PLACEHOLDER: Directorist user dashboard with the "Affiliate" tab (handshake icon) selected -->
 
-1. They apply via the form and see "pending review".
-2. Once you approve them, they receive an email, and their dashboard shows:
-   - Status badge, visit count, referral count, and pending/approved/paid commission totals.
-   - Their **referral link** with a one-click **Copy link** button.
-   - Your payout instructions and their referral history.
-3. They share the link — it can point at any page: `https://yoursite.com/?ref=CODE`, `https://yoursite.com/some-listing/?ref=CODE`, etc.
-4. Visits and conversions accumulate automatically. Notes:
-   - The **last** affiliate link clicked wins if a visitor follows several.
-   - Affiliates can't earn from their own sign-ups or listings (self-referrals are blocked).
-   - A listing posted later still credits the affiliate who referred the author's registration, even after the cookie expires.
+---
 
-## Managing affiliates
+## What your affiliates see
 
-**Directorist Affiliate → Affiliates**
+![Screenshot: affiliate dashboard with stats, referral link and copy button](docs/images/frontend-affiliate-dashboard.png)
+<!-- 📸 IMAGE PLACEHOLDER: approved affiliate's dashboard — stat cards, referral link field with "Copy link" button, referral history table -->
 
-- **Review applications** — every affiliate row shows status, referral code, totals, and links to full details (website, promotional channel, application note).
-- **Approve / Reject / Suspend** — row actions. Approve and Reject send the applicant an email. Suspend quietly stops new visits/referrals from being credited without notifying them.
-- **Add affiliate manually** — the "Add Affiliate" form creates an affiliate (and a WordPress user if the email is new) with any starting status, e.g. pre-approved partners.
+**While pending:** their stat cards plus a notice — *"Your application is being reviewed. Your referral link will appear here once you are approved."* No link is shown yet.
 
-Affiliate statuses: **Pending** (applied, inactive) → **Approved** (link active, earning) / **Rejected** / **Suspended**.
+**Once approved:**
 
-## Managing referrals
+- **Stat cards** — status badge, visits, referrals, and pending / approved / paid commission totals.
+- **Referral link** with a one-click **Copy link** button (it flashes *"Copied!"* in green). Clicking the field also selects the whole URL.
+- **Your payout instructions** and their payout email.
+- **Referral history** — their last 20 referrals with amount, status badge, and date.
 
-**Directorist Affiliate → Referrals**
+Sharing works on any URL: `?ref=CODE` can be appended to the homepage, a listing, a category — every entry page counts.
 
-Each conversion creates a referral with status **Pending**. For every referral you can:
+> ⚠️ **Note for affiliates:** self-referrals don't count (the plugin blocks them), and if a visitor clicks two different affiliate links, the **last** click wins.
 
-- **Approve** — the commission becomes payable (it moves to the Payouts screen).
-- **Reject** — e.g. fraudulent or refunded conversions. Nothing is owed.
-- **Mark paid** — only available for **approved** referrals; it records a payout entry for the single referral.
+---
 
-The **Visits** screen shows raw traffic per affiliate (landing page, referrer, IP, converted or not) — useful for spotting suspicious patterns before approving.
+## Everyday workflows
 
-## Paying your affiliates
+### Reviewing an application (≈1 minute)
 
-**Directorist Affiliate → Payouts**
+1. **Directorist Affiliate → Affiliates** — pending rows wear an amber badge.
+2. Click **View details** to read their website, promotional channel, and note.
+3. Click **Approve** (they're emailed and go live) or **Reject** (they're emailed a decline).
 
-1. The **Unpaid approved commissions** table lists every approved, not-yet-paid referral.
-2. Tick the referrals you're paying and click **Mark selected as paid**. Referrals are grouped into one payout record per affiliate. Affiliates whose selected total is under the **minimum payout** are skipped with a notice.
-3. Pay them through your actual payment channel (PayPal, bank, etc.) using the payout email shown.
-4. **Export approved payouts CSV** downloads the approved-referral list (affiliate, payout email, amount, date) for bulk processing in your payment tool.
-5. **Payout history** keeps a permanent record of what was paid, when, and to whom.
+### Moderating referrals (weekly)
+
+1. Open **Referrals**; pending rows are your queue.
+2. Cross-check anything unusual against the **Visits** log (same IP repeatedly? empty referrers?).
+3. **Approve** the legitimate ones — they queue up on Payouts.
+
+### Running a payout day (monthly)
+
+1. Open **Payouts** and click **Export approved payouts CSV**.
+2. Pay the affiliates through your bank/PayPal using the emails in the CSV.
+3. Back on the screen, tick the referrals you just paid and click **Mark selected as paid**.
+4. The inline confirmation tells you how many payouts were recorded and whether anyone was skipped for the minimum. The **Payout history** below is your audit trail.
+
+![Screenshot: payout confirmation notice with paid and skipped counts](docs/images/workflow-payout-confirmation.png)
+<!-- 📸 IMAGE PLACEHOLDER: green "2 payouts recorded." + amber "1 affiliate was skipped…" notices at the top of the Payouts screen -->
+
+---
 
 ## Email notifications
 
-| Email | Recipient | When |
+| Email | Goes to | Trigger |
 | --- | --- | --- |
-| New affiliate application | Site admin (`admin_email`) | Someone submits the application form |
-| Application approved / rejected | The affiliate | You approve or reject them |
+| New affiliate application | Site admin | Someone applies |
+| Application approved / rejected | The affiliate | You decide on their application |
 | New referral recorded | The affiliate | A conversion is credited to them |
-| New account details | The new user | An account is auto-created during application |
+| New account details | The new user | An account was auto-created during application |
 
-Emails are plain text via `wp_mail()`. Use an SMTP plugin for reliable delivery.
+All emails are plain text via `wp_mail()`.
+
+> 💡 **Tip:** Pair this with an SMTP plugin (e.g. WP Mail SMTP) so notifications reliably reach inboxes.
+
+---
 
 ## Privacy & GDPR
 
-- Visits store IP address and browser user agent. Enable **Anonymize visitor IP** to truncate IPs at collection time.
-- Tracking cookies (`directorist_affiliate_ref`, `directorist_affiliate_visit`) identify the referring affiliate, not the visitor's identity — but they are still cookies; mention them in your cookie policy and consent tooling if required in your jurisdiction.
-- **Delete data on uninstall** lets you fully remove all collected data when retiring the program.
+- Visits record IP address and browser user agent. Enable **Anonymize visitor IP** (Settings → General) to truncate IPs at collection time.
+- Two cookies (`directorist_affiliate_ref`, `directorist_affiliate_visit`) attribute visits to affiliates. Mention them in your cookie policy/consent tool if your jurisdiction requires it.
+- **Delete data on uninstall** (Settings → Advanced) guarantees a clean exit — tables, options, and user meta are removed when you delete the plugin.
+
+---
 
 ## Developer reference
 
@@ -188,8 +302,8 @@ Emails are plain text via `wp_mail()`. Use an SMTP plugin for reliable delivery.
 
 | Shortcode | Renders |
 | --- | --- |
-| `[directorist_affiliate_registration]` | Affiliate application form |
-| `[directorist_affiliate_dashboard]` | Affiliate dashboard (logged-in users) |
+| `[directorist_affiliate_registration]` | The application form |
+| `[directorist_affiliate_dashboard]` | The affiliate dashboard (logged-in users) |
 
 ### Actions
 
@@ -215,29 +329,45 @@ add_filter( 'directorist_affiliate_listing_commission', function ( $amount, $tri
 }, 10, 2 );
 ```
 
+### AJAX endpoints
+
+All four forms post to `admin-ajax.php`; each also has a full non-JavaScript fallback.
+
+| Action | Access | Nonce action |
+| --- | --- | --- |
+| `directorist_affiliate_register` | Public (`nopriv` + logged-in) | `directorist_affiliate_register` |
+| `directorist_affiliate_add_affiliate` | `manage_options` | `directorist_affiliate_add_affiliate` |
+| `directorist_affiliate_save_settings` | `manage_options` | `directorist_affiliate_save_settings` |
+| `directorist_affiliate_mark_paid` | `manage_options` | `directorist_affiliate_mark_paid` |
+
 ### Database tables
 
-`{prefix}directorist_affiliates`, `{prefix}directorist_affiliate_visits`, `{prefix}directorist_affiliate_referrals`, `{prefix}directorist_affiliate_payouts`. Full schema in [README.md](README.md).
+`{prefix}directorist_affiliates`, `{prefix}directorist_affiliate_visits`, `{prefix}directorist_affiliate_referrals`, `{prefix}directorist_affiliate_payouts` — full schema in [README.md](README.md).
+
+---
 
 ## FAQ & troubleshooting
 
+**The application form says "You already have an affiliate application" on the very first submit.**
+That was a bug before 0.3.0 (page content rendered twice could process the form twice). Since 0.3.0 submissions are processed exactly once and normally via AJAX — update the plugin if you still see it.
+
+**The form button says "Submitting…" but nothing happens.**
+Open the browser console (F12) — a red line usually names the blocker. Common causes: a security plugin blocking `admin-ajax.php` for visitors, or a JavaScript error from another plugin. The form still works with JavaScript disabled, which is a quick way to confirm where the problem lives.
+
 **Referral links don't set the cookie.**
-Full-page caching (or a CDN serving cached HTML) can prevent the visit capture from running. Exclude URLs containing your referral parameter (`ref` by default) from caching, or configure your cache to vary on it.
+Full-page caching or a CDN can serve cached HTML that skips tracking. Exclude URLs containing your referral parameter (`ref` by default) from cache, or configure the cache to vary on it.
 
-**An affiliate's link shows visits but no referrals.**
-Commissions are only recorded while the relevant commission type is enabled and the affiliate is **approved** at conversion time. Also check the conversion happened within the cookie duration, and that the visitor isn't the affiliate themselves.
+**Visits are counted but no referrals appear.**
+Check that: the affiliate was **approved** at conversion time, the relevant commission type is enabled, the conversion happened within the cookie window, and the visitor isn't the affiliate themselves.
 
-**Can the same registration or listing be credited twice?**
-No — the plugin stores one referral per affiliate + conversion (duplicate events are ignored).
+**Can the same sign-up or listing be credited twice?**
+No — one referral per affiliate per conversion, enforced at the database layer. Duplicate events are ignored.
 
-**Can I use percentage commissions or tie commissions to paid plans?**
-Not out of the box — commissions are flat amounts. The `directorist_affiliate_*_commission` filters let developers compute dynamic amounts.
+**Can I pay percentages, or hook into paid plans?**
+Not out of the box — commissions are flat. Developers can compute dynamic amounts with the `directorist_affiliate_*_commission` filters above.
 
-**How do I change what "counts" as a listing conversion?**
-Use the **Commission trigger** setting: `submission` counts every created listing; `publish` waits until the listing goes live (recommended when listings are moderated).
+**Why was an affiliate skipped during bulk payout?**
+Their selected referrals total less than your **Minimum payout amount**. The warning notice tells you how many were skipped; select more of their referrals or lower the minimum.
 
-**Where do I see why an affiliate was skipped during a bulk payout?**
-The Payouts screen shows a warning notice with the number of skipped affiliates and the configured minimum. Select more of their approved referrals (or lower the minimum) and retry.
-
-**Does deactivating the plugin delete my data?**
-No. Even uninstalling keeps all data unless **Delete data on uninstall** is enabled in Settings → Advanced.
+**Does deactivating or uninstalling delete my data?**
+Deactivating never does. Uninstalling only does if **Delete data on uninstall** is enabled in Settings → Advanced.

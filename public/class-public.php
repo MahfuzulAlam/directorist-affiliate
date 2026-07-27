@@ -57,5 +57,15 @@ final class Directorist_Affiliate_Public {
 			DIRECTORIST_AFFILIATE_VERSION,
 			true
 		);
+
+		wp_localize_script(
+			'directorist-affiliate',
+			'directoristAffiliate',
+			array(
+				'ajaxUrl'         => admin_url( 'admin-ajax.php' ),
+				'submittingLabel' => __( 'Submitting…', 'directorist-affiliate' ),
+				'genericError'    => __( 'Something went wrong. Please try again.', 'directorist-affiliate' ),
+			)
+		);
 	}
 }

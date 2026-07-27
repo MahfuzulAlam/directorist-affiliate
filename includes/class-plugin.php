@@ -75,6 +75,13 @@ final class Directorist_Affiliate_Plugin {
 	public $shortcodes;
 
 	/**
+	 * Registration service.
+	 *
+	 * @var Directorist_Affiliate_Registration
+	 */
+	public $registration;
+
+	/**
 	 * Register bootstrap hooks.
 	 *
 	 * @return void
@@ -171,14 +178,15 @@ final class Directorist_Affiliate_Plugin {
 	 * @return void
 	 */
 	private function init_services(): void {
-		$this->settings   = new Directorist_Affiliate_Settings();
-		$this->affiliate  = new Directorist_Affiliate_Affiliate();
-		$this->referral   = new Directorist_Affiliate_Referral();
-		$this->tracking   = new Directorist_Affiliate_Tracking( $this->settings, $this->affiliate );
-		$this->commission = new Directorist_Affiliate_Commission( $this->settings );
-		$this->payout     = new Directorist_Affiliate_Payout( $this->referral );
-		$this->email      = new Directorist_Affiliate_Email();
-		$this->shortcodes = new Directorist_Affiliate_Shortcodes( $this );
+		$this->settings     = new Directorist_Affiliate_Settings();
+		$this->affiliate    = new Directorist_Affiliate_Affiliate();
+		$this->referral     = new Directorist_Affiliate_Referral();
+		$this->tracking     = new Directorist_Affiliate_Tracking( $this->settings, $this->affiliate );
+		$this->commission   = new Directorist_Affiliate_Commission( $this->settings );
+		$this->payout       = new Directorist_Affiliate_Payout( $this->referral, $this->affiliate );
+		$this->email        = new Directorist_Affiliate_Email();
+		$this->registration = new Directorist_Affiliate_Registration( $this->affiliate, $this->email );
+		$this->shortcodes   = new Directorist_Affiliate_Shortcodes( $this );
 	}
 
 	/**
@@ -194,6 +202,7 @@ final class Directorist_Affiliate_Plugin {
 		( new Directorist_Affiliate_Public( $this ) )->register();
 		$this->shortcodes->register();
 		( new Directorist_Affiliate_Directorist_Integration( $this ) )->register();
+		( new Directorist_Affiliate_Ajax( $this ) )->register();
 
 		if ( is_admin() ) {
 			( new Directorist_Affiliate_Admin( $this ) )->register();

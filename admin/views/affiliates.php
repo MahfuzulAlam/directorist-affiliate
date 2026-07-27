@@ -12,24 +12,17 @@ defined( 'ABSPATH' ) || exit;
 
 	<?php if ( ! empty( $notice ) ) : ?>
 		<?php
-		$success_notices = array( 'affiliate_created', 'affiliate_updated' );
-		$messages        = array(
-			'affiliate_created'       => __( 'Affiliate created successfully.', 'directorist-affiliate' ),
-			'affiliate_updated'       => __( 'Affiliate status updated.', 'directorist-affiliate' ),
-			'invalid_affiliate'       => __( 'Please provide a valid name, email, payout email, and status.', 'directorist-affiliate' ),
-			'user_create_failed'      => __( 'Could not create the WordPress user for this affiliate.', 'directorist-affiliate' ),
-			'affiliate_exists'        => __( 'This WordPress user is already registered as an affiliate.', 'directorist-affiliate' ),
-			'affiliate_create_failed' => __( 'Could not create the affiliate record.', 'directorist-affiliate' ),
-		);
+		$notice_message = $plugin->registration->admin_message( $notice );
+		$is_success     = in_array( $notice, array( 'affiliate_created', 'affiliate_updated' ), true );
 		?>
-		<?php if ( isset( $messages[ $notice ] ) ) : ?>
-			<div class="notice <?php echo in_array( $notice, $success_notices, true ) ? 'notice-success' : 'notice-error'; ?> is-dismissible"><p><?php echo esc_html( $messages[ $notice ] ); ?></p></div>
+		<?php if ( $notice_message ) : ?>
+			<div class="notice <?php echo $is_success ? 'notice-success' : 'notice-error'; ?> is-dismissible"><p><?php echo esc_html( $notice_message ); ?></p></div>
 		<?php endif; ?>
 	<?php endif; ?>
 
 	<div class="directorist-affiliate-detail">
 		<h2><?php esc_html_e( 'Add Affiliate', 'directorist-affiliate' ); ?></h2>
-		<form method="post" class="directorist-affiliate-admin-form">
+		<form method="post" class="directorist-affiliate-admin-form" data-da-ajax="directorist_affiliate_add_affiliate" data-da-success="reload">
 			<?php wp_nonce_field( 'directorist_affiliate_add_affiliate' ); ?>
 			<input type="hidden" name="directorist_affiliate_add_affiliate" value="1" />
 

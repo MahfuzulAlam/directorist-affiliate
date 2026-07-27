@@ -83,6 +83,24 @@ final class Directorist_Affiliate_Admin {
 			array(),
 			DIRECTORIST_AFFILIATE_VERSION
 		);
+
+		wp_enqueue_script(
+			'directorist-affiliate-admin',
+			DIRECTORIST_AFFILIATE_URL . 'assets/js/directorist-affiliate.js',
+			array(),
+			DIRECTORIST_AFFILIATE_VERSION,
+			true
+		);
+
+		wp_localize_script(
+			'directorist-affiliate-admin',
+			'directoristAffiliate',
+			array(
+				'ajaxUrl'         => admin_url( 'admin-ajax.php' ),
+				'submittingLabel' => __( 'Submitting…', 'directorist-affiliate' ),
+				'genericError'    => __( 'Something went wrong. Please try again.', 'directorist-affiliate' ),
+			)
+		);
 	}
 
 	/**
