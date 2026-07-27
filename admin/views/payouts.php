@@ -8,14 +8,11 @@
 defined( 'ABSPATH' ) || exit;
 
 $export_url = wp_nonce_url(
-	admin_url( 'admin.php?page=directorist-affiliate-payouts&directorist_affiliate_export=payouts' ),
+	Directorist_Affiliate_Admin::page_url( 'payouts', array( 'directorist_affiliate_export' => 'payouts' ) ),
 	'directorist_affiliate_export_payouts'
 );
 ?>
-<div class="wrap directorist-affiliate-admin">
-	<h1><?php esc_html_e( 'Payouts', 'directorist-affiliate' ); ?></h1>
-
-	<?php if ( null !== $paid_count && $paid_count > 0 ) : ?>
+<?php if ( null !== $paid_count && $paid_count > 0 ) : ?>
 		<div class="notice notice-success is-dismissible">
 			<p>
 				<?php
@@ -134,4 +131,3 @@ $export_url = wp_nonce_url(
 			<?php endif; ?>
 		</tbody>
 	</table>
-</div>

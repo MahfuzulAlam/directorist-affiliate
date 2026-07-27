@@ -17,7 +17,54 @@ final class Directorist_Affiliate_Referral {
 	 * @return string[]
 	 */
 	public function statuses(): array {
-		return array( 'pending', 'approved', 'rejected', 'paid' );
+		return array( 'pending', 'approved', 'rejected', 'paid', 'cancelled', 'refunded' );
+	}
+
+	/**
+	 * Referral types.
+	 *
+	 * @return string[]
+	 */
+	public function types(): array {
+		return array( 'user_registration', 'listing_submission', 'plan_purchase', 'featured_purchase' );
+	}
+
+	/**
+	 * Translated label for a referral type.
+	 *
+	 * @param string $type Referral type.
+	 *
+	 * @return string
+	 */
+	public function type_label( string $type ): string {
+		$labels = array(
+			'user_registration'  => __( 'User registration', 'directorist-affiliate' ),
+			'listing_submission' => __( 'Listing submission', 'directorist-affiliate' ),
+			'plan_purchase'      => __( 'Plan purchase', 'directorist-affiliate' ),
+			'featured_purchase'  => __( 'Featured listing purchase', 'directorist-affiliate' ),
+		);
+
+		return $labels[ $type ] ?? ucwords( str_replace( '_', ' ', $type ) );
+	}
+
+	/**
+	 * Translated label for a referral status.
+	 *
+	 * @param string $status Referral status.
+	 *
+	 * @return string
+	 */
+	public function status_label( string $status ): string {
+		$labels = array(
+			'pending'   => __( 'Pending', 'directorist-affiliate' ),
+			'approved'  => __( 'Approved', 'directorist-affiliate' ),
+			'rejected'  => __( 'Rejected', 'directorist-affiliate' ),
+			'paid'      => __( 'Paid', 'directorist-affiliate' ),
+			'cancelled' => __( 'Cancelled', 'directorist-affiliate' ),
+			'refunded'  => __( 'Refunded', 'directorist-affiliate' ),
+		);
+
+		return $labels[ $status ] ?? ucfirst( $status );
 	}
 
 	/**
@@ -45,12 +92,16 @@ final class Directorist_Affiliate_Referral {
 		$type         = sanitize_key( $data['referral_type'] ?? '' );
 		$user_id      = ! empty( $data['referred_user_id'] ) ? absint( $data['referred_user_id'] ) : null;
 		$listing_id   = ! empty( $data['listing_id'] ) ? absint( $data['listing_id'] ) : null;
+		$order_id     = ! empty( $data['order_id'] ) ? absint( $data['order_id'] ) : null;
+		$order_source = isset( $data['order_source'] ) ? sanitize_key( $data['order_source'] ) : '';
+		$status       = sanitize_key( $data['status'] ?? 'pending' );
+		$status       = in_array( $status, $this->statuses(), true ) ? $status : 'pending';
 
-		if ( ! $affiliate_id || ! in_array( $type, array( 'user_registration', 'listing_submission' ), true ) ) {
+		if ( ! $affiliate_id || ! in_array( $type, $this->types(), true ) ) {
 			return 0;
 		}
 
-		$existing = $this->find_duplicate( $affiliate_id, $type, $user_id, $listing_id );
+		$existing = $this->find_duplicate( $affiliate_id, $type, $user_id, $listing_id, $order_id, $order_source );
 
 		if ( $existing ) {
 			return (int) $existing->id;
@@ -63,14 +114,17 @@ final class Directorist_Affiliate_Referral {
 				'referral_type'     => $type,
 				'referred_user_id'  => $user_id,
 				'listing_id'        => $listing_id,
+				'order_id'          => $order_id,
+				'order_source'      => $order_source,
+				'order_total'       => isset( $data['order_total'] ) ? (float) $data['order_total'] : null,
 				'commission_amount' => (float) ( $data['commission_amount'] ?? 0 ),
-				'status'            => sanitize_key( $data['status'] ?? 'pending' ),
+				'status'            => $status,
 				'date_created'      => current_time( 'mysql' ),
-				'date_approved'     => null,
+				'date_approved'     => 'approved' === $status ? current_time( 'mysql' ) : null,
 				'date_paid'         => null,
 				'notes'             => sanitize_textarea_field( $data['notes'] ?? '' ),
 			),
-			array( '%d', '%s', '%d', '%d', '%f', '%s', '%s', '%s', '%s', '%s' )
+			array( '%d', '%s', '%d', '%d', '%d', '%s', '%f', '%f', '%s', '%s', '%s', '%s', '%s' )
 		);
 
 		if ( ! $inserted ) {
@@ -96,15 +150,24 @@ final class Directorist_Affiliate_Referral {
 	/**
 	 * Find duplicate referral for same conversion event.
 	 *
+	 * Order-based referrals are deduplicated per order regardless of the
+	 * affiliate, so one paid order can never yield two commissions.
+	 *
 	 * @param int      $affiliate_id Affiliate ID.
 	 * @param string   $type Referral type.
 	 * @param int|null $user_id User ID.
 	 * @param int|null $listing_id Listing ID.
+	 * @param int|null $order_id Order ID.
+	 * @param string   $order_source Order source (directorist|legacy).
 	 *
 	 * @return object|null
 	 */
-	public function find_duplicate( int $affiliate_id, string $type, ?int $user_id, ?int $listing_id ) {
+	public function find_duplicate( int $affiliate_id, string $type, ?int $user_id, ?int $listing_id, ?int $order_id = null, string $order_source = '' ) {
 		global $wpdb;
+
+		if ( in_array( $type, array( 'plan_purchase', 'featured_purchase' ), true ) ) {
+			return $order_id ? $this->get_by_order( $order_id, $order_source ) : null;
+		}
 
 		if ( 'user_registration' === $type && $user_id ) {
 			return $wpdb->get_row(
@@ -129,6 +192,26 @@ final class Directorist_Affiliate_Referral {
 		}
 
 		return null;
+	}
+
+	/**
+	 * Get referral linked to an order.
+	 *
+	 * @param int    $order_id Order ID.
+	 * @param string $order_source Order source (directorist|legacy).
+	 *
+	 * @return object|null
+	 */
+	public function get_by_order( int $order_id, string $order_source = '' ) {
+		global $wpdb;
+
+		return $wpdb->get_row(
+			$wpdb->prepare(
+				"SELECT * FROM {$this->table()} WHERE order_id = %d AND order_source = %s LIMIT 1",
+				$order_id,
+				sanitize_key( $order_source )
+			)
+		);
 	}
 
 	/**

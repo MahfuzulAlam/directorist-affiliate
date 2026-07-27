@@ -30,6 +30,7 @@ final class Directorist_Affiliate_Autoloader {
 		'Directorist_Affiliate_Ajax'                    => 'includes/class-ajax.php',
 		'Directorist_Affiliate_Shortcodes'              => 'includes/class-shortcodes.php',
 		'Directorist_Affiliate_Directorist_Integration' => 'includes/class-directorist-integration.php',
+		'Directorist_Affiliate_Order_Integration'       => 'includes/class-order-integration.php',
 		'Directorist_Affiliate_Admin'                   => 'admin/class-admin.php',
 		'Directorist_Affiliate_Admin_Actions'           => 'admin/class-admin-actions.php',
 		'Directorist_Affiliate_Public'                  => 'public/class-public.php',

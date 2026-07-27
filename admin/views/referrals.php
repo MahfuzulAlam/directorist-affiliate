@@ -7,10 +7,7 @@
 
 defined( 'ABSPATH' ) || exit;
 ?>
-<div class="wrap directorist-affiliate-admin">
-	<h1><?php esc_html_e( 'Referrals', 'directorist-affiliate' ); ?></h1>
-
-	<?php if ( ! empty( $notice ) ) : ?>
+<?php if ( ! empty( $notice ) ) : ?>
 		<?php if ( 'referral_updated' === $notice ) : ?>
 			<div class="notice notice-success is-dismissible"><p><?php esc_html_e( 'Referral updated.', 'directorist-affiliate' ); ?></p></div>
 		<?php elseif ( 'referral_not_approved' === $notice ) : ?>
@@ -25,6 +22,7 @@ defined( 'ABSPATH' ) || exit;
 				<th><?php esc_html_e( 'Type', 'directorist-affiliate' ); ?></th>
 				<th><?php esc_html_e( 'Referred user', 'directorist-affiliate' ); ?></th>
 				<th><?php esc_html_e( 'Listing', 'directorist-affiliate' ); ?></th>
+				<th><?php esc_html_e( 'Order', 'directorist-affiliate' ); ?></th>
 				<th><?php esc_html_e( 'Amount', 'directorist-affiliate' ); ?></th>
 				<th><?php esc_html_e( 'Status', 'directorist-affiliate' ); ?></th>
 				<th><?php esc_html_e( 'Date', 'directorist-affiliate' ); ?></th>
@@ -37,11 +35,11 @@ defined( 'ABSPATH' ) || exit;
 					<?php
 					$affiliate = $plugin->affiliate->get( (int) $referral->affiliate_id );
 					$user      = $referral->referred_user_id ? get_user_by( 'id', (int) $referral->referred_user_id ) : false;
-					$base_url  = admin_url( 'admin.php?page=directorist-affiliate-referrals&referral_id=' . absint( $referral->id ) );
+					$base_url  = Directorist_Affiliate_Admin::page_url( 'referrals', array( 'referral_id' => absint( $referral->id ) ) );
 					?>
 					<tr>
 						<td><?php echo esc_html( $affiliate ? $plugin->affiliate->get_name( $affiliate ) : __( 'Unknown', 'directorist-affiliate' ) ); ?></td>
-						<td><?php echo esc_html( str_replace( '_', ' ', $referral->referral_type ) ); ?></td>
+						<td><?php echo esc_html( $plugin->referral->type_label( (string) $referral->referral_type ) ); ?></td>
 						<td><?php echo esc_html( $user ? $user->user_email : '-' ); ?></td>
 						<td>
 							<?php if ( $referral->listing_id ) : ?>
@@ -50,8 +48,22 @@ defined( 'ABSPATH' ) || exit;
 								<?php echo esc_html( '-' ); ?>
 							<?php endif; ?>
 						</td>
+						<td>
+							<?php if ( ! empty( $referral->order_id ) ) : ?>
+								<?php if ( 'legacy' === $referral->order_source ) : ?>
+									<a href="<?php echo esc_url( (string) get_edit_post_link( (int) $referral->order_id ) ); ?>">#<?php echo esc_html( (int) $referral->order_id ); ?></a>
+								<?php else : ?>
+									#<?php echo esc_html( (int) $referral->order_id ); ?>
+								<?php endif; ?>
+								<?php if ( isset( $referral->order_total ) && null !== $referral->order_total ) : ?>
+									<br><small><?php echo esc_html( number_format_i18n( (float) $referral->order_total, 2 ) ); ?></small>
+								<?php endif; ?>
+							<?php else : ?>
+								<?php echo esc_html( '-' ); ?>
+							<?php endif; ?>
+						</td>
 						<td><?php echo esc_html( number_format_i18n( (float) $referral->commission_amount, 2 ) ); ?></td>
-						<td><span class="directorist-affiliate-badge is-<?php echo esc_attr( sanitize_html_class( $referral->status ) ); ?>"><?php echo esc_html( $referral->status ); ?></span></td>
+						<td><span class="directorist-affiliate-badge is-<?php echo esc_attr( sanitize_html_class( $referral->status ) ); ?>"><?php echo esc_html( $plugin->referral->status_label( (string) $referral->status ) ); ?></span></td>
 						<td><?php echo esc_html( mysql2date( get_option( 'date_format' ), $referral->date_created ) ); ?></td>
 						<td class="directorist-affiliate-row-actions">
 							<a href="<?php echo esc_url( wp_nonce_url( add_query_arg( 'directorist_referral_action', 'approve', $base_url ), 'directorist_referral_action_' . absint( $referral->id ) ) ); ?>"><?php esc_html_e( 'Approve', 'directorist-affiliate' ); ?></a> |
@@ -61,8 +73,7 @@ defined( 'ABSPATH' ) || exit;
 					</tr>
 				<?php endforeach; ?>
 			<?php else : ?>
-				<tr><td colspan="8"><?php esc_html_e( 'No referrals found.', 'directorist-affiliate' ); ?></td></tr>
+				<tr><td colspan="9"><?php esc_html_e( 'No referrals found.', 'directorist-affiliate' ); ?></td></tr>
 			<?php endif; ?>
 		</tbody>
 	</table>
-</div>

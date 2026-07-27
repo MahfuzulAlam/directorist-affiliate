@@ -7,10 +7,7 @@
 
 defined( 'ABSPATH' ) || exit;
 ?>
-<div class="wrap directorist-affiliate-admin">
-	<h1><?php esc_html_e( 'Affiliates', 'directorist-affiliate' ); ?></h1>
-
-	<?php if ( ! empty( $notice ) ) : ?>
+<?php if ( ! empty( $notice ) ) : ?>
 		<?php
 		$notice_message = $plugin->registration->admin_message( $notice );
 		$is_success     = in_array( $notice, array( 'affiliate_created', 'affiliate_updated' ), true );
@@ -72,7 +69,7 @@ defined( 'ABSPATH' ) || exit;
 			<h2><?php esc_html_e( 'Affiliate Details', 'directorist-affiliate' ); ?></h2>
 			<p><strong><?php esc_html_e( 'Name', 'directorist-affiliate' ); ?>:</strong> <?php echo esc_html( $plugin->affiliate->get_name( $selected_affiliate ) ); ?></p>
 			<p><strong><?php esc_html_e( 'Email', 'directorist-affiliate' ); ?>:</strong> <?php echo esc_html( $plugin->affiliate->get_email( $selected_affiliate ) ); ?></p>
-			<p><strong><?php esc_html_e( 'Status', 'directorist-affiliate' ); ?>:</strong> <span class="directorist-affiliate-badge is-<?php echo esc_attr( sanitize_html_class( $selected_affiliate->status ) ); ?>"><?php echo esc_html( $selected_affiliate->status ); ?></span></p>
+			<p><strong><?php esc_html_e( 'Status', 'directorist-affiliate' ); ?>:</strong> <span class="directorist-affiliate-badge is-<?php echo esc_attr( sanitize_html_class( $selected_affiliate->status ) ); ?>"><?php echo esc_html( $plugin->affiliate->status_label( (string) $selected_affiliate->status ) ); ?></span></p>
 			<p><strong><?php esc_html_e( 'Payout email', 'directorist-affiliate' ); ?>:</strong> <?php echo esc_html( $selected_affiliate->payout_email ); ?></p>
 			<p><strong><?php esc_html_e( 'Website', 'directorist-affiliate' ); ?>:</strong> <?php echo $selected_affiliate->website ? '<a href="' . esc_url( $selected_affiliate->website ) . '" target="_blank" rel="noopener noreferrer">' . esc_html( $selected_affiliate->website ) . '</a>' : esc_html__( 'Not provided', 'directorist-affiliate' ); ?></p>
 			<p><strong><?php esc_html_e( 'Promotional channel', 'directorist-affiliate' ); ?>:</strong> <?php echo esc_html( $selected_affiliate->promotional_method ); ?></p>
@@ -98,7 +95,7 @@ defined( 'ABSPATH' ) || exit;
 			<?php if ( $affiliates ) : ?>
 				<?php foreach ( $affiliates as $affiliate ) : ?>
 					<?php
-					$base_url = admin_url( 'admin.php?page=directorist-affiliate-affiliates&affiliate_id=' . absint( $affiliate->id ) );
+					$base_url = Directorist_Affiliate_Admin::page_url( 'affiliates', array( 'affiliate_id' => absint( $affiliate->id ) ) );
 					?>
 					<tr>
 						<td>
@@ -111,14 +108,14 @@ defined( 'ABSPATH' ) || exit;
 							<?php endif; ?>
 						</td>
 						<td><?php echo esc_html( $plugin->affiliate->get_email( $affiliate ) ); ?></td>
-						<td><span class="directorist-affiliate-badge is-<?php echo esc_attr( sanitize_html_class( $affiliate->status ) ); ?>"><?php echo esc_html( $affiliate->status ); ?></span></td>
+						<td><span class="directorist-affiliate-badge is-<?php echo esc_attr( sanitize_html_class( $affiliate->status ) ); ?>"><?php echo esc_html( $plugin->affiliate->status_label( (string) $affiliate->status ) ); ?></span></td>
 						<td><code><?php echo esc_html( $affiliate->referral_code ); ?></code></td>
 						<td><?php echo esc_html( number_format_i18n( $plugin->referral->count( '', (int) $affiliate->id ) ) ); ?></td>
 						<td><?php echo esc_html( number_format_i18n( $plugin->referral->sum_commission( '', (int) $affiliate->id ), 2 ) ); ?></td>
 						<td><?php echo esc_html( number_format_i18n( $plugin->referral->sum_commission( 'approved', (int) $affiliate->id ), 2 ) ); ?></td>
 						<td><?php echo esc_html( mysql2date( get_option( 'date_format' ), $affiliate->date_created ) ); ?></td>
 						<td class="directorist-affiliate-row-actions">
-							<a href="<?php echo esc_url( add_query_arg( 'view_affiliate', absint( $affiliate->id ), admin_url( 'admin.php?page=directorist-affiliate-affiliates' ) ) ); ?>"><?php esc_html_e( 'View details', 'directorist-affiliate' ); ?></a> |
+							<a href="<?php echo esc_url( Directorist_Affiliate_Admin::page_url( 'affiliates', array( 'view_affiliate' => absint( $affiliate->id ) ) ) ); ?>"><?php esc_html_e( 'View details', 'directorist-affiliate' ); ?></a> |
 							<a href="<?php echo esc_url( wp_nonce_url( add_query_arg( 'directorist_affiliate_action', 'approve', $base_url ), 'directorist_affiliate_action_' . absint( $affiliate->id ) ) ); ?>"><?php esc_html_e( 'Approve', 'directorist-affiliate' ); ?></a> |
 							<a href="<?php echo esc_url( wp_nonce_url( add_query_arg( 'directorist_affiliate_action', 'reject', $base_url ), 'directorist_affiliate_action_' . absint( $affiliate->id ) ) ); ?>"><?php esc_html_e( 'Reject', 'directorist-affiliate' ); ?></a> |
 							<a href="<?php echo esc_url( wp_nonce_url( add_query_arg( 'directorist_affiliate_action', 'suspend', $base_url ), 'directorist_affiliate_action_' . absint( $affiliate->id ) ) ); ?>"><?php esc_html_e( 'Suspend', 'directorist-affiliate' ); ?></a>
@@ -130,4 +127,3 @@ defined( 'ABSPATH' ) || exit;
 			<?php endif; ?>
 		</tbody>
 	</table>
-</div>

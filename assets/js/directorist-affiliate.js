@@ -88,8 +88,9 @@
 				notice = document.createElement( 'div' );
 				notice.className = 'directorist-affiliate-js-notice';
 
-				var heading = form.closest( '.wrap' ).querySelector( 'h1' );
-				heading.parentNode.insertBefore( notice, heading.nextSibling );
+				var anchor = form.closest( '.wrap' ).querySelector( '.wp-header-end' ) ||
+					form.closest( '.wrap' ).querySelector( 'h1' );
+				anchor.parentNode.insertBefore( notice, anchor.nextSibling );
 			}
 
 			notice.className = 'notice directorist-affiliate-js-notice ' + ( isSuccess ? 'notice-success' : 'notice-error' );
@@ -125,6 +126,60 @@
 			form.hidden = true;
 		}
 	}
+
+	/* -----------------------------------------------------------------------
+	 * Settings sub-tabs (progressive enhancement)
+	 *
+	 * Sections stay inside one form, so hidden fields still submit; without
+	 * JavaScript the sections simply render stacked.
+	 * --------------------------------------------------------------------- */
+
+	( function () {
+		var container = document.querySelector( '.directorist-affiliate-settings-tabs' );
+
+		if ( ! container ) {
+			return;
+		}
+
+		var buttons  = Array.prototype.slice.call( container.querySelectorAll( '.directorist-affiliate-subtab-link' ) );
+		var sections = Array.prototype.slice.call( container.querySelectorAll( '.directorist-affiliate-settings-section' ) );
+
+		if ( ! buttons.length || ! sections.length ) {
+			return;
+		}
+
+		container.classList.add( 'is-tabbed' );
+
+		function activate( name, updateHash ) {
+			buttons.forEach( function ( button ) {
+				var active = button.getAttribute( 'data-target' ) === name;
+
+				button.classList.toggle( 'is-active', active );
+				button.setAttribute( 'aria-pressed', active ? 'true' : 'false' );
+			} );
+
+			sections.forEach( function ( section ) {
+				section.classList.toggle( 'is-active', section.getAttribute( 'data-section' ) === name );
+			} );
+
+			if ( updateHash && window.history && window.history.replaceState ) {
+				window.history.replaceState( null, '', '#da-' + name );
+			}
+		}
+
+		buttons.forEach( function ( button ) {
+			button.addEventListener( 'click', function () {
+				activate( button.getAttribute( 'data-target' ), true );
+			} );
+		} );
+
+		var initial = ( window.location.hash || '' ).replace( '#da-', '' );
+		var known   = sections.some( function ( section ) {
+			return section.getAttribute( 'data-section' ) === initial;
+		} );
+
+		activate( known ? initial : sections[ 0 ].getAttribute( 'data-section' ), false );
+	} )();
 
 	document.addEventListener( 'submit', function ( event ) {
 		var form = event.target.closest( 'form[data-da-ajax]' );

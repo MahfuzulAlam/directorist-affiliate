@@ -7,9 +7,7 @@
 
 defined( 'ABSPATH' ) || exit;
 ?>
-<div class="wrap directorist-affiliate-admin">
-	<h1><?php esc_html_e( 'Visits', 'directorist-affiliate' ); ?></h1>
-	<table class="widefat striped">
+<table class="widefat striped">
 		<thead>
 			<tr>
 				<th><?php esc_html_e( 'Affiliate', 'directorist-affiliate' ); ?></th>
@@ -42,6 +40,5 @@ defined( 'ABSPATH' ) || exit;
 			<?php else : ?>
 				<tr><td colspan="6"><?php esc_html_e( 'No visits found.', 'directorist-affiliate' ); ?></td></tr>
 			<?php endif; ?>
-		</tbody>
-	</table>
-</div>
+	</tbody>
+</table>

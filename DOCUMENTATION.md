@@ -48,7 +48,7 @@ Turn your visitors into promoters. This guide walks you through every screen of 
 1. Someone **applies** to be an affiliate on your site.
 2. You **approve** them — they get a personal referral link like `https://yoursite.com/?ref=their-code`.
 3. Visitors who follow that link are **tracked with a cookie** (30 days by default).
-4. When a tracked visitor **registers** or **submits a listing**, the affiliate earns a **fixed commission**.
+4. When a tracked visitor **registers**, **submits a listing**, or **pays for a pricing plan or featured listing**, the affiliate earns a commission — a fixed amount, or a percentage of the order total for paid purchases. Refunded or cancelled orders take their commission back automatically.
 5. You **approve the referral** and **record the payout**. Money moves through your own channel (PayPal, bank, etc.) — the plugin keeps the books and gives you a CSV for batch payments.
 
 > 💡 **Tip:** Commissions are flat amounts you control. Nothing is ever paid automatically — you always review first.
@@ -65,7 +65,7 @@ Turn your visitors into promoters. This guide walks you through every screen of 
 
 1. Go to **Plugins → Add New → Upload Plugin**, choose the `directorist-affiliate` ZIP, and click **Install Now** — or copy the folder into `wp-content/plugins/`.
 2. Click **Activate**. If Directorist isn't active you'll be stopped with a clear message — activate Directorist first.
-3. Done. The plugin creates its database tables and defaults silently; a new **Directorist Affiliate** menu (🔗 network icon) appears in your admin sidebar.
+3. Done. The plugin creates its database tables and defaults silently; a new **Affiliate** page appears under the **Directorist** menu in your admin sidebar.
 
 ![Screenshot: Plugins screen with Directorist – Affiliate activated](docs/images/install-plugins-screen.png)
 <!-- 📸 IMAGE PLACEHOLDER: wp-admin Plugins list showing "Directorist - Affiliate" active, with the new sidebar menu visible on the left -->
@@ -75,7 +75,7 @@ Turn your visitors into promoters. This guide walks you through every screen of 
 ## Quick start — first affiliate in 5 steps
 
 **Step 1 — Set your commission amounts.**
-Go to **Directorist Affiliate → Settings**. Enter a fixed amount for registrations and/or listings (e.g. `2.00` and `5.00`), then click **Save settings**. You'll see a green *"Settings saved."* confirmation without the page reloading.
+Go to **Directorist → Affiliate → Settings**. Enter a fixed amount for registrations and/or listings (e.g. `2.00` and `5.00`), then click **Save settings**. You'll see a green *"Settings saved."* confirmation without the page reloading.
 
 ![Screenshot: Settings screen with commission amounts filled in](docs/images/quickstart-settings.png)
 <!-- 📸 IMAGE PLACEHOLDER: Settings page, Registration + Listing commission sections filled, success notice visible -->
@@ -87,7 +87,7 @@ Create a page and add the shortcode `[directorist_affiliate_registration]`.
 Create a second page with `[directorist_affiliate_dashboard]`. (The same dashboard also shows up automatically as an **Affiliate** tab in the Directorist user dashboard, so this page is optional but nice to link in menus.)
 
 **Step 4 — Approve your first applicant.**
-When someone applies, open **Directorist Affiliate → Affiliates**, review their row, and click **Approve**. Their status badge flips to green and they receive an email — their referral link is now live.
+When someone applies, open **Directorist → Affiliate → Affiliates**, review their row, and click **Approve**. Their status badge flips to green and they receive an email — their referral link is now live.
 
 **Step 5 — Watch referrals arrive, then pay.**
 Approve incoming rows on the **Referrals** screen, then batch-pay them on the **Payouts** screen.
@@ -98,7 +98,12 @@ Approve incoming rows on the **Referrals** screen, then batch-pay them on the **
 
 ## A tour of the admin screens
 
-Everything lives under the **Directorist Affiliate** sidebar menu.
+Everything lives in one modern, tabbed page: **Directorist → Affiliate** in the admin sidebar. Six tabs — **Dashboard, Affiliates, Referrals, Visits, Payouts, Settings** — sit under a single header, so you never lose your place, and every form on the page saves via AJAX with inline confirmations.
+
+![Screenshot: the tabbed Affiliate page header and navigation](docs/images/admin-tabbed-shell.png)
+<!-- 📸 IMAGE PLACEHOLDER: the Affiliate page under the Directorist menu — header with version chip, the six-tab navigation with Dashboard active -->
+
+Old bookmarks to the previous standalone pages redirect automatically to the right tab.
 
 ### Dashboard — your program at a glance
 
@@ -134,6 +139,8 @@ Every conversion lands here as a **Pending** row showing who earned it, the type
 - **Reject** — for fraud, refunds, or test data. Nothing is owed.
 - **Mark paid** — pays a single referral on the spot. Only works on **approved** rows; otherwise you'll see an error notice asking you to approve first (this keeps your payout history complete).
 
+Order-based referrals (plan and featured purchases) also show the **order number and order total**, and carry two automatic statuses: **Cancelled** and **Refunded** are applied by the plugin when the underlying order is cancelled or refunded — nothing for you to do, and those amounts never reach the Payouts screen.
+
 ### Visits — the traffic log
 
 ![Screenshot: Visits screen](docs/images/admin-visits.png)
@@ -162,7 +169,7 @@ Covered in full in the next section.
 
 ## Settings, section by section
 
-**Directorist Affiliate → Settings.** The form saves without a page reload and confirms with *"Settings saved."*
+**Directorist → Affiliate → Settings.** The sections are organized into pill-style sub-tabs — **General, Registration Commission, Listing Commission, Order Commissions, Payout, Advanced** — so you only see one group at a time. It's still a single form underneath: one **Save settings** click stores everything from every sub-tab at once, without a page reload, confirming with *"Settings saved."*
 
 ![Screenshot: full settings screen](docs/images/settings-full.png)
 <!-- 📸 IMAGE PLACEHOLDER: entire Settings page scrolled to show all five sections -->
@@ -174,6 +181,7 @@ Covered in full in the next section.
 | **Enable affiliate system** | Master switch | Off = no tracking, no commissions, links do nothing |
 | **Referral URL parameter** | The `?ref=` part of links (default `ref`) | Changing it breaks previously shared links — pick once, early |
 | **Cookie duration** | Days a referral is remembered (default 30) | Longer = more generous attribution window |
+| **Attribution model** | **First click** (default) or **Last click** | First click: the first affiliate keeps the credit until the cookie expires — referrals can't be "stolen". Last click: the newest link wins |
 | **Anonymize visitor IP** | Strips the last IP octet in the Visits log | Turn on for GDPR-friendly logging |
 
 ### Registration Commission
@@ -186,6 +194,20 @@ Enable/disable, the flat amount, and the **Commission trigger**:
 
 - **On listing submission** — credit the moment a listing is created (even if it awaits moderation).
 - **On listing approval/publish** — credit only when it goes live. **Recommended** if you moderate listings; it keeps spam submissions from earning anything.
+
+### Order Commissions (Paid Events)
+
+The revenue events — commissions on money actually paid on your site. Each can be a **fixed amount** or a **percentage of the order total**, and each is automatically inactive (greyed out with an explanation) when the feature it depends on isn't available:
+
+| Setting | What it does | Availability |
+| --- | --- | --- |
+| **Pricing plan purchases** | Commission when a referred user buys a plan/subscription | Needs the **Directorist Pricing Plans** extension active |
+| **Featured listing purchases** | Commission when a referred user pays for featured status | Needs Directorist **monetization + featured listings** enabled |
+| **Auto-approve commissions** | New referrals start as **Approved** (payable immediately) instead of **Pending** | Always available; leave off to vet every commission |
+
+Good to know: free (0.00) orders never earn, one order can never be credited twice, and if a paid order is later **refunded or cancelled** its commission automatically flips to Refunded/Cancelled and disappears from payouts.
+
+> 💡 **Tip:** A common setup is *10–20% of plan purchases* — choose "Percentage of order total" and enter `15.00` for 15%.
 
 ### Payout
 
@@ -251,7 +273,7 @@ Sharing works on any URL: `?ref=CODE` can be appended to the homepage, a listing
 
 ### Reviewing an application (≈1 minute)
 
-1. **Directorist Affiliate → Affiliates** — pending rows wear an amber badge.
+1. **Directorist → Affiliate → Affiliates** — pending rows wear an amber badge.
 2. Click **View details** to read their website, promotional channel, and note.
 3. Click **Approve** (they're emailed and go live) or **Reject** (they're emailed a decline).
 
@@ -312,6 +334,7 @@ All emails are plain text via `wp_mail()`.
 | `directorist_affiliate_created` | An affiliate record is created | `$affiliate_id, $status` |
 | `directorist_affiliate_status_changed` | An affiliate's status changes | `$affiliate_id, $status` |
 | `directorist_affiliate_referral_created` | A new referral is recorded (not for deduped repeats) | `$referral_id, $affiliate_id, $type` |
+| `directorist_affiliate_referral_reversed` | An order refund/cancellation reversed a referral | `$referral_id, $new_status, $order_status` |
 | `directorist_affiliate_payout_recorded` | A payout is recorded | `$payout_id, $affiliate_id, $amount, $referral_ids` |
 
 ### Filters
@@ -320,6 +343,8 @@ All emails are plain text via `wp_mail()`.
 | --- | --- | --- |
 | `directorist_affiliate_registration_commission` | Commission for a referred registration | `$amount` |
 | `directorist_affiliate_listing_commission` | Commission for a referred listing | `$amount, $trigger` |
+| `directorist_affiliate_plan_commission` | Commission for a referred plan purchase | `$amount, $order_total` |
+| `directorist_affiliate_featured_commission` | Commission for a referred featured purchase | `$amount, $order_total` |
 
 Example — double listing commissions during a promotion:
 
@@ -364,7 +389,10 @@ Check that: the affiliate was **approved** at conversion time, the relevant comm
 No — one referral per affiliate per conversion, enforced at the database layer. Duplicate events are ignored.
 
 **Can I pay percentages, or hook into paid plans?**
-Not out of the box — commissions are flat. Developers can compute dynamic amounts with the `directorist_affiliate_*_commission` filters above.
+Yes — since 0.4.0, plan and featured-listing purchases support percentage-of-order-total (or fixed) commissions under **Settings → Order Commissions (Paid Events)**. Registration and listing-submission events remain flat amounts; the `directorist_affiliate_*_commission` filters cover anything custom.
+
+**Why is "Pricing plan purchases" greyed out in Settings?**
+The Directorist Pricing Plans extension isn't active (for the featured event: monetization/featured listings are off). Activate the required feature and the fields unlock — until then that commission event stays safely disabled, even if it was previously configured.
 
 **Why was an affiliate skipped during bulk payout?**
 Their selected referrals total less than your **Minimum payout amount**. The warning notice tells you how many were skipped; select more of their referrals or lower the minimum.

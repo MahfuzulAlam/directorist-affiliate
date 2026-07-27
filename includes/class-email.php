@@ -26,7 +26,7 @@ final class Directorist_Affiliate_Email {
 				/* translators: 1: affiliate email, 2: admin URL. */
 				__( "A new Directorist affiliate application was submitted by %1\$s.\n\nReview it here: %2\$s", 'directorist-affiliate' ),
 				$affiliate->payout_email,
-				admin_url( 'admin.php?page=directorist-affiliate-affiliates' )
+				Directorist_Affiliate_Admin::page_url( 'affiliates' )
 			)
 		);
 	}
@@ -77,8 +77,8 @@ final class Directorist_Affiliate_Email {
 			__( 'New affiliate referral recorded', 'directorist-affiliate' ),
 			sprintf(
 				/* translators: 1: referral type, 2: commission amount. */
-				__( 'A new %1$s referral was recorded with a commission amount of %2$s.', 'directorist-affiliate' ),
-				str_replace( '_', ' ', $referral->referral_type ),
+				__( 'A new "%1$s" referral was recorded with a commission amount of %2$s.', 'directorist-affiliate' ),
+				Directorist_Affiliate_Plugin::instance()->referral->type_label( (string) $referral->referral_type ),
 				number_format_i18n( (float) $referral->commission_amount, 2 )
 			)
 		);

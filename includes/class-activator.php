@@ -91,6 +91,9 @@ CREATE TABLE {$referrals} (
 	referral_type varchar(40) NOT NULL,
 	referred_user_id bigint(20) unsigned DEFAULT NULL,
 	listing_id bigint(20) unsigned DEFAULT NULL,
+	order_id bigint(20) unsigned DEFAULT NULL,
+	order_source varchar(20) NOT NULL DEFAULT '',
+	order_total decimal(18,6) DEFAULT NULL,
 	commission_amount decimal(18,6) NOT NULL DEFAULT 0,
 	status varchar(20) NOT NULL DEFAULT 'pending',
 	date_created datetime NOT NULL,
@@ -102,6 +105,7 @@ CREATE TABLE {$referrals} (
 	KEY referral_type (referral_type),
 	KEY referred_user_id (referred_user_id),
 	KEY listing_id (listing_id),
+	KEY order_id (order_id),
 	KEY status (status)
 ) {$charset_collate};
 CREATE TABLE {$payouts} (

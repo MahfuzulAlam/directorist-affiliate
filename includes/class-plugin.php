@@ -100,11 +100,25 @@ final class Directorist_Affiliate_Plugin {
 	public static function instance(): Directorist_Affiliate_Plugin {
 		if ( null === self::$instance ) {
 			self::$instance = new self();
+			self::$instance->maybe_upgrade();
 			self::$instance->init_services();
 			self::$instance->register_hooks();
 		}
 
 		return self::$instance;
+	}
+
+	/**
+	 * Run schema upgrades when the stored DB version is outdated.
+	 *
+	 * @return void
+	 */
+	private function maybe_upgrade(): void {
+		$installed = (string) get_option( 'directorist_affiliate_db_version', '0' );
+
+		if ( version_compare( $installed, DIRECTORIST_AFFILIATE_DB_VERSION, '<' ) ) {
+			Directorist_Affiliate_Activator::create_tables();
+		}
 	}
 
 	/**
@@ -202,6 +216,7 @@ final class Directorist_Affiliate_Plugin {
 		( new Directorist_Affiliate_Public( $this ) )->register();
 		$this->shortcodes->register();
 		( new Directorist_Affiliate_Directorist_Integration( $this ) )->register();
+		( new Directorist_Affiliate_Order_Integration( $this ) )->register();
 		( new Directorist_Affiliate_Ajax( $this ) )->register();
 
 		if ( is_admin() ) {

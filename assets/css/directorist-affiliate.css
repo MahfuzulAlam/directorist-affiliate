@@ -111,7 +111,6 @@
 	font-size: 12px;
 	font-weight: 600;
 	line-height: 1.5;
-	text-transform: capitalize;
 	color: var(--da-color-neutral);
 	background: var(--da-color-neutral-bg);
 }
@@ -137,9 +136,15 @@
 	background: var(--da-color-info-bg);
 }
 
-.directorist-affiliate-badge.is-suspended {
+.directorist-affiliate-badge.is-suspended,
+.directorist-affiliate-badge.is-cancelled {
 	color: var(--da-color-neutral);
 	background: var(--da-color-neutral-bg);
+}
+
+.directorist-affiliate-badge.is-refunded {
+	color: var(--da-color-danger);
+	background: var(--da-color-danger-bg);
 }
 
 /* ---------------------------------------------------------------------------
@@ -323,6 +328,167 @@
 
 .directorist-affiliate-table tbody tr:hover td {
 	background: var(--da-color-soft);
+}
+
+/* ---------------------------------------------------------------------------
+ * Admin — tabbed shell
+ * ------------------------------------------------------------------------- */
+
+.directorist-affiliate-shell {
+	max-width: 1280px;
+	margin-top: 20px;
+	padding: 0 28px 28px;
+	border: 1px solid var(--da-color-border);
+	border-radius: 12px;
+	background: var(--da-color-surface);
+	box-shadow: var(--da-shadow);
+}
+
+.directorist-affiliate-admin-header {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: baseline;
+	gap: 4px 14px;
+	padding-top: 24px;
+}
+
+.directorist-affiliate-admin .directorist-affiliate-admin-header h1 {
+	display: inline-flex;
+	align-items: center;
+	gap: 10px;
+	margin: 0;
+	padding: 0;
+	font-size: 24px;
+	font-weight: 700;
+	color: var(--da-color-text);
+}
+
+.directorist-affiliate-version {
+	padding: 3px 10px;
+	border-radius: 999px;
+	background: var(--da-color-info-bg);
+	color: var(--da-color-info);
+	font-size: 11px;
+	font-weight: 600;
+	letter-spacing: 0.03em;
+}
+
+.directorist-affiliate-admin-tagline {
+	margin: 0;
+	color: var(--da-color-muted);
+	font-size: 13px;
+}
+
+.directorist-affiliate-tab-nav {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 2px;
+	margin-top: 18px;
+	border-bottom: 1px solid var(--da-color-border);
+}
+
+.directorist-affiliate-tab-link {
+	display: inline-flex;
+	align-items: center;
+	gap: 7px;
+	margin-bottom: -1px;
+	padding: 11px 16px;
+	border-bottom: 2px solid transparent;
+	border-radius: 6px 6px 0 0;
+	color: var(--da-color-muted);
+	font-size: 13px;
+	font-weight: 600;
+	text-decoration: none;
+	transition: color 0.15s ease, background 0.15s ease, border-color 0.15s ease;
+}
+
+.directorist-affiliate-tab-link .dashicons {
+	font-size: 16px;
+	width: 16px;
+	height: 16px;
+}
+
+.directorist-affiliate-tab-link:hover {
+	color: var(--da-color-primary);
+	background: var(--da-color-soft);
+}
+
+.directorist-affiliate-tab-link:focus {
+	box-shadow: none;
+	outline: none;
+}
+
+.directorist-affiliate-tab-link:focus-visible {
+	outline: 2px solid var(--da-color-primary);
+	outline-offset: -2px;
+}
+
+.directorist-affiliate-tab-link.is-active {
+	color: var(--da-color-primary);
+	border-bottom-color: var(--da-color-primary);
+}
+
+.directorist-affiliate-tab-panel {
+	padding-top: 22px;
+}
+
+/* Settings sub-tabs */
+
+.directorist-affiliate-subtab-nav {
+	display: none;
+	flex-wrap: wrap;
+	gap: 8px;
+	margin-bottom: 6px;
+}
+
+.directorist-affiliate-settings-tabs.is-tabbed .directorist-affiliate-subtab-nav {
+	display: flex;
+}
+
+.directorist-affiliate-subtab-link {
+	padding: 7px 16px;
+	border: 1px solid var(--da-color-border);
+	border-radius: 999px;
+	background: var(--da-color-surface);
+	color: var(--da-color-muted);
+	font-size: 13px;
+	font-weight: 600;
+	cursor: pointer;
+	transition: color 0.15s ease, background 0.15s ease, border-color 0.15s ease;
+}
+
+.directorist-affiliate-subtab-link:hover {
+	color: var(--da-color-primary);
+	border-color: var(--da-color-primary);
+}
+
+.directorist-affiliate-subtab-link:focus-visible {
+	outline: 2px solid var(--da-color-primary);
+	outline-offset: 2px;
+}
+
+.directorist-affiliate-subtab-link.is-active {
+	background: var(--da-color-primary);
+	border-color: var(--da-color-primary);
+	color: #fff;
+}
+
+.directorist-affiliate-settings-tabs.is-tabbed .directorist-affiliate-settings-section {
+	display: none;
+}
+
+.directorist-affiliate-settings-tabs.is-tabbed .directorist-affiliate-settings-section.is-active {
+	display: block;
+}
+
+/* The active pill already names the section when tabbed. */
+.directorist-affiliate-settings-tabs.is-tabbed .directorist-affiliate-settings-section > h2 {
+	display: none;
+}
+
+.directorist-affiliate-tab-panel > h2:first-child,
+.directorist-affiliate-tab-panel > form > h2:first-of-type {
+	margin-top: 0;
 }
 
 /* ---------------------------------------------------------------------------

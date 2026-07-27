@@ -21,6 +21,24 @@ final class Directorist_Affiliate_Affiliate {
 	}
 
 	/**
+	 * Translated label for an affiliate status.
+	 *
+	 * @param string $status Affiliate status.
+	 *
+	 * @return string
+	 */
+	public function status_label( string $status ): string {
+		$labels = array(
+			'pending'   => __( 'Pending', 'directorist-affiliate' ),
+			'approved'  => __( 'Approved', 'directorist-affiliate' ),
+			'rejected'  => __( 'Rejected', 'directorist-affiliate' ),
+			'suspended' => __( 'Suspended', 'directorist-affiliate' ),
+		);
+
+		return $labels[ $status ] ?? ucfirst( $status );
+	}
+
+	/**
 	 * Get table name.
 	 *
 	 * @return string

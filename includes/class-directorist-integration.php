@@ -76,7 +76,7 @@ final class Directorist_Affiliate_Directorist_Integration {
 				'referral_type'     => 'user_registration',
 				'referred_user_id'  => $user_id,
 				'commission_amount' => $amount,
-				'status'            => 'pending',
+				'status'            => $this->plugin->commission->default_referral_status(),
 				'notes'             => __( 'Created from referral cookie during user registration.', 'directorist-affiliate' ),
 			)
 		);
@@ -192,7 +192,7 @@ final class Directorist_Affiliate_Directorist_Integration {
 				'referred_user_id'  => $user_id,
 				'listing_id'        => $listing_id,
 				'commission_amount' => $amount,
-				'status'            => 'pending',
+				'status'            => $this->plugin->commission->default_referral_status(),
 				'notes'             => sprintf(
 					/* translators: %s: commission trigger. */
 					__( 'Created from Directorist listing %s trigger.', 'directorist-affiliate' ),

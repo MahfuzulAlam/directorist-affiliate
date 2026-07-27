@@ -1,0 +1,835 @@
+# Copyright (C) 2026 wpXplore
+# This file is distributed under the GPL v2 or later.
+msgid ""
+msgstr ""
+"Project-Id-Version: Directorist - Affiliate 1.0.0\n"
+"Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/directorist-affiliate\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"POT-Creation-Date: 2026-07-27T18:04:23+00:00\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"X-Generator: WP-CLI 2.12.0\n"
+"X-Domain: directorist-affiliate\n"
+
+#. Plugin Name of the plugin
+#: directorist-affiliate.php
+msgid "Directorist - Affiliate"
+msgstr ""
+
+#. Plugin URI of the plugin
+#: directorist-affiliate.php
+msgid "https://wpxplore.com/tools/directorist-affiliate/"
+msgstr ""
+
+#. Description of the plugin
+#: directorist-affiliate.php
+msgid "Affiliate tracking and commissions for Directorist — referrals for registrations, listing submissions, and paid plan/featured orders."
+msgstr ""
+
+#. Author of the plugin
+#: directorist-affiliate.php
+msgid "wpXplore"
+msgstr ""
+
+#. Author URI of the plugin
+#: directorist-affiliate.php
+msgid "https://wpxplore.com"
+msgstr ""
+
+#: admin/class-admin-actions.php:162
+msgid "Manual payout marked from referral list."
+msgstr ""
+
+#: admin/class-admin.php:88
+msgid "Dashboard"
+msgstr ""
+
+#: admin/class-admin.php:93
+msgid "Affiliates"
+msgstr ""
+
+#: admin/class-admin.php:98
+#: public/views/affiliate-dashboard.php:17
+msgid "Referrals"
+msgstr ""
+
+#: admin/class-admin.php:103
+#: public/views/affiliate-dashboard.php:16
+msgid "Visits"
+msgstr ""
+
+#: admin/class-admin.php:108
+msgid "Payouts"
+msgstr ""
+
+#: admin/class-admin.php:113
+msgid "Settings"
+msgstr ""
+
+#: admin/class-admin.php:139
+#: admin/class-admin.php:140
+#: admin/class-admin.php:232
+#: admin/views/payouts.php:78
+#: admin/views/payouts.php:110
+#: admin/views/referrals.php:21
+#: admin/views/visits.php:13
+#: includes/class-directorist-integration.php:140
+msgid "Affiliate"
+msgstr ""
+
+#: admin/class-admin.php:213
+#: public/class-public.php:66
+msgid "Submitting…"
+msgstr ""
+
+#: admin/class-admin.php:214
+#: public/class-public.php:67
+msgid "Something went wrong. Please try again."
+msgstr ""
+
+#: admin/class-admin.php:235
+msgid "Referral tracking and commissions for your directory."
+msgstr ""
+
+#: admin/class-admin.php:239
+msgid "Affiliate sections"
+msgstr ""
+
+#: admin/views/affiliates.php:21
+msgid "Add Affiliate"
+msgstr ""
+
+#: admin/views/affiliates.php:28
+#: admin/views/affiliates.php:70
+#: admin/views/affiliates.php:83
+#: public/views/registration-form.php:33
+msgid "Name"
+msgstr ""
+
+#: admin/views/affiliates.php:32
+#: admin/views/affiliates.php:71
+#: admin/views/affiliates.php:84
+#: public/views/registration-form.php:38
+msgid "Email"
+msgstr ""
+
+#: admin/views/affiliates.php:36
+#: admin/views/affiliates.php:73
+#: admin/views/payouts.php:79
+#: admin/views/payouts.php:112
+#: public/views/affiliate-dashboard.php:39
+#: public/views/registration-form.php:53
+msgid "Payout email"
+msgstr ""
+
+#: admin/views/affiliates.php:40
+#: admin/views/affiliates.php:72
+#: admin/views/affiliates.php:85
+#: admin/views/referrals.php:27
+#: public/views/affiliate-dashboard.php:13
+#: public/views/affiliate-dashboard.php:54
+msgid "Status"
+msgstr ""
+
+#: admin/views/affiliates.php:42
+#: includes/class-affiliate.php:33
+#: includes/class-referral.php:60
+#: public/views/affiliate-dashboard.php:19
+msgid "Approved"
+msgstr ""
+
+#: admin/views/affiliates.php:43
+#: includes/class-affiliate.php:32
+#: includes/class-referral.php:59
+#: public/views/affiliate-dashboard.php:18
+msgid "Pending"
+msgstr ""
+
+#: admin/views/affiliates.php:44
+#: includes/class-affiliate.php:34
+#: includes/class-referral.php:61
+msgid "Rejected"
+msgstr ""
+
+#: admin/views/affiliates.php:45
+#: includes/class-affiliate.php:35
+msgid "Suspended"
+msgstr ""
+
+#: admin/views/affiliates.php:49
+#: admin/views/affiliates.php:74
+#: public/views/registration-form.php:43
+msgid "Website"
+msgstr ""
+
+#: admin/views/affiliates.php:53
+#: admin/views/affiliates.php:75
+#: public/views/registration-form.php:48
+msgid "Promotional channel"
+msgstr ""
+
+#: admin/views/affiliates.php:59
+#: admin/views/affiliates.php:76
+msgid "Application note"
+msgstr ""
+
+#: admin/views/affiliates.php:63
+msgid "Add affiliate"
+msgstr ""
+
+#: admin/views/affiliates.php:69
+msgid "Affiliate Details"
+msgstr ""
+
+#: admin/views/affiliates.php:74
+msgid "Not provided"
+msgstr ""
+
+#: admin/views/affiliates.php:86
+msgid "Referral code"
+msgstr ""
+
+#: admin/views/affiliates.php:87
+#: admin/views/dashboard.php:15
+msgid "Total referrals"
+msgstr ""
+
+#: admin/views/affiliates.php:88
+msgid "Total commission"
+msgstr ""
+
+#: admin/views/affiliates.php:89
+msgid "Unpaid commission"
+msgstr ""
+
+#: admin/views/affiliates.php:90
+msgid "Date applied"
+msgstr ""
+
+#: admin/views/affiliates.php:91
+#: admin/views/referrals.php:29
+msgid "Actions"
+msgstr ""
+
+#: admin/views/affiliates.php:118
+msgid "View details"
+msgstr ""
+
+#: admin/views/affiliates.php:119
+#: admin/views/referrals.php:69
+msgid "Approve"
+msgstr ""
+
+#: admin/views/affiliates.php:120
+#: admin/views/referrals.php:70
+msgid "Reject"
+msgstr ""
+
+#: admin/views/affiliates.php:121
+msgid "Suspend"
+msgstr ""
+
+#: admin/views/affiliates.php:126
+msgid "No affiliates found."
+msgstr ""
+
+#: admin/views/dashboard.php:10
+msgid "Affiliates & traffic"
+msgstr ""
+
+#: admin/views/dashboard.php:12
+msgid "Total affiliates"
+msgstr ""
+
+#: admin/views/dashboard.php:13
+msgid "Pending affiliates"
+msgstr ""
+
+#: admin/views/dashboard.php:14
+msgid "Total visits"
+msgstr ""
+
+#: admin/views/dashboard.php:18
+msgid "Commissions"
+msgstr ""
+
+#: admin/views/dashboard.php:20
+msgid "Pending commission"
+msgstr ""
+
+#: admin/views/dashboard.php:21
+msgid "Approved commission"
+msgstr ""
+
+#: admin/views/dashboard.php:22
+msgid "Paid commission"
+msgstr ""
+
+#. translators: %s: number of payouts.
+#: admin/views/payouts.php:22
+#: includes/class-ajax.php:132
+#, php-format
+msgid "%s payout recorded."
+msgid_plural "%s payouts recorded."
+msgstr[0] ""
+msgstr[1] ""
+
+#. translators: 1: number of affiliates, 2: minimum payout amount.
+#: admin/views/payouts.php:38
+#, php-format
+msgid "%1$s affiliate was skipped because the selected total is below the minimum payout of %2$s."
+msgid_plural "%1$s affiliates were skipped because their selected totals are below the minimum payout of %2$s."
+msgstr[0] ""
+msgstr[1] ""
+
+#: admin/views/payouts.php:53
+msgid "Export approved payouts CSV"
+msgstr ""
+
+#: admin/views/payouts.php:55
+msgid "Unpaid approved commissions"
+msgstr ""
+
+#. translators: %s: minimum payout amount.
+#: admin/views/payouts.php:63
+#, php-format
+msgid "Minimum payout per affiliate: %s. Selections totalling less than this per affiliate are skipped."
+msgstr ""
+
+#: admin/views/payouts.php:77
+msgid "Select"
+msgstr ""
+
+#: admin/views/payouts.php:80
+msgid "Referral"
+msgstr ""
+
+#: admin/views/payouts.php:81
+#: admin/views/payouts.php:111
+#: admin/views/referrals.php:26
+#: public/views/affiliate-dashboard.php:53
+msgid "Amount"
+msgstr ""
+
+#: admin/views/payouts.php:82
+#: admin/views/referrals.php:28
+#: admin/views/visits.php:17
+#: public/views/affiliate-dashboard.php:55
+msgid "Date"
+msgstr ""
+
+#: admin/views/payouts.php:91
+#: admin/views/payouts.php:122
+#: admin/views/referrals.php:41
+#: admin/views/visits.php:26
+msgid "Unknown"
+msgstr ""
+
+#: admin/views/payouts.php:99
+msgid "No approved unpaid referrals found."
+msgstr ""
+
+#: admin/views/payouts.php:103
+msgid "Mark selected as paid"
+msgstr ""
+
+#: admin/views/payouts.php:106
+msgid "Payout history"
+msgstr ""
+
+#: admin/views/payouts.php:113
+msgid "Date paid"
+msgstr ""
+
+#: admin/views/payouts.php:114
+msgid "Notes"
+msgstr ""
+
+#: admin/views/payouts.php:130
+msgid "No payouts found."
+msgstr ""
+
+#: admin/views/referrals.php:12
+msgid "Referral updated."
+msgstr ""
+
+#: admin/views/referrals.php:14
+msgid "Only approved referrals can be marked as paid. Approve the referral first."
+msgstr ""
+
+#: admin/views/referrals.php:22
+#: public/views/affiliate-dashboard.php:52
+msgid "Type"
+msgstr ""
+
+#: admin/views/referrals.php:23
+msgid "Referred user"
+msgstr ""
+
+#: admin/views/referrals.php:24
+msgid "Listing"
+msgstr ""
+
+#: admin/views/referrals.php:25
+msgid "Order"
+msgstr ""
+
+#: admin/views/referrals.php:71
+msgid "Mark paid"
+msgstr ""
+
+#: admin/views/referrals.php:76
+msgid "No referrals found."
+msgstr ""
+
+#: admin/views/settings.php:15
+#: admin/views/settings.php:40
+msgid "General"
+msgstr ""
+
+#: admin/views/settings.php:16
+#: admin/views/settings.php:75
+msgid "Registration Commission"
+msgstr ""
+
+#: admin/views/settings.php:17
+#: admin/views/settings.php:89
+msgid "Listing Commission"
+msgstr ""
+
+#: admin/views/settings.php:18
+msgid "Order Commissions"
+msgstr ""
+
+#: admin/views/settings.php:19
+#: admin/views/settings.php:164
+msgid "Payout"
+msgstr ""
+
+#: admin/views/settings.php:20
+#: admin/views/settings.php:178
+msgid "Advanced"
+msgstr ""
+
+#: admin/views/settings.php:27
+msgid "Settings sections"
+msgstr ""
+
+#: admin/views/settings.php:43
+msgid "Enable affiliate system"
+msgstr ""
+
+#: admin/views/settings.php:44
+#: admin/views/settings.php:67
+#: admin/views/settings.php:79
+#: admin/views/settings.php:93
+#: admin/views/settings.php:156
+#: admin/views/settings.php:183
+msgid "Enabled"
+msgstr ""
+
+#: admin/views/settings.php:47
+msgid "Referral URL parameter"
+msgstr ""
+
+#: admin/views/settings.php:51
+msgid "Cookie duration"
+msgstr ""
+
+#: admin/views/settings.php:52
+msgid "days"
+msgstr ""
+
+#: admin/views/settings.php:55
+msgid "Attribution model"
+msgstr ""
+
+#: admin/views/settings.php:58
+msgid "First click (recommended)"
+msgstr ""
+
+#: admin/views/settings.php:59
+msgid "Last click"
+msgstr ""
+
+#: admin/views/settings.php:61
+msgid "First click: the first affiliate a visitor clicks keeps the credit until the cookie expires. Last click: every new affiliate link overwrites the previous credit."
+msgstr ""
+
+#: admin/views/settings.php:65
+msgid "Anonymize visitor IP"
+msgstr ""
+
+#: admin/views/settings.php:68
+msgid "Store visit IP addresses with the last octet removed (recommended for GDPR compliance)."
+msgstr ""
+
+#: admin/views/settings.php:78
+msgid "Enable registration commission"
+msgstr ""
+
+#: admin/views/settings.php:82
+#: admin/views/settings.php:96
+msgid "Fixed commission amount"
+msgstr ""
+
+#: admin/views/settings.php:92
+msgid "Enable listing commission"
+msgstr ""
+
+#: admin/views/settings.php:100
+msgid "Commission trigger"
+msgstr ""
+
+#: admin/views/settings.php:103
+msgid "On listing submission"
+msgstr ""
+
+#: admin/views/settings.php:104
+msgid "On listing approval/publish"
+msgstr ""
+
+#: admin/views/settings.php:112
+msgid "Order Commissions (Paid Events)"
+msgstr ""
+
+#: admin/views/settings.php:113
+msgid "Commissions on completed paid orders. Refunded or cancelled orders reverse their commission automatically."
+msgstr ""
+
+#: admin/views/settings.php:116
+msgid "Pricing plan purchases"
+msgstr ""
+
+#: admin/views/settings.php:120
+msgid "Pay commission when a referred user buys a pricing plan"
+msgstr ""
+
+#: admin/views/settings.php:123
+#: admin/views/settings.php:142
+msgid "Inactive:"
+msgstr ""
+
+#: admin/views/settings.php:123
+msgid "requires the Directorist Pricing Plans extension. Activate it to enable this event."
+msgstr ""
+
+#: admin/views/settings.php:127
+#: admin/views/settings.php:146
+msgid "Percentage of order total (%)"
+msgstr ""
+
+#: admin/views/settings.php:128
+#: admin/views/settings.php:147
+msgid "Fixed amount"
+msgstr ""
+
+#: admin/views/settings.php:135
+msgid "Featured listing purchases"
+msgstr ""
+
+#: admin/views/settings.php:139
+msgid "Pay commission when a referred user buys featured status"
+msgstr ""
+
+#: admin/views/settings.php:142
+msgid "requires Directorist monetization with featured listings enabled (Directory Settings → Monetization)."
+msgstr ""
+
+#: admin/views/settings.php:154
+msgid "Auto-approve commissions"
+msgstr ""
+
+#: admin/views/settings.php:157
+msgid "New referrals are created as Approved (payable immediately) instead of Pending review."
+msgstr ""
+
+#: admin/views/settings.php:167
+msgid "Minimum payout amount"
+msgstr ""
+
+#: admin/views/settings.php:171
+msgid "Payout instructions"
+msgstr ""
+
+#: admin/views/settings.php:181
+msgid "Delete data on uninstall"
+msgstr ""
+
+#: admin/views/settings.php:184
+msgid "Permanently remove all affiliate tables, settings, and related user meta when the plugin is deleted."
+msgstr ""
+
+#: admin/views/settings.php:190
+msgid "Save settings"
+msgstr ""
+
+#: admin/views/visits.php:14
+msgid "Landing page"
+msgstr ""
+
+#: admin/views/visits.php:15
+msgid "Referrer URL"
+msgstr ""
+
+#: admin/views/visits.php:16
+msgid "IP"
+msgstr ""
+
+#: admin/views/visits.php:18
+msgid "Converted"
+msgstr ""
+
+#: admin/views/visits.php:28
+msgid "Direct"
+msgstr ""
+
+#: admin/views/visits.php:33
+msgid "Yes"
+msgstr ""
+
+#: admin/views/visits.php:35
+msgid "No"
+msgstr ""
+
+#: admin/views/visits.php:41
+msgid "No visits found."
+msgstr ""
+
+#: includes/class-activator.php:27
+msgid "Directorist - Affiliate requires Directorist to be active."
+msgstr ""
+
+#: includes/class-activator.php:28
+msgid "Missing dependency"
+msgstr ""
+
+#: includes/class-ajax.php:54
+#: includes/class-ajax.php:175
+msgid "Security check failed. Please reload the page and try again."
+msgstr ""
+
+#: includes/class-ajax.php:97
+msgid "Settings saved."
+msgstr ""
+
+#: includes/class-ajax.php:115
+msgid "Select at least one referral to mark as paid."
+msgstr ""
+
+#: includes/class-ajax.php:126
+msgid "No payouts recorded. Only approved referrals can be paid."
+msgstr ""
+
+#. translators: %s: number of affiliates.
+#: includes/class-ajax.php:139
+#, php-format
+msgid "%s affiliate was skipped for being below the minimum payout."
+msgid_plural "%s affiliates were skipped for being below the minimum payout."
+msgstr[0] ""
+msgstr[1] ""
+
+#: includes/class-ajax.php:168
+msgid "You are not allowed to do that."
+msgstr ""
+
+#: includes/class-directorist-integration.php:80
+msgid "Created from referral cookie during user registration."
+msgstr ""
+
+#. translators: %s: commission trigger.
+#: includes/class-directorist-integration.php:198
+#, php-format
+msgid "Created from Directorist listing %s trigger."
+msgstr ""
+
+#: includes/class-email.php:24
+msgid "New affiliate application"
+msgstr ""
+
+#. translators: 1: affiliate email, 2: admin URL.
+#: includes/class-email.php:27
+#, php-format
+msgid ""
+"A new Directorist affiliate application was submitted by %1$s.\n"
+"\n"
+"Review it here: %2$s"
+msgstr ""
+
+#: includes/class-email.php:50
+msgid "Your affiliate application was approved"
+msgstr ""
+
+#: includes/class-email.php:51
+msgid "Your affiliate application was rejected"
+msgstr ""
+
+#: includes/class-email.php:54
+msgid "Your Directorist affiliate application has been approved. You can now use your referral link from the affiliate dashboard."
+msgstr ""
+
+#: includes/class-email.php:55
+msgid "Your Directorist affiliate application has been rejected."
+msgstr ""
+
+#: includes/class-email.php:77
+msgid "New affiliate referral recorded"
+msgstr ""
+
+#. translators: 1: referral type, 2: commission amount.
+#: includes/class-email.php:80
+#, php-format
+msgid "A new \"%1$s\" referral was recorded with a commission amount of %2$s."
+msgstr ""
+
+#. translators: 1: order source, 2: order ID.
+#: includes/class-order-integration.php:263
+#, php-format
+msgid "Created from paid %1$s order #%2$d."
+msgstr ""
+
+#: includes/class-payout.php:167
+msgid "Manual payout marked from admin."
+msgstr ""
+
+#: includes/class-plugin.php:161
+msgid "Directorist - Affiliate requires Directorist to be installed and active."
+msgstr ""
+
+#. translators: %s: minimum Directorist version.
+#: includes/class-plugin.php:180
+#, php-format
+msgid "Directorist - Affiliate requires Directorist %s or newer."
+msgstr ""
+
+#: includes/class-referral.php:41
+msgid "User registration"
+msgstr ""
+
+#: includes/class-referral.php:42
+msgid "Listing submission"
+msgstr ""
+
+#: includes/class-referral.php:43
+msgid "Plan purchase"
+msgstr ""
+
+#: includes/class-referral.php:44
+msgid "Featured listing purchase"
+msgstr ""
+
+#: includes/class-referral.php:62
+#: public/views/affiliate-dashboard.php:20
+msgid "Paid"
+msgstr ""
+
+#: includes/class-referral.php:63
+msgid "Cancelled"
+msgstr ""
+
+#: includes/class-referral.php:64
+msgid "Refunded"
+msgstr ""
+
+#: includes/class-registration.php:52
+msgid "Your affiliate application was submitted and is pending review."
+msgstr ""
+
+#: includes/class-registration.php:67
+msgid "Please complete all required fields with valid values."
+msgstr ""
+
+#: includes/class-registration.php:77
+msgid "An account already exists with this email address. Please log in before applying."
+msgstr ""
+
+#: includes/class-registration.php:94
+msgid "You already have an affiliate application."
+msgstr ""
+
+#: includes/class-registration.php:111
+msgid "Unable to submit your application. Please try again."
+msgstr ""
+
+#: includes/class-registration.php:208
+msgid "Affiliate created successfully."
+msgstr ""
+
+#: includes/class-registration.php:209
+msgid "Affiliate status updated."
+msgstr ""
+
+#: includes/class-registration.php:210
+msgid "Please provide a valid name, email, payout email, and status."
+msgstr ""
+
+#: includes/class-registration.php:211
+msgid "Could not create the WordPress user for this affiliate."
+msgstr ""
+
+#: includes/class-registration.php:212
+msgid "This WordPress user is already registered as an affiliate."
+msgstr ""
+
+#: includes/class-registration.php:213
+msgid "Could not create the affiliate record."
+msgstr ""
+
+#: includes/class-shortcodes.php:97
+msgid "Please log in to view your affiliate dashboard."
+msgstr ""
+
+#: includes/class-shortcodes.php:103
+msgid "You have not applied for the affiliate program yet."
+msgstr ""
+
+#: includes/class-shortcodes.php:143
+msgid "Security check failed. Please try again."
+msgstr ""
+
+#: public/views/affiliate-dashboard.php:25
+msgid "Referral link"
+msgstr ""
+
+#: public/views/affiliate-dashboard.php:29
+msgid "Copied!"
+msgstr ""
+
+#: public/views/affiliate-dashboard.php:30
+msgid "Copy link"
+msgstr ""
+
+#: public/views/affiliate-dashboard.php:33
+msgid "Share this link anywhere you promote the site. Sign-ups and listings from your visitors are credited to you."
+msgstr ""
+
+#: public/views/affiliate-dashboard.php:35
+msgid "Your application is being reviewed. Your referral link will appear here once you are approved."
+msgstr ""
+
+#: public/views/affiliate-dashboard.php:47
+msgid "Referral history"
+msgstr ""
+
+#: public/views/affiliate-dashboard.php:69
+msgid "No referrals yet."
+msgstr ""
+
+#: public/views/registration-form.php:27
+msgid "Leave this field empty"
+msgstr ""
+
+#: public/views/registration-form.php:49
+msgid "Blog, YouTube, newsletter…"
+msgstr ""
+
+#: public/views/registration-form.php:59
+msgid "Message/application note"
+msgstr ""
+
+#: public/views/registration-form.php:64
+msgid "Apply as affiliate"
+msgstr ""

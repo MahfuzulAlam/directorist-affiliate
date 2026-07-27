@@ -113,6 +113,7 @@ final class Directorist_Affiliate_Shortcodes {
 		return $this->render(
 			'affiliate-dashboard.php',
 			array(
+				'plugin'               => $this->plugin,
 				'affiliate'            => $affiliate,
 				'referrals'            => $referrals,
 				'visits'               => $this->plugin->tracking->count( (int) $affiliate->id ),

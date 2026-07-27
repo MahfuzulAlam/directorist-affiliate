@@ -27,3 +27,6 @@ Thumbs.db
 # Environment files
 .env
 .env.*
+
+# Internal planning docs (not for distribution)
+/prd/

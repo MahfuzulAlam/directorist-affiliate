@@ -44,6 +44,12 @@ final class Directorist_Affiliate_Admin_Actions {
 	 * @return void
 	 */
 	public function handle_actions(): void {
+		// admin-ajax.php also fires admin_init; these no-JS fallbacks must not
+		// intercept AJAX submissions (their redirect would corrupt the JSON response).
+		if ( wp_doing_ajax() ) {
+			return;
+		}
+
 		if ( ! current_user_can( 'manage_options' ) ) {
 			return;
 		}
@@ -70,7 +76,7 @@ final class Directorist_Affiliate_Admin_Actions {
 
 		$result = $this->plugin->registration->process_admin( $_POST );
 
-		$this->redirect( 'directorist-affiliate-affiliates', array( 'directorist_affiliate_notice' => $result['notice'] ) );
+		$this->redirect( 'affiliates', array( 'directorist_affiliate_notice' => $result['notice'] ) );
 	}
 
 	/**
@@ -86,7 +92,7 @@ final class Directorist_Affiliate_Admin_Actions {
 		check_admin_referer( 'directorist_affiliate_save_settings' );
 		$this->plugin->settings->save( $_POST );
 
-		$this->redirect( 'directorist-affiliate-settings', array( 'updated' => '1' ) );
+		$this->redirect( 'settings', array( 'updated' => '1' ) );
 	}
 
 	/**
@@ -118,7 +124,7 @@ final class Directorist_Affiliate_Admin_Actions {
 			}
 		}
 
-		$this->redirect( 'directorist-affiliate-affiliates', array( 'directorist_affiliate_notice' => 'affiliate_updated' ) );
+		$this->redirect( 'affiliates', array( 'directorist_affiliate_notice' => 'affiliate_updated' ) );
 	}
 
 	/**
@@ -163,7 +169,7 @@ final class Directorist_Affiliate_Admin_Actions {
 			$this->plugin->referral->update_status( $referral_id, $status );
 		}
 
-		$this->redirect( 'directorist-affiliate-referrals', array( 'directorist_affiliate_notice' => $notice ) );
+		$this->redirect( 'referrals', array( 'directorist_affiliate_notice' => $notice ) );
 	}
 
 	/**
@@ -188,7 +194,7 @@ final class Directorist_Affiliate_Admin_Actions {
 		);
 
 		$this->redirect(
-			'directorist-affiliate-payouts',
+			'payouts',
 			array(
 				'directorist_affiliate_paid'    => $result['paid'],
 				'directorist_affiliate_skipped' => $result['skipped'],
@@ -244,15 +250,15 @@ final class Directorist_Affiliate_Admin_Actions {
 	}
 
 	/**
-	 * Redirect to a plugin admin page with query args and stop execution.
+	 * Redirect to a tab of the Affiliate admin page and stop execution.
 	 *
-	 * @param string               $page Admin page slug.
+	 * @param string               $tab Tab slug.
 	 * @param array<string,string> $args Extra query args.
 	 *
 	 * @return void
 	 */
-	private function redirect( string $page, array $args = array() ): void {
-		wp_safe_redirect( add_query_arg( $args, admin_url( 'admin.php?page=' . $page ) ) );
+	private function redirect( string $tab, array $args = array() ): void {
+		wp_safe_redirect( Directorist_Affiliate_Admin::page_url( $tab, $args ) );
 		exit;
 	}
 }

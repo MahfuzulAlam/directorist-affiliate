@@ -86,6 +86,19 @@ final class Directorist_Affiliate_Tracking {
 			return;
 		}
 
+		// First-click attribution: an existing valid credit is never overwritten.
+		if ( 'first_click' === $this->settings->get( 'attribution_model', 'first_click' ) ) {
+			$existing_id = $this->get_cookie_affiliate_id();
+
+			if ( $existing_id && $existing_id !== (int) $affiliate->id ) {
+				$existing = $this->affiliate->get( $existing_id );
+
+				if ( $existing && 'approved' === $existing->status ) {
+					return;
+				}
+			}
+		}
+
 		$visit_id = $this->create_visit( $affiliate );
 		$expires  = time() + ( DAY_IN_SECONDS * max( 1, absint( $this->settings->get( 'cookie_duration', 30 ) ) ) );
 		$secure   = is_ssl();

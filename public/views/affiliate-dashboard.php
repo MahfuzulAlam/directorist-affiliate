@@ -11,7 +11,7 @@ defined( 'ABSPATH' ) || exit;
 	<div class="directorist-affiliate-summary">
 		<div>
 			<strong><?php esc_html_e( 'Status', 'directorist-affiliate' ); ?></strong>
-			<span><span class="directorist-affiliate-badge is-<?php echo esc_attr( sanitize_html_class( $affiliate->status ) ); ?>"><?php echo esc_html( $affiliate->status ); ?></span></span>
+			<span><span class="directorist-affiliate-badge is-<?php echo esc_attr( sanitize_html_class( $affiliate->status ) ); ?>"><?php echo esc_html( $plugin->affiliate->status_label( (string) $affiliate->status ) ); ?></span></span>
 		</div>
 		<div><strong><?php esc_html_e( 'Visits', 'directorist-affiliate' ); ?></strong><span><?php echo esc_html( number_format_i18n( (int) $visits ) ); ?></span></div>
 		<div><strong><?php esc_html_e( 'Referrals', 'directorist-affiliate' ); ?></strong><span><?php echo esc_html( number_format_i18n( (int) $total_referrals ) ); ?></span></div>
@@ -59,9 +59,9 @@ defined( 'ABSPATH' ) || exit;
 				<?php if ( $referrals ) : ?>
 					<?php foreach ( $referrals as $referral ) : ?>
 						<tr>
-							<td><?php echo esc_html( str_replace( '_', ' ', $referral->referral_type ) ); ?></td>
+							<td><?php echo esc_html( $plugin->referral->type_label( (string) $referral->referral_type ) ); ?></td>
 							<td><?php echo esc_html( number_format_i18n( (float) $referral->commission_amount, 2 ) ); ?></td>
-							<td><span class="directorist-affiliate-badge is-<?php echo esc_attr( sanitize_html_class( $referral->status ) ); ?>"><?php echo esc_html( $referral->status ); ?></span></td>
+							<td><span class="directorist-affiliate-badge is-<?php echo esc_attr( sanitize_html_class( $referral->status ) ); ?>"><?php echo esc_html( $plugin->referral->status_label( (string) $referral->status ) ); ?></span></td>
 							<td><?php echo esc_html( mysql2date( get_option( 'date_format' ), $referral->date_created ) ); ?></td>
 						</tr>
 					<?php endforeach; ?>
