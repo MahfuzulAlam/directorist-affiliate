@@ -1,0 +1,397 @@
+/**
+ * Directorist Affiliate — shared front-end and admin styles.
+ *
+ * @package DirectoristAffiliate
+ */
+
+.directorist-affiliate-wrap,
+.directorist-affiliate-admin {
+	--da-color-primary: #2271b1;
+	--da-color-primary-dark: #135e96;
+	--da-color-text: #1d2327;
+	--da-color-muted: #646970;
+	--da-color-border: #dcdcde;
+	--da-color-surface: #ffffff;
+	--da-color-soft: #f6f7f7;
+	--da-color-success: #00713b;
+	--da-color-success-bg: #edfaef;
+	--da-color-warning: #996800;
+	--da-color-warning-bg: #fcf9e8;
+	--da-color-danger: #b32d2e;
+	--da-color-danger-bg: #fcf0f1;
+	--da-color-info: #2271b1;
+	--da-color-info-bg: #f0f6fc;
+	--da-color-neutral: #50575e;
+	--da-color-neutral-bg: #f0f0f1;
+	--da-radius: 8px;
+	--da-shadow: 0 1px 2px rgba(16, 24, 40, 0.06), 0 1px 3px rgba(16, 24, 40, 0.1);
+
+	box-sizing: border-box;
+	color: var(--da-color-text);
+}
+
+.directorist-affiliate-wrap *,
+.directorist-affiliate-admin * {
+	box-sizing: border-box;
+}
+
+.directorist-affiliate-wrap {
+	max-width: 860px;
+}
+
+/* ---------------------------------------------------------------------------
+ * Notices
+ * ------------------------------------------------------------------------- */
+
+.directorist-affiliate-notice {
+	margin: 12px 0;
+	padding: 12px 16px;
+	border-left: 4px solid var(--da-color-info);
+	border-radius: 0 var(--da-radius) var(--da-radius) 0;
+	background: var(--da-color-info-bg);
+	font-size: 14px;
+	line-height: 1.5;
+}
+
+.directorist-affiliate-notice--success {
+	border-left-color: var(--da-color-success);
+	background: var(--da-color-success-bg);
+}
+
+.directorist-affiliate-notice--error {
+	border-left-color: var(--da-color-danger);
+	background: var(--da-color-danger-bg);
+}
+
+/* ---------------------------------------------------------------------------
+ * Stat summary cards
+ * ------------------------------------------------------------------------- */
+
+.directorist-affiliate-summary {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+	gap: 14px;
+	margin: 18px 0;
+}
+
+.directorist-affiliate-summary > div {
+	padding: 18px;
+	border: 1px solid var(--da-color-border);
+	border-radius: var(--da-radius);
+	background: var(--da-color-surface);
+	box-shadow: var(--da-shadow);
+}
+
+.directorist-affiliate-summary strong {
+	display: block;
+	font-size: 11px;
+	font-weight: 600;
+	letter-spacing: 0.06em;
+	text-transform: uppercase;
+	color: var(--da-color-muted);
+}
+
+.directorist-affiliate-summary span {
+	display: block;
+	margin-top: 8px;
+	font-size: 24px;
+	font-weight: 600;
+	line-height: 1.2;
+	color: var(--da-color-text);
+}
+
+/* ---------------------------------------------------------------------------
+ * Status badges
+ * ------------------------------------------------------------------------- */
+
+.directorist-affiliate-badge {
+	display: inline-block;
+	padding: 3px 10px;
+	border-radius: 999px;
+	font-size: 12px;
+	font-weight: 600;
+	line-height: 1.5;
+	text-transform: capitalize;
+	color: var(--da-color-neutral);
+	background: var(--da-color-neutral-bg);
+}
+
+.directorist-affiliate-badge.is-approved,
+.directorist-affiliate-badge.is-converted {
+	color: var(--da-color-success);
+	background: var(--da-color-success-bg);
+}
+
+.directorist-affiliate-badge.is-pending {
+	color: var(--da-color-warning);
+	background: var(--da-color-warning-bg);
+}
+
+.directorist-affiliate-badge.is-rejected {
+	color: var(--da-color-danger);
+	background: var(--da-color-danger-bg);
+}
+
+.directorist-affiliate-badge.is-paid {
+	color: var(--da-color-info);
+	background: var(--da-color-info-bg);
+}
+
+.directorist-affiliate-badge.is-suspended {
+	color: var(--da-color-neutral);
+	background: var(--da-color-neutral-bg);
+}
+
+/* ---------------------------------------------------------------------------
+ * Front-end form
+ * ------------------------------------------------------------------------- */
+
+.directorist-affiliate-form {
+	padding: 24px;
+	border: 1px solid var(--da-color-border);
+	border-radius: var(--da-radius);
+	background: var(--da-color-surface);
+	box-shadow: var(--da-shadow);
+}
+
+.directorist-affiliate-form-grid {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+	gap: 0 20px;
+}
+
+.directorist-affiliate-form p {
+	margin: 0 0 18px;
+}
+
+.directorist-affiliate-form label {
+	display: block;
+	margin-bottom: 6px;
+	font-size: 14px;
+	font-weight: 600;
+}
+
+.directorist-affiliate-form .required {
+	color: var(--da-color-danger);
+}
+
+.directorist-affiliate-form input[type="text"],
+.directorist-affiliate-form input[type="email"],
+.directorist-affiliate-form input[type="url"],
+.directorist-affiliate-form textarea {
+	width: 100%;
+	padding: 9px 12px;
+	border: 1px solid var(--da-color-border);
+	border-radius: 6px;
+	background: var(--da-color-surface);
+	font-size: 14px;
+	line-height: 1.5;
+	transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.directorist-affiliate-form input:focus,
+.directorist-affiliate-form textarea:focus {
+	outline: none;
+	border-color: var(--da-color-primary);
+	box-shadow: 0 0 0 2px rgba(34, 113, 177, 0.18);
+}
+
+.directorist-affiliate-form button[type="submit"] {
+	display: inline-block;
+	padding: 10px 22px;
+	border: 0;
+	border-radius: 6px;
+	background: var(--da-color-primary);
+	color: #fff;
+	font-size: 14px;
+	font-weight: 600;
+	cursor: pointer;
+	transition: background 0.15s ease;
+}
+
+.directorist-affiliate-form button[type="submit"]:hover,
+.directorist-affiliate-form button[type="submit"]:focus {
+	background: var(--da-color-primary-dark);
+	color: #fff;
+}
+
+/* Honeypot field — visually removed, still present for bots. */
+.directorist-affiliate-hp {
+	position: absolute !important;
+	left: -9999px !important;
+	width: 1px;
+	height: 1px;
+	margin: 0;
+	overflow: hidden;
+}
+
+/* ---------------------------------------------------------------------------
+ * Front-end dashboard
+ * ------------------------------------------------------------------------- */
+
+.directorist-affiliate-dashboard h3 {
+	margin: 28px 0 12px;
+}
+
+.directorist-affiliate-link-group {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 8px;
+	align-items: stretch;
+	margin-top: 6px;
+}
+
+.directorist-affiliate-link-group input[readonly] {
+	flex: 1 1 280px;
+	min-width: 0;
+	padding: 9px 12px;
+	border: 1px solid var(--da-color-border);
+	border-radius: 6px;
+	background: var(--da-color-soft);
+	font-size: 13px;
+	color: var(--da-color-text);
+}
+
+.directorist-affiliate-copy {
+	padding: 9px 16px;
+	border: 1px solid var(--da-color-primary);
+	border-radius: 6px;
+	background: var(--da-color-surface);
+	color: var(--da-color-primary);
+	font-size: 13px;
+	font-weight: 600;
+	cursor: pointer;
+	transition: background 0.15s ease, color 0.15s ease;
+}
+
+.directorist-affiliate-copy:hover,
+.directorist-affiliate-copy:focus {
+	background: var(--da-color-primary);
+	color: #fff;
+}
+
+.directorist-affiliate-copy.is-copied {
+	border-color: var(--da-color-success);
+	background: var(--da-color-success);
+	color: #fff;
+}
+
+/* ---------------------------------------------------------------------------
+ * Tables (front-end + admin extras)
+ * ------------------------------------------------------------------------- */
+
+.directorist-affiliate-table-wrap {
+	overflow-x: auto;
+	-webkit-overflow-scrolling: touch;
+}
+
+.directorist-affiliate-table {
+	width: 100%;
+	border-collapse: collapse;
+	border: 1px solid var(--da-color-border);
+	border-radius: var(--da-radius);
+	background: var(--da-color-surface);
+	font-size: 14px;
+}
+
+.directorist-affiliate-table th,
+.directorist-affiliate-table td {
+	padding: 12px 14px;
+	border-bottom: 1px solid var(--da-color-border);
+	text-align: left;
+	vertical-align: middle;
+}
+
+.directorist-affiliate-table thead th {
+	font-size: 12px;
+	font-weight: 600;
+	letter-spacing: 0.04em;
+	text-transform: uppercase;
+	color: var(--da-color-muted);
+	background: var(--da-color-soft);
+}
+
+.directorist-affiliate-table tbody tr:last-child td {
+	border-bottom: 0;
+}
+
+.directorist-affiliate-table tbody tr:hover td {
+	background: var(--da-color-soft);
+}
+
+/* ---------------------------------------------------------------------------
+ * Admin
+ * ------------------------------------------------------------------------- */
+
+.directorist-affiliate-admin .directorist-affiliate-summary span {
+	font-size: 26px;
+}
+
+.directorist-affiliate-detail {
+	max-width: 960px;
+	margin: 18px 0;
+	padding: 20px;
+	border: 1px solid var(--da-color-border);
+	border-radius: var(--da-radius);
+	background: var(--da-color-surface);
+	box-shadow: var(--da-shadow);
+}
+
+.directorist-affiliate-detail h2 {
+	margin-top: 0;
+}
+
+.directorist-affiliate-admin-grid {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+	gap: 4px 16px;
+}
+
+.directorist-affiliate-admin-form label {
+	display: block;
+	margin-bottom: 6px;
+	font-weight: 600;
+}
+
+.directorist-affiliate-admin-form .required {
+	color: var(--da-color-danger);
+}
+
+.directorist-affiliate-admin-form input,
+.directorist-affiliate-admin-form select,
+.directorist-affiliate-admin-form textarea {
+	width: 100%;
+	max-width: 100%;
+}
+
+.directorist-affiliate-admin .widefat.striped {
+	border-radius: var(--da-radius);
+	overflow: hidden;
+}
+
+.directorist-affiliate-admin .widefat th {
+	font-weight: 600;
+}
+
+.directorist-affiliate-row-actions {
+	white-space: nowrap;
+}
+
+/* ---------------------------------------------------------------------------
+ * Small screens
+ * ------------------------------------------------------------------------- */
+
+@media (max-width: 600px) {
+	.directorist-affiliate-summary {
+		grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+		gap: 10px;
+	}
+
+	.directorist-affiliate-summary span {
+		font-size: 20px;
+	}
+
+	.directorist-affiliate-form {
+		padding: 16px;
+	}
+}

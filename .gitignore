@@ -1,0 +1,29 @@
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE / editor files
+.idea/
+.vscode/
+*.sublime-project
+*.sublime-workspace
+
+# Dependency directories
+/vendor/
+/node_modules/
+
+# Build artifacts
+/dist/
+/build/
+*.zip
+
+# Logs and caches
+*.log
+.phpunit.result.cache
+.php-cs-fixer.cache
+.phpcs.cache
+.cache/
+
+# Environment files
+.env
+.env.*
