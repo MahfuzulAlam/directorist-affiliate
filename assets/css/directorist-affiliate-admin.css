@@ -452,15 +452,31 @@ a.directorist-affiliate-stat-meta:hover {
 	height: var(--da-control-h);
 	min-height: var(--da-control-h);
 	margin: 0;
-	padding: 0 12px;
 	border-radius: var(--da-radius-sm);
 	border-color: var(--da-border-strong);
 	font-size: 13px;
-	line-height: 1;
 	vertical-align: middle;
 }
 
-/* Buttons centre their label; native selects/inputs keep their own alignment. */
+/* Selects size to their longest option, plus room for the dropdown arrow
+ * WordPress paints as a background image at the trailing edge. Without that
+ * trailing padding the label runs underneath the arrow. */
+.directorist-affiliate-admin .directorist-affiliate-filter-bar select,
+.directorist-affiliate-admin .directorist-affiliate-bulk-bar select {
+	width: auto;
+	max-width: 100%;
+	padding-inline: 12px 30px;
+	line-height: normal;
+}
+
+.directorist-affiliate-admin .directorist-affiliate-filter-bar input[type="search"] {
+	width: 15rem;
+	max-width: 100%;
+	padding-inline: 12px;
+	line-height: normal;
+}
+
+/* Buttons hug their label and centre it. */
 .directorist-affiliate-admin .directorist-affiliate-filter-bar .button,
 .directorist-affiliate-admin .directorist-affiliate-bulk-bar .button,
 .directorist-affiliate-admin .directorist-affiliate-toolbar .button {
@@ -468,10 +484,9 @@ a.directorist-affiliate-stat-meta:hover {
 	align-items: center;
 	justify-content: center;
 	gap: 4px;
-}
-
-.directorist-affiliate-admin .directorist-affiliate-filter-bar input[type="search"] {
-	min-width: 240px;
+	width: auto;
+	padding-inline: 16px;
+	line-height: 1;
 }
 
 .directorist-affiliate-filter-reset {
