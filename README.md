@@ -6,7 +6,7 @@ Affiliate tracking and fixed-commission referral system for [Directorist](https:
 
 | Item | Value |
 | --- | --- |
-| Version | 1.2.0 (plugin) / 0.2.0 (DB schema) |
+| Version | 1.2.1 (plugin) / 0.2.0 (DB schema) |
 | Author | [wpXplore](https://wpxplore.com) |
 | Website | https://wpxplore.com/tools/directorist-affiliate/ |
 | Requires | WordPress 6.3+, PHP 7.4+ |
@@ -312,6 +312,11 @@ Usage examples are in [DOCUMENTATION.md](DOCUMENTATION.md#developer-reference).
 
 ## Changelog
 
+### 1.2.1 — 2026-08-13
+
+- **Fix:** filter dropdown labels ran underneath the dropdown arrow ("All affiliates", "All statuses", "Bulk actions"). Normalizing the control heights in 1.2.0 applied a flat horizontal padding to selects, which overrode the trailing space WordPress reserves for the arrow it paints as a background image (`appearance: none` + a background SVG at the trailing edge). Selects now size to their longest option with explicit arrow clearance, buttons hug their label, and the search field keeps a fixed typing width — all still on the shared height token.
+- Arrow clearance uses logical padding, so it follows the writing direction in RTL, where WordPress flips the arrow to the opposite edge.
+
 ### 1.2.0 — 2026-08-13
 
 **Filtering and search**
@@ -327,6 +332,8 @@ Usage examples are in [DOCUMENTATION.md](DOCUMENTATION.md#developer-reference).
 - **Add affiliate** moved into a native `<dialog>` modal — browser-provided focus trapping, Escape to close, and backdrop click-to-dismiss; validation errors render inside the modal instead of behind it.
 - Directorist core's `.directorist-deprecated-item-notice` is hidden on the Affiliate screen (our stylesheet only loads there, so other admin pages are untouched).
 - Admin assets are matched against the screen's exact hook suffix returned by `add_submenu_page()` rather than a substring, guaranteeing they load on this one page and nowhere else.
+- Every control in a filter, bulk-action, or toolbar row shares one height token (`--da-control-h`), so selects, inputs, and buttons line up instead of disagreeing by a few pixels — WordPress ships different metrics for each.
+- The header's "Program active / disabled" chip drops the default admin link underline and blue; it links to Settings but reads as a status indicator, with the dot carrying the state.
 
 **Internal**
 - `Referral::count()`, `Tracking::list()/count()`, `Payout::list()/count()` and `Affiliate::count()` now take an args array and share one private `build_where()` per repository, so every filter is applied identically to the rows and the count. `Payout::sum()` added for the history total.
