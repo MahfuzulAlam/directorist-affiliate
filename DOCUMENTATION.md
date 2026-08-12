@@ -59,7 +59,7 @@ Turn your visitors into promoters. This guide walks you through every screen of 
 
 | Requirement | Version |
 | --- | --- |
-| WordPress | 5.8+ |
+| WordPress | 6.3+ |
 | PHP | 7.4+ |
 | Directorist | 8.7.3+ (must be active) |
 
@@ -110,21 +110,23 @@ Old bookmarks to the previous standalone pages redirect automatically to the rig
 ![Screenshot: admin dashboard stat cards](docs/images/admin-dashboard.png)
 <!-- 📸 IMAGE PLACEHOLDER: Dashboard screen showing both card rows (Affiliates & traffic / Commissions) with non-zero numbers -->
 
-Two rows of stat cards:
+Two rows of stat tiles plus a recent-activity table:
 
-- **Affiliates & traffic** — total affiliates, pending applications (your review queue), total tracked visits, total referrals.
-- **Commissions** — pending (awaiting your review), approved (owed, unpaid), and paid totals.
+- **Top row** — affiliates (with a one-click link to your pending applications), link visits and the share of them that converted, and total referrals.
+- **Commissions** — pending (awaiting your review), approved (owed, unpaid, linking straight to Payouts), and paid totals, all in your site's currency.
+- **Recent referrals** — the last eight conversions, so you can see activity without leaving the tab.
 
-> 💡 **Tip:** A growing *Pending affiliates* or *Pending commission* number is your to-do list — check it a couple of times a week.
+> 💡 **Tip:** A growing *applications awaiting review* or *Pending* commission number is your to-do list — check it a couple of times a week. The header also shows whether the program is currently **active** or **disabled**.
 
 ### Affiliates — your partner roster
 
 ![Screenshot: Affiliates screen with status badges and row actions](docs/images/admin-affiliates.png)
 <!-- 📸 IMAGE PLACEHOLDER: Affiliates table with a mix of Pending (amber), Approved (green), Rejected (red) badges; Add Affiliate panel visible above -->
 
-- **Add Affiliate panel** (top) — onboard a partner yourself: name, email, payout email, starting status (you can pre-approve trusted partners), website, promotional channel. Submitting shows an inline confirmation, then the list refreshes.
-- **The table** — each row shows a colored status badge (**amber** pending, **green** approved, **red** rejected, **gray** suspended), the referral code, totals for referrals and commission, and unpaid balance.
-- **Row actions** — **View details** (opens the full application: website, promotional channel, note), **Approve**, **Reject**, **Suspend**.
+- **Add affiliate** (first button on the filter row) — opens a popup with name, email, payout email, starting status (you can pre-approve trusted partners), website, and promotional channel. Press Escape, click outside, or hit Cancel to dismiss it; anything you need to fix is shown inside the popup, so nothing you typed is lost.
+- **Filter and search** — narrow by status, by when they applied, or search names, emails, referral codes and websites. The count on the right tells you how many matched.
+- **The table** — each row shows a colored status badge (**amber** pending, **green** approved, **red** rejected, **gray** suspended), the referral code, referral count (click through to that affiliate's referrals), total earned, and unpaid balance. Twenty per page.
+- **Row actions** — **Details** (the full application: website, promotional channel, note), **Approve**, **Reject**, **Suspend**. The action matching an affiliate's current status is hidden, so you can't approve someone twice.
 
 > ⚠️ **Note:** Approve and Reject email the applicant. Suspend is silent — tracking simply stops counting for them.
 
@@ -137,7 +139,9 @@ Every conversion lands here as a **Pending** row showing who earned it, the type
 
 - **Approve** — the commission becomes payable and moves to the Payouts screen.
 - **Reject** — for fraud, refunds, or test data. Nothing is owed.
-- **Mark paid** — pays a single referral on the spot. Only works on **approved** rows; otherwise you'll see an error notice asking you to approve first (this keeps your payout history complete).
+- **Mark paid** — pays a single referral on the spot. Only shown on **approved** rows (this keeps your payout history complete). Once a referral is paid it can't be moved back to pending or approved, so you can never accidentally pay it twice; a refund or cancellation of the underlying order still reverses it automatically.
+- **Bulk actions** — tick several rows (or the header checkbox to select the page) and approve, reject, or mark them paid in one go.
+- **Filters** — narrow by affiliate, event type (registration, listing, plan purchase, featured purchase), status, and date range. Twenty per page, and your filters stay applied as you page through.
 
 Order-based referrals (plan and featured purchases) also show the **order number and order total**, and carry two automatic statuses: **Cancelled** and **Refunded** are applied by the plugin when the underlying order is cancelled or refunded — nothing for you to do, and those amounts never reach the Payouts screen.
 
@@ -146,18 +150,21 @@ Order-based referrals (plan and featured purchases) also show the **order number
 ![Screenshot: Visits screen](docs/images/admin-visits.png)
 <!-- 📸 IMAGE PLACEHOLDER: Visits table with landing pages, referrer URLs, IPs, and green "Yes" converted badges on a few rows -->
 
-The raw click log per affiliate: landing page, where the visitor came from, IP, date, and a green **Yes** badge once a visit converts. Scan it before approving big referral batches — dozens of visits from one IP is a red flag.
+The raw click log per affiliate: the landing page they arrived on, the site they came from, IP, date and time, and a green **Converted** badge once a visit leads to a referral. Filter by affiliate, by whether the visit converted, and by date range — useful for questions like *"how much traffic did Sam send last month, and how much of it converted?"* Scan it before approving big referral batches — dozens of visits from one IP is a red flag. Obvious bot and crawler traffic is filtered out automatically, so these numbers reflect real people. Twenty per page.
 
 ### Payouts — pay day
 
 ![Screenshot: Payouts screen with selected referrals and payout history](docs/images/admin-payouts.png)
 <!-- 📸 IMAGE PLACEHOLDER: Payouts screen — some checkboxes ticked in "Unpaid approved commissions", the minimum-payout hint line, and the Payout history table below -->
 
-Three things on one screen:
+This screen has two sub-tabs.
 
-1. **Export approved payouts CSV** (top button) — downloads every approved, unpaid referral with the affiliate's payout email, ready for your bank or PayPal batch tool.
-2. **Unpaid approved commissions** — tick the referrals you're paying and click **Mark selected as paid**. The plugin groups them into **one payout record per affiliate** and confirms inline (e.g. *"2 payouts recorded. 1 affiliate was skipped for being below the minimum payout."*), then refreshes.
-3. **Payout history** — a permanent ledger: who was paid, how much, when, and to which email.
+**Unpaid approved commissions** — your pay-day work queue:
+
+1. **Outstanding balance and Export CSV** (top bar) — see exactly what you owe right now, and download every approved, unpaid referral with the affiliate's payout email, ready for your bank or PayPal batch tool.
+2. **The list** — tick the referrals you're paying (or use the header checkbox to select all) and click **Mark selected as paid**. The plugin groups them into **one payout record per affiliate** and confirms inline (e.g. *"2 payouts recorded. 1 affiliate was skipped for being below the minimum payout."*), then refreshes.
+
+**Payout history** — the permanent ledger: who was paid, how much, when, to which email, and how many commissions each payment covered. Filter by affiliate, payout email, or date range, and the **Total paid** figure at the top updates to match your filters — handy for month-end reconciliation or answering *"how much did we pay Sam last quarter?"* Twenty per page.
 
 > 💡 **Tip:** Set a **Minimum payout amount** in Settings and the screen enforces it for you — affiliates under the threshold are skipped with a clear warning, never silently.
 
@@ -169,7 +176,7 @@ Covered in full in the next section.
 
 ## Settings, section by section
 
-**Directorist → Affiliate → Settings.** The sections are organized into pill-style sub-tabs — **General, Registration Commission, Listing Commission, Order Commissions, Payout, Advanced** — so you only see one group at a time. It's still a single form underneath: one **Save settings** click stores everything from every sub-tab at once, without a page reload, confirming with *"Settings saved."*
+**Directorist → Affiliate → Settings.** The sections are organized into pill-style sub-tabs — **General, Commissions, Payout, Notifications, Advanced** — so you only see one group at a time. It's still a single form underneath: one **Save settings** click (in the save bar that stays with you as you scroll) stores everything from every sub-tab at once, without a page reload, confirming with *"Settings saved."* If you try to leave with unsaved changes, your browser asks first.
 
 ![Screenshot: full settings screen](docs/images/settings-full.png)
 <!-- 📸 IMAGE PLACEHOLDER: entire Settings page scrolled to show all five sections -->
@@ -178,26 +185,22 @@ Covered in full in the next section.
 
 | Setting | What it does | UX effect |
 | --- | --- | --- |
-| **Enable affiliate system** | Master switch | Off = no tracking, no commissions, links do nothing |
+| **Affiliate system** | Master switch | Off = no tracking, no commissions, links do nothing |
 | **Referral URL parameter** | The `?ref=` part of links (default `ref`) | Changing it breaks previously shared links — pick once, early |
 | **Cookie duration** | Days a referral is remembered (default 30) | Longer = more generous attribution window |
 | **Attribution model** | **First click** (default) or **Last click** | First click: the first affiliate keeps the credit until the cookie expires — referrals can't be "stolen". Last click: the newest link wins |
+| **Accept applications** | Whether the application form takes new submissions | Off = the form shows a friendly "applications are closed" notice; existing affiliates keep earning |
+| **Require login to apply** | Applicants must already have an account | Off (default) = applying creates a WordPress account automatically. Turn **on** if you don't want your application page creating accounts |
 | **Anonymize visitor IP** | Strips the last IP octet in the Visits log | Turn on for GDPR-friendly logging |
 
-### Registration Commission
+### Commissions
 
-Enable/disable, plus the flat amount paid when a referred visitor creates an account.
+Two cards. **Free events** are flat rewards for conversions where no money changes hands:
 
-### Listing Commission
+- **User registration** — a flat amount when a referred visitor creates an account.
+- **Listing submission** — a flat amount when a referred user adds a listing, plus the **trigger**: credit *on submission* (the moment it's created, even awaiting moderation) or *on approval/publish* (only when it goes live). **Publish is recommended** if you moderate listings; it keeps spam submissions from earning anything.
 
-Enable/disable, the flat amount, and the **Commission trigger**:
-
-- **On listing submission** — credit the moment a listing is created (even if it awaits moderation).
-- **On listing approval/publish** — credit only when it goes live. **Recommended** if you moderate listings; it keeps spam submissions from earning anything.
-
-### Order Commissions (Paid Events)
-
-The revenue events — commissions on money actually paid on your site. Each can be a **fixed amount** or a **percentage of the order total**, and each is automatically inactive (greyed out with an explanation) when the feature it depends on isn't available:
+**Paid orders** are the revenue events — commissions on money actually paid on your site. Each can be a **fixed amount** or a **percentage of the order total**, and each is automatically inactive (greyed out with an explanation) when the feature it depends on isn't available:
 
 | Setting | What it does | Availability |
 | --- | --- | --- |
@@ -214,9 +217,18 @@ Good to know: free (0.00) orders never earn, one order can never be credited twi
 - **Minimum payout amount** — per-affiliate threshold enforced on bulk payouts (`0` disables it).
 - **Payout instructions** — free text shown on every affiliate's dashboard. Tell them how and when you pay, e.g. *"PayPal, 1st of each month, $25 minimum."*
 
+### Notifications
+
+Three independent switches, all on by default:
+
+- **New application (to admin)** — you get an email whenever someone applies.
+- **Application decision (to affiliate)** — the applicant is emailed when you approve or reject them.
+- **New referral (to affiliate)** — the affiliate is emailed each time one of their referrals converts. Turn this off if your affiliates are high-volume and would rather check the dashboard.
+
 ### Advanced
 
 - **Delete data on uninstall** — off by default. When on, deleting the plugin removes all tables, settings, and related user meta. Leave off if you might reinstall.
+- **Shortcodes** — a quick copy reference for the two page shortcodes.
 
 ---
 
@@ -233,9 +245,10 @@ What visitors experience:
 
 - A clean two-column form: **Name**, **Email**, **Website**, **Promotional channel**, **Payout email**, and an optional note. Required fields are marked with a red asterisk.
 - Submitting happens **instantly, without a page reload** — the button switches to *"Submitting…"*, then either a green success notice replaces the form or a red notice explains what to fix (nothing they typed is lost).
-- **Logged-out visitors** get a WordPress account created automatically and receive the standard set-password email. If their email already has an account, they're asked to log in first.
-- **Logged-in users** see their name and email pre-filled.
-- One application per person; bots are filtered by an invisible honeypot.
+- **Logged-out visitors** get a WordPress account created automatically and receive the standard set-password email. If their email already has an account, they're asked to log in first. Prefer not to have accounts created this way? Turn on **Require login to apply** in Settings → General.
+- **Logged-in users** see their name and email pre-filled — and if they've already applied, they see their status instead of an empty form.
+- One application per person. Bots are filtered by an invisible honeypot, and guest applications are rate-limited per network, so the form can't be used to mass-create accounts.
+- When **Accept applications** is off, the page shows a polite "applications are closed" notice instead of the form.
 
 ![Screenshot: success message after applying](docs/images/frontend-registration-success.png)
 <!-- 📸 IMAGE PLACEHOLDER: the green "Your affiliate application was submitted and is pending review." notice shown in place of the form -->
@@ -258,14 +271,33 @@ Add `[directorist_affiliate_dashboard]` to a page — and/or rely on the **Affil
 
 **Once approved:**
 
-- **Stat cards** — status badge, visits, referrals, and pending / approved / paid commission totals.
-- **Referral link** with a one-click **Copy link** button (it flashes *"Copied!"* in green). Clicking the field also selects the whole URL.
-- **Your payout instructions** and their payout email.
+- **An earnings headline** — total lifetime earnings in your site's currency, with their status badge, and their **referral link** beside it with a one-click **Copy** button (it flashes *"Copied!"* in green). Clicking the field selects the whole URL.
+- **Stat tiles** — visits (with the share that converted), referrals, and pending / approved / paid totals.
+- **Link builder** — a dropdown of key destinations (Home, Add Listing, All Listings, Checkout); picking one instantly produces the ready-to-share link with their code attached.
+- **Payout details** — their payout email and your payout instructions.
 - **Referral history** — their last 20 referrals with amount, status badge, and date.
+- **Payout history** — every payment you've recorded for them: amount, method, and date.
 
 Sharing works on any URL: `?ref=CODE` can be appended to the homepage, a listing, a category — every entry page counts.
 
-> ⚠️ **Note for affiliates:** self-referrals don't count (the plugin blocks them), and if a visitor clicks two different affiliate links, the **last** click wins.
+> ⚠️ **Note for affiliates:** self-referrals don't count (the plugin blocks them). If a visitor clicks two different affiliate links, whichever wins depends on your **Attribution model** setting — first click by default.
+
+**If suspended or rejected:** they see a clear explanation instead of a link, and no new referrals are tracked. Commissions already earned stay in their history.
+
+---
+
+## Filtering and date ranges
+
+Affiliates, Referrals, Visits, and Payout history all share the same filter bar, and every one of them includes a **date filter**.
+
+Pick a ready-made period — **Today, Yesterday, This week, Last week, This month, Last month, Last 7 days, Last 30 days, This year** — and the list updates immediately. Choose **Custom range…** instead and two date boxes appear for an exact start and end; both ends are included, and if you enter them backwards the plugin sorts it out rather than showing nothing.
+
+A few things worth knowing:
+
+- **Weeks follow your site's setting.** "This week" starts on whichever day you've set as the start of the week in **Settings → General**.
+- **Filters survive paging.** Move to page 2 and your filters come with you; the URL is shareable and bookmarkable, so you can save a view like "last month's payouts for Sam".
+- **Payout history filters on the payment date**, while the other screens filter on when the record was created — so "Last month" on Payout history means money that went out last month.
+- **Reset** clears everything back to the unfiltered list.
 
 ---
 
@@ -285,10 +317,11 @@ Sharing works on any URL: `?ref=CODE` can be appended to the homepage, a listing
 
 ### Running a payout day (monthly)
 
-1. Open **Payouts** and click **Export approved payouts CSV**.
+1. Open **Payouts → Unpaid approved commissions** and click **Export CSV**.
 2. Pay the affiliates through your bank/PayPal using the emails in the CSV.
 3. Back on the screen, tick the referrals you just paid and click **Mark selected as paid**.
-4. The inline confirmation tells you how many payouts were recorded and whether anyone was skipped for the minimum. The **Payout history** below is your audit trail.
+4. The inline confirmation tells you how many payouts were recorded and whether anyone was skipped for the minimum.
+5. Switch to **Payout history** and set the date filter to **This month** to confirm the total matches what actually left your account.
 
 ![Screenshot: payout confirmation notice with paid and skipped counts](docs/images/workflow-payout-confirmation.png)
 <!-- 📸 IMAGE PLACEHOLDER: green "2 payouts recorded." + amber "1 affiliate was skipped…" notices at the top of the Payouts screen -->
@@ -304,7 +337,7 @@ Sharing works on any URL: `?ref=CODE` can be appended to the homepage, a listing
 | New referral recorded | The affiliate | A conversion is credited to them |
 | New account details | The new user | An account was auto-created during application |
 
-All emails are plain text via `wp_mail()`.
+All emails are plain text via `wp_mail()`. The first three can be switched on or off individually in **Settings → Notifications**.
 
 > 💡 **Tip:** Pair this with an SMTP plugin (e.g. WP Mail SMTP) so notifications reliably reach inboxes.
 
@@ -326,6 +359,13 @@ All emails are plain text via `wp_mail()`.
 | --- | --- |
 | `[directorist_affiliate_registration]` | The application form |
 | `[directorist_affiliate_dashboard]` | The affiliate dashboard (logged-in users) |
+| `[directorist_affiliate_link]` | The current affiliate's referral link to a specific page. Attributes: `page` (`home`, `add-listing`, `all-listings`, `dashboard`, `checkout`), `url` (an explicit same-site URL), `text` (link label). Renders nothing for anyone who isn't an approved affiliate. |
+
+Example — a "promote us" call to action for approved affiliates:
+
+```
+[directorist_affiliate_link page="add-listing" text="Share the Add Listing page"]
+```
 
 ### Actions
 
@@ -345,6 +385,7 @@ All emails are plain text via `wp_mail()`.
 | `directorist_affiliate_listing_commission` | Commission for a referred listing | `$amount, $trigger` |
 | `directorist_affiliate_plan_commission` | Commission for a referred plan purchase | `$amount, $order_total` |
 | `directorist_affiliate_featured_commission` | Commission for a referred featured purchase | `$amount, $order_total` |
+| `directorist_affiliate_link_targets` | Destinations offered by the dashboard link builder | `$targets, $code` |
 
 Example — double listing commissions during a promotion:
 
@@ -356,7 +397,7 @@ add_filter( 'directorist_affiliate_listing_commission', function ( $amount, $tri
 
 ### AJAX endpoints
 
-All four forms post to `admin-ajax.php`; each also has a full non-JavaScript fallback.
+All forms post to `admin-ajax.php`; each also has a full non-JavaScript fallback. Bulk referral moderation posts to `admin_init` with the `directorist_affiliate_referral_bulk` nonce.
 
 | Action | Access | Nonce action |
 | --- | --- | --- |

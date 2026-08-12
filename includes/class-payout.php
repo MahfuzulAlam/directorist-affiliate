@@ -66,7 +66,10 @@ final class Directorist_Affiliate_Payout {
 			return 0;
 		}
 
-		$amount = 0.0;
+		// Only referrals that are approved AND belong to this affiliate are
+		// recorded and flipped to paid; anything else in the list is ignored.
+		$valid_ids = array();
+		$amount    = 0.0;
 
 		foreach ( $referral_ids as $referral_id ) {
 			$referral = $this->referral->get( $referral_id );
@@ -75,10 +78,11 @@ final class Directorist_Affiliate_Payout {
 				continue;
 			}
 
-			$amount += (float) $referral->commission_amount;
+			$valid_ids[] = $referral_id;
+			$amount     += (float) $referral->commission_amount;
 		}
 
-		if ( $amount <= 0 ) {
+		if ( empty( $valid_ids ) || $amount <= 0 ) {
 			return 0;
 		}
 
@@ -90,7 +94,7 @@ final class Directorist_Affiliate_Payout {
 				'status'         => 'paid',
 				'payment_method' => 'manual',
 				'payout_email'   => sanitize_email( $payout_email ),
-				'referral_ids'   => implode( ',', $referral_ids ),
+				'referral_ids'   => implode( ',', $valid_ids ),
 				'date_created'   => current_time( 'mysql' ),
 				'date_paid'      => current_time( 'mysql' ),
 				'notes'          => sanitize_textarea_field( $notes ),
@@ -104,7 +108,7 @@ final class Directorist_Affiliate_Payout {
 
 		$payout_id = (int) $wpdb->insert_id;
 
-		foreach ( $referral_ids as $referral_id ) {
+		foreach ( $valid_ids as $referral_id ) {
 			$this->referral->update_status( $referral_id, 'paid' );
 		}
 
@@ -114,9 +118,9 @@ final class Directorist_Affiliate_Payout {
 		 * @param int   $payout_id Payout ID.
 		 * @param int   $affiliate_id Affiliate ID.
 		 * @param float $amount Total amount paid.
-		 * @param int[] $referral_ids Referral IDs covered.
+		 * @param int[] $valid_ids Referral IDs covered by this payout.
 		 */
-		do_action( 'directorist_affiliate_payout_recorded', $payout_id, $affiliate_id, $amount, $referral_ids );
+		do_action( 'directorist_affiliate_payout_recorded', $payout_id, $affiliate_id, $amount, $valid_ids );
 
 		return $payout_id;
 	}
@@ -181,15 +185,118 @@ final class Directorist_Affiliate_Payout {
 	/**
 	 * List payout records.
 	 *
+	 * @param array<string,mixed> $args Query args (affiliate_id, email, date_from, date_to, limit, offset).
+	 *
+	 * @return object[]
+	 */
+	public function list( array $args = array() ): array {
+		global $wpdb;
+
+		list( $where, $params ) = $this->build_where( $args );
+
+		$params[] = isset( $args['limit'] ) ? absint( $args['limit'] ) : 50;
+		$params[] = isset( $args['offset'] ) ? absint( $args['offset'] ) : 0;
+
+		return $wpdb->get_results(
+			$wpdb->prepare( "SELECT * FROM {$this->table()} WHERE {$where} ORDER BY date_created DESC LIMIT %d OFFSET %d", $params )
+		);
+	}
+
+	/**
+	 * Count payout records matching the same filters as list().
+	 *
+	 * @param array<string,mixed> $args Query args.
+	 *
+	 * @return int
+	 */
+	public function count( array $args = array() ): int {
+		global $wpdb;
+
+		list( $where, $params ) = $this->build_where( $args );
+
+		$sql = "SELECT COUNT(*) FROM {$this->table()} WHERE {$where}";
+
+		if ( $params ) {
+			return (int) $wpdb->get_var( $wpdb->prepare( $sql, $params ) );
+		}
+
+		return (int) $wpdb->get_var( $sql );
+	}
+
+	/**
+	 * Sum payout amounts matching the same filters as list().
+	 *
+	 * @param array<string,mixed> $args Query args.
+	 *
+	 * @return float
+	 */
+	public function sum( array $args = array() ): float {
+		global $wpdb;
+
+		list( $where, $params ) = $this->build_where( $args );
+
+		$sql = "SELECT COALESCE(SUM(amount), 0) FROM {$this->table()} WHERE {$where}";
+
+		if ( $params ) {
+			return (float) $wpdb->get_var( $wpdb->prepare( $sql, $params ) );
+		}
+
+		return (float) $wpdb->get_var( $sql );
+	}
+
+	/**
+	 * List payout records for one affiliate.
+	 *
+	 * @param int $affiliate_id Affiliate ID.
 	 * @param int $limit Limit.
 	 *
 	 * @return object[]
 	 */
-	public function list( int $limit = 50 ): array {
+	public function list_by_affiliate( int $affiliate_id, int $limit = 20 ): array {
+		return $this->list(
+			array(
+				'affiliate_id' => $affiliate_id,
+				'limit'        => $limit,
+			)
+		);
+	}
+
+	/**
+	 * Build the shared WHERE clause for list()/count()/sum().
+	 *
+	 * Date filters run against `date_paid` when present, falling back to
+	 * `date_created`, so "paid in March" means what an admin expects.
+	 *
+	 * @param array<string,mixed> $args Query args.
+	 *
+	 * @return array{0:string,1:array<int,mixed>} WHERE fragment and its params.
+	 */
+	private function build_where( array $args ): array {
 		global $wpdb;
 
-		return $wpdb->get_results(
-			$wpdb->prepare( "SELECT * FROM {$this->table()} ORDER BY date_created DESC LIMIT %d", absint( $limit ) )
-		);
+		$where  = '1=1';
+		$params = array();
+
+		if ( ! empty( $args['affiliate_id'] ) ) {
+			$where   .= ' AND affiliate_id = %d';
+			$params[] = absint( $args['affiliate_id'] );
+		}
+
+		if ( ! empty( $args['email'] ) ) {
+			$where   .= ' AND payout_email LIKE %s';
+			$params[] = '%' . $wpdb->esc_like( sanitize_text_field( (string) $args['email'] ) ) . '%';
+		}
+
+		if ( ! empty( $args['date_from'] ) ) {
+			$where   .= ' AND COALESCE(date_paid, date_created) >= %s';
+			$params[] = (string) $args['date_from'];
+		}
+
+		if ( ! empty( $args['date_to'] ) ) {
+			$where   .= ' AND COALESCE(date_paid, date_created) <= %s';
+			$params[] = (string) $args['date_to'];
+		}
+
+		return array( $where, $params );
 	}
 }

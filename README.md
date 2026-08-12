@@ -6,17 +6,17 @@ Affiliate tracking and fixed-commission referral system for [Directorist](https:
 
 | Item | Value |
 | --- | --- |
-| Version | 1.0.0 (plugin) / 0.2.0 (DB schema) |
+| Version | 1.2.0 (plugin) / 0.2.0 (DB schema) |
 | Author | [wpXplore](https://wpxplore.com) |
 | Website | https://wpxplore.com/tools/directorist-affiliate/ |
-| Requires | WordPress 5.8+, PHP 7.4+ |
+| Requires | WordPress 6.3+, PHP 7.4+ |
 | Depends on | Directorist ≥ 8.7.3 (declared via `Requires Plugins: directorist`) |
 | Text domain | `directorist-affiliate` — fully translatable; POT template at `languages/directorist-affiliate.pot` |
 | Commission model | Fixed amounts for registration/listing events; **fixed or percentage of order total** for paid plan/featured orders; all filterable |
 | Revenue events | Pricing-plan purchases (requires Pricing Plans extension) and featured-listing purchases (requires Directorist monetization) — auto-disabled when the dependency is missing |
 | Payouts | Manual (recorded by admin; no gateway integration); per-affiliate minimum enforced on bulk payouts |
-| Assets | One shared stylesheet + one vanilla JS file (AJAX forms, copy-referral-link button) |
-| Forms | All four forms submit via AJAX (`admin-ajax.php`) with full no-JavaScript POST fallbacks |
+| Assets | One front-end stylesheet + one admin stylesheet + one vanilla JS file (AJAX forms, copy link, link builder, bulk select) |
+| Forms | All forms submit via AJAX (`admin-ajax.php`) with full no-JavaScript POST fallbacks |
 | User guide | [DOCUMENTATION.md](DOCUMENTATION.md) |
 
 ## How it works (big picture)
@@ -52,6 +52,7 @@ directorist-affiliate/
 │   └── images/                          # Screenshots/video thumbnail referenced by DOCUMENTATION.md
 ├── includes/
 │   ├── class-autoloader.php             # Classmap autoloader (lazy class loading)
+│   ├── class-date-range.php             # Date-range presets → MySQL datetime bounds
 │   ├── class-plugin.php                 # Service container / dependency checks
 │   ├── class-activator.php              # dbDelta table creation + default options
 │   ├── class-deactivator.php            # flush_rewrite_rules only
@@ -69,16 +70,18 @@ directorist-affiliate/
 │   ├── class-directorist-integration.php# Registration/listing referrals + dashboard tab
 │   └── class-order-integration.php      # Paid-order commissions (new + legacy orders), refund reversal
 ├── admin/
-│   ├── class-admin.php                  # Menu, assets, screen rendering
+│   ├── class-admin.php                  # Menu, assets, filter parsing, screen rendering
 │   ├── class-admin-actions.php          # Form/moderation handlers + CSV export
-│   └── views/                           # dashboard, affiliates, referrals,
-│                                        # visits, payouts, settings pages
+│   └── views/                           # dashboard, affiliates, referrals, visits,
+│       │                                # payouts-unpaid, payouts-history, settings
+│       └── partials/                    # filter-bar.php, payout-sections.php
 ├── public/
 │   ├── class-public.php                 # Front-end asset registration + tracking hook
 │   └── views/                           # registration-form.php, affiliate-dashboard.php
 ├── assets/
-│   ├── css/directorist-affiliate.css    # Shared front-end + admin styles (design tokens, badges, cards)
-│   └── js/directorist-affiliate.js      # Copy-referral-link button
+│   ├── css/directorist-affiliate.css        # Front-end styles (tokens, hero, stat tiles, badges, tables)
+│   ├── css/directorist-affiliate-admin.css  # Admin styles (shell, tabs, toggles, filters, pagination)
+│   └── js/directorist-affiliate.js          # Copy link, link builder, AJAX forms, bulk select, sub-tabs
 └── languages/                           # (empty)
 ```
 
@@ -154,10 +157,11 @@ Four custom tables (all `dbDelta`-managed, version tracked in option `directoris
 | `Directorist_Affiliate_Commission` | Resolves commission amounts per event — fixed for registration/listing, fixed **or percentage of order total** for plan/featured orders. Returns `null` (= don't record) when the system/event is disabled **or the required extension is inactive** (`is_pricing_plans_active()`, `is_featured_monetization_active()`). Also owns the auto-approve default status. |
 | `Directorist_Affiliate_Order_Integration` | Listens to both Directorist order systems, creates commissions on paid plan/featured orders (deduped per order), and reverses them to `cancelled`/`refunded` when the order is refunded, cancelled, failed, or expired. |
 | `Directorist_Affiliate_Payout` | `mark_paid()` validates referrals (must belong to the affiliate and be `approved`), sums them, inserts a payout row, and flips referrals to `paid`. Skips zero-amount payouts. |
-| `Directorist_Affiliate_Email` | Plain-text `wp_mail` notices: new application → admin; approve/reject decision → affiliate; new referral recorded → affiliate. |
-| `Directorist_Affiliate_View` | Static template renderer (`output()` prints, `render()` returns a string) used by both admin screens and shortcodes. |
+| `Directorist_Affiliate_Email` | Plain-text `wp_mail` notices: new application → admin; approve/reject decision → affiliate; new referral recorded → affiliate. Each is individually toggleable in Settings → Notifications. |
+| `Directorist_Affiliate_Date_Range` | Turns a preset (`today`, `this_week`, `last_month`, `last_30`, …) or a custom start/end pair into inclusive MySQL datetime bounds in the site's timezone. Honors `start_of_week`, validates dates with `checkdate()`, and swaps reversed custom ranges. |
+| `Directorist_Affiliate_View` | Static template renderer (`output()` prints, `render()` returns a string, `partial()` renders an admin partial with an isolated context) used by both admin screens and shortcodes. |
 | `Directorist_Affiliate_Autoloader` | Classmap `spl_autoload_register` loader; the map doubles as the plugin's class inventory. |
-| `Directorist_Affiliate_Registration` | Application processing shared by every entry point: `process_public()` (honeypot, validation, account creation, pending application) and `process_admin()` (status choice, user reuse). Callers do nonce/capability checks. |
+| `Directorist_Affiliate_Registration` | Application processing shared by every entry point: `process_public()` (application gates, honeypot, per-IP rate limit of 5/hour for guests, validation, account creation, pending application) and `process_admin()` (status choice, user reuse). Callers do nonce/capability checks. |
 | `Directorist_Affiliate_Ajax` | `admin-ajax.php` endpoints for all four forms (`directorist_affiliate_register` incl. `nopriv`, `…_add_affiliate`, `…_save_settings`, `…_mark_paid`), returning JSON via `wp_send_json_*`. |
 
 ## Visit tracking details
@@ -169,6 +173,7 @@ Four custom tables (all `dbDelta`-managed, version tracked in option `directoris
   - `directorist_affiliate_ref` → affiliate ID
   - `directorist_affiliate_visit` → visit row ID
 - Attribution is configurable: **first click** (default, per PRD — an existing valid credit is never overwritten until the cookie expires) or **last click** (each valid `?ref=` hit overwrites the credit). Every counted hit creates a visit row.
+- Obvious crawler traffic (bot/crawler/spider/headless/curl user agents, and requests with no user agent) is skipped, so click counts and conversion rates reflect real visitors. Capture also bails if headers were already sent.
 
 ## Conversion → referral creation
 
@@ -185,9 +190,11 @@ Four custom tables (all `dbDelta`-managed, version tracked in option `directoris
 
 **Paid order flow:** when an order reaches **paid**, the integration computes the total exactly like core (`sub_total` + tax − coupon, falling back to the stored amount), resolves the affiliate (tracking cookie first, then the affiliate recorded at the buyer's registration), applies the self-referral and per-order duplicate guards, and creates a `plan_purchase`/`featured_purchase` referral storing the order ID, source, and total. Free (0.00) orders never earn. If the order is later refunded or cancelled, the referral flips to `refunded`/`cancelled` and drops out of payable sums; `directorist_affiliate_referral_reversed` fires for extensions.
 
-**Registration flow:** commission amount resolved → affiliate read from cookie → must be approved and not the registering user themselves (self-referral guard #2) → referral created as `pending` → user meta `_directorist_affiliate_id` and `_directorist_affiliate_visit_id` stored on the new user → visit marked converted → affiliate emailed.
+**Registration flow:** affiliate read from cookie → must be approved and not the registering user themselves (self-referral guard #2) → user meta `_directorist_affiliate_id` / `_directorist_affiliate_visit_id` stored on the new user **regardless of whether the registration commission event is enabled**, so later conversions still attribute → if the event is enabled, a `pending` referral is created, the visit marked converted, and the affiliate emailed.
 
-**Listing flow:** affiliate resolved from the author's `_directorist_affiliate_id` user meta first, falling back to the live cookie — so a listing posted days after registration (cookie may be gone) still credits the original affiliate. Same approval/self-referral guards, then a `listing_submission` referral is created, the visit marked converted, and the affiliate emailed.
+**Listing flow:** affiliate resolved from the author's `_directorist_affiliate_id` user meta first, falling back to the live cookie **only when the current session belongs to the listing author** — so a listing posted days after registration still credits the original affiliate, while a moderator publishing someone else's listing can never leak their own cookie into the attribution. Same approval/self-referral guards, then a `listing_submission` referral is created, the visit marked converted, and the affiliate emailed.
+
+**Cookie trust rule (all order/listing events):** the tracking cookie belongs to a browser session, so it is only consulted when the current user *is* the converting user (or a guest completing their own checkout). Admin-side events — offline-payment approval, order status edits, moderator publishing — attribute exclusively through the persisted user meta. The first affiliate credited to a user is written to user meta and never overwritten, which keeps first-click semantics across devices and cookie expiry.
 
 Both paths are idempotent: `Referral::create()` returns the existing row if a referral for the same affiliate + type + user/listing already exists, so double-firing hooks can't double-pay.
 
@@ -197,12 +204,12 @@ One tabbed **Affiliate** page registered as a submenu of the Directorist listing
 
 | Tab (`?tab=`) | Contents / actions |
 | --- | --- |
-| `dashboard` | Stat cards: total/pending affiliates, visits, referrals, pending/approved/paid commission totals. |
-| `affiliates` | Manual "Add affiliate" form (creates/reuses a WP user, can start as approved), affiliate detail panel, table of affiliates with per-row Approve / Reject / Suspend links (nonce-protected), status badges, and referral/commission rollups. |
-| `referrals` | All referrals with Approve / Reject / Mark paid actions and order details. "Mark paid" is **restricted to `approved` referrals** and always routes through the payout service so every payment leaves a payout record; other statuses get an error notice. |
-| `visits` | Latest 100 visits: affiliate, landing/referrer URLs, IP, converted badge. |
-| `payouts` | Checkbox list of unpaid **approved** referrals → "Mark selected as paid" (grouped into one payout per affiliate, **skipping affiliates below the configured minimum payout** with a warning notice); payout history; **Export approved payouts CSV** (up to 1,000 rows: affiliate_id, payout_email, referral_id, amount, date_created). |
-| `settings` | The settings form below, organized into pill-style sub-tabs (General / Registration / Listing / Order Commissions / Payout / Advanced). One form underneath — a single save submits every section (AJAX with POST fallback); JS-off renders the sections stacked. Sub-tab state is kept in the URL hash (`#da-general`). |
+| `dashboard` | Stat tiles (affiliates + pending-application shortcut, visits with conversion rate, referrals) and commission tiles (pending / approved / paid), plus the 8 most recent referrals. |
+| `affiliates` | An **Add affiliate** button leads the filter bar and opens a native `<dialog>` **modal** (creates/reuses a WP user, can start as approved); affiliate detail card; filters (status, search across name/email/code/website, applied-date range); **paginated** table (20/page) with per-row Approve / Reject / Suspend links (nonce-protected; the action matching the current status is hidden) and referral/commission rollups from one grouped query. |
+| `referrals` | Filters: **affiliate, event type, status, and date range**; 20/page; **bulk actions** (Approve / Reject / Mark as paid) alongside per-row actions. "Mark paid" is **restricted to `approved` referrals** and always routes through the payout service so every payment leaves a payout record; other statuses get an error notice. |
+| `visits` | Filters: **affiliate, converted/not converted, and date range**; 20/page. Columns: affiliate + code, landing path, referring host, IP, timestamp, converted badge. |
+| `payouts` | Two sub-tabs (`&section=`). **Unpaid approved commissions** (`unpaid`, default): outstanding-balance toolbar, checkbox list with select-all → "Mark selected as paid" (grouped into one payout per affiliate, **skipping affiliates below the configured minimum payout** with a warning notice), and **Export approved payouts CSV** (up to 1,000 rows: affiliate_id, payout_email, referral_id, amount, date_created — cells starting with `=`/`+`/`-`/`@` are neutralized against spreadsheet formula injection). **Payout history** (`history`): filters by **affiliate, payout email, and date range** with a total-paid summary, 20/page, each row linking to that affiliate's referrals. |
+| `settings` | The settings form below, organized into pill-style sub-tabs (General / Commissions / Payout / Notifications / Advanced) with toggle switches, inline field descriptions, and a **sticky save bar**. One form underneath — a single save submits every section (AJAX with POST fallback); JS-off renders the sections stacked. Sub-tab state is kept in the URL hash (`#da-general`); leaving with unsaved changes warns first. |
 
 Tab rendering lives in `Directorist_Affiliate_Admin`; all mutations live in `Directorist_Affiliate_Admin_Actions`, run through `admin_init`, are capability-checked (`manage_options`) and nonce-verified (`check_admin_referer`), then redirect back to the relevant tab with a success/error notice (or return JSON via the AJAX endpoints).
 
@@ -213,11 +220,31 @@ Tab rendering lives in `Directorist_Affiliate_Admin`; all mutations live in `Dir
 **Shortcodes**
 
 - `[directorist_affiliate_registration]` — Application form (name, email, website, promotional channel, payout email, note) with an invisible **honeypot anti-spam field** (bot submissions are silently discarded). For visitors who aren't logged in it **creates a WordPress account** via the shared `Affiliate::register_user()` helper (username derived from the email local-part, random password, standard new-user email). If the email already belongs to an account, it asks them to log in first. One application per user.
-- `[directorist_affiliate_dashboard]` — For logged-in affiliates: status badge, visit/referral counts, pending/approved/paid commission totals, their referral URL with a **copy-to-clipboard button** (only shown once approved), payout email, admin-configured payout instructions, and their last 20 referrals.
+- `[directorist_affiliate_dashboard]` — For logged-in affiliates: an earnings hero with status badge and their referral URL + **copy-to-clipboard button** (only once approved), stat tiles (visits with conversion rate, referrals, pending/approved/paid), a **link builder** for deep links to Add Listing / All Listings / Checkout, payout email and instructions, their last 20 referrals, and their **payout history**.
+- `[directorist_affiliate_link page="add-listing" text="Add your business"]` — Renders the current affiliate's referral link to a named Directorist page (`home`, `add-listing`, `all-listings`, `dashboard`, `checkout`) or an explicit same-site `url`. Outputs nothing for visitors who are not approved affiliates.
 
 **Directorist dashboard tab** — The same dashboard renders inside Directorist's user dashboard as an "Affiliate" tab (icon `las la-handshake`) via the `directorist_dashboard_tabs` filter.
 
-Views are rendered with a tiny `ob_start()`/`extract()` template loader; assets are one shared stylesheet and one small vanilla JS file, both registered as `directorist-affiliate` and enqueued on demand.
+The registration shortcode also respects the application gates: it shows a "closed" notice when `enable_applications` is off, a login prompt when `applications_require_login` is on, and an "already applied" notice for users who have an application.
+
+Views are rendered with a tiny `ob_start()`/`extract()` template loader. Assets: `assets/css/directorist-affiliate.css` (front end, registered as `directorist-affiliate`), `assets/css/directorist-affiliate-admin.css` (admin only), and one vanilla JS file shared by both, enqueued with `strategy => defer`.
+
+## List filtering
+
+Every list screen shares one GET-based filter bar (`admin/views/partials/filter-bar.php`), so filters are bookmarkable, survive pagination, and need no JavaScript. `Directorist_Affiliate_Admin::request_filters()` parses the request once; `pagination_args()` reduces it to the non-empty query vars that pagination links must carry.
+
+| Screen | Query vars |
+| --- | --- |
+| Affiliates | `status`, `s` (name/email/code/website), date range |
+| Referrals | `affiliate`, `type`, `status`, date range |
+| Visits | `affiliate`, `converted` (`1`/`0`), date range |
+| Payouts → history | `affiliate`, `email`, date range |
+
+**Date range** is shared by all four: `range` holds a preset (`today`, `yesterday`, `this_week`, `last_week`, `this_month`, `last_month`, `last_7`, `last_30`, `this_year`) or `custom`, in which case `from` and `to` carry `Y-m-d` dates. Picking a preset auto-submits; choosing "Custom range…" reveals two native date inputs. Bounds are inclusive and computed in the site's timezone — `this_week` respects the `start_of_week` option, and a reversed custom range is swapped rather than returning nothing. Referrals, visits, and affiliates filter on `date_created`; payout history filters on `COALESCE(date_paid, date_created)`, so "paid in March" means what an admin expects.
+
+Affiliate filters are a dropdown built from `Affiliate::options()` rather than a text field, so they always resolve to a real affiliate ID.
+
+The bar also takes an optional `lead_button` (`array{modal, label}`), rendered as the first control — used by the Affiliates screen for "Add affiliate". It is a `type="button"`, so it opens the modal without submitting the surrounding GET form. It carries the plugin's own `.directorist-affiliate-add-btn` styling rather than WordPress's `.button-primary`, whose `:focus` rule paints a white inner ring that lingers after a mouse click; keyboard focus still shows a ring via `:focus-visible`.
 
 ## Settings reference
 
@@ -227,7 +254,9 @@ Stored in one option, `directorist_affiliate_settings` (autoload off):
 | --- | --- | --- |
 | `enabled` | `1` | Master on/off for tracking + commissions |
 | `ref_param` | `ref` | Query-string parameter for referral links |
-| `cookie_duration` | `30` | Cookie lifetime in days (min 1) |
+| `cookie_duration` | `30` | Cookie lifetime in days (clamped to 1–3650) |
+| `enable_applications` | `1` | Accept new affiliate applications (form shows a "closed" notice when off) |
+| `applications_require_login` | `0` | Require a WordPress account to apply; when off, applying creates one |
 | `enable_registration` | `1` | Pay commission on referred user registration |
 | `registration_amount` | `0.00` | Fixed amount per registration |
 | `enable_listing` | `1` | Pay commission on referred listing |
@@ -241,13 +270,16 @@ Stored in one option, `directorist_affiliate_settings` (autoload off):
 | `auto_approve_commissions` | `0` | Create referrals as `approved` (payable immediately) instead of `pending` |
 | `minimum_payout` | `0.00` | Per-affiliate threshold enforced on the bulk "Mark selected as paid" action (`0` = disabled) |
 | `payout_instructions` | `''` | Free text shown on the affiliate dashboard |
+| `notify_admin_application` | `1` | Email the admin when someone applies |
+| `notify_affiliate_status` | `1` | Email the applicant on approve/reject |
+| `notify_affiliate_referral` | `1` | Email the affiliate when a referral converts |
 | `anonymize_ip` | `0` | Truncate visit IPs via `wp_privacy_anonymize_ip()` at collection time |
 | `delete_data_on_uninstall` | `0` | Allow `uninstall.php` to drop tables/options/user meta on plugin delete |
 
 ## Status lifecycles
 
 - **Affiliate:** `pending` → `approved` / `rejected` / `suspended` (admin action; approve/reject trigger an email). Only `approved` affiliates get visits and referrals credited.
-- **Referral:** `pending` → `approved` (stamps `date_approved`) → `paid` (stamps `date_paid`, normally via a payout record); or `rejected`.
+- **Referral:** `pending` → `approved` (stamps `date_approved`) → `paid` (stamps `date_paid`, normally via a payout record); or `rejected`. A `paid` referral is **locked**: it can only move to `refunded`/`cancelled` (an order reversal). Re-approving it would queue a second payment, so `Referral::update_status()` refuses that transition for both single-row and bulk actions.
 - **Payout:** created directly as `paid` / `manual`.
 
 ## Data footprint
@@ -262,9 +294,11 @@ Stored in one option, `directorist_affiliate_settings` (autoload off):
 ## Security posture
 
 - Every table access goes through `$wpdb->prepare()`; inputs are sanitized on the way in (`sanitize_email`, `esc_url_raw`, `sanitize_key`, `absint`, …) and escaped on output (`esc_html`, `esc_url`, `esc_attr`).
-- All admin actions: `manage_options` + nonces. Frontend application form: nonce-protected POST plus an invisible honeypot field against bot signups.
+- All admin actions: `manage_options` + nonces. Frontend application form: nonce-protected POST, an invisible honeypot field, a **per-IP rate limit** (5 guest applications per hour), and admin-controlled gates for whether applications are open at all and whether a login is required — so the form can never be used as an unbounded account-creation endpoint.
+- CSV export neutralizes spreadsheet formula injection (cells beginning `=`, `+`, `-`, `@`, tab, or CR are prefixed with an apostrophe).
 - Cookies are `HttpOnly` and marked secure on SSL. Statuses/types are validated against whitelists before being written.
-- Self-referral is blocked at both the tracking and the referral-creation layers; duplicate referrals are blocked at the repository layer.
+- Self-referral is blocked at both the tracking and the referral-creation layers; duplicate referrals are blocked at the repository layer. The tracking cookie is only trusted for the converting user's own session (see the cookie trust rule above).
+- `Payout::mark_paid()` records and flips **only** the referral IDs it validated (approved and owned by that affiliate), so an unrelated ID passed in a payout request can never be marked paid.
 - Optional IP anonymization (`wp_privacy_anonymize_ip()`) for visit logs; opt-in full data removal on uninstall.
 - Referrals can only be marked paid from the `approved` status, so every payment is backed by a payout record (audit trail).
 
@@ -272,11 +306,67 @@ Stored in one option, `directorist_affiliate_settings` (autoload off):
 
 Actions: `directorist_affiliate_created( $affiliate_id, $status )`, `directorist_affiliate_status_changed( $affiliate_id, $status )`, `directorist_affiliate_referral_created( $referral_id, $affiliate_id, $type )`, `directorist_affiliate_referral_reversed( $referral_id, $new_status, $order_status )`, `directorist_affiliate_payout_recorded( $payout_id, $affiliate_id, $amount, $referral_ids )`.
 
-Filters: `directorist_affiliate_registration_commission( $amount )`, `directorist_affiliate_listing_commission( $amount, $trigger )`, `directorist_affiliate_plan_commission( $amount, $order_total )`, `directorist_affiliate_featured_commission( $amount, $order_total )`.
+Filters: `directorist_affiliate_registration_commission( $amount )`, `directorist_affiliate_listing_commission( $amount, $trigger )`, `directorist_affiliate_plan_commission( $amount, $order_total )`, `directorist_affiliate_featured_commission( $amount, $order_total )`, `directorist_affiliate_link_targets( $targets, $code )` (destinations offered by the dashboard link builder).
 
 Usage examples are in [DOCUMENTATION.md](DOCUMENTATION.md#developer-reference).
 
 ## Changelog
+
+### 1.2.0 — 2026-08-13
+
+**Filtering and search**
+- New shared **date-range filter** on Affiliates, Referrals, Visits, and Payout history: presets (today, yesterday, this/last week, this/last month, last 7/30 days, this year) plus a custom start/end picker. Bounds are inclusive, timezone-correct, `start_of_week`-aware, and reversed custom ranges are swapped instead of silently returning nothing.
+- **Referrals** filter by affiliate, event type, status, and date; **Visits** by affiliate, converted state, and date; **Payout history** by affiliate, payout email, and date. All are plain GET forms, so filtered views are bookmarkable and survive pagination.
+- Affiliate filters use a dropdown from the affiliate list rather than free text, so they always resolve to a real ID.
+
+**Payouts**
+- Split into two sub-tabs: **Unpaid approved commissions** and **Payout history** (`&section=`). History is paginated at 20/page, shows a total-paid figure for the current filters, names how many commissions each payout covered, and links each row to that affiliate's referrals.
+
+**Admin UI**
+- **Add affiliate** sits at the start of the Affiliates filter bar (before the status filter) and carries the plugin's own button styling — WordPress's `.button-primary` focus ring left a white outline stuck on the button after clicking it.
+- **Add affiliate** moved into a native `<dialog>` modal — browser-provided focus trapping, Escape to close, and backdrop click-to-dismiss; validation errors render inside the modal instead of behind it.
+- Directorist core's `.directorist-deprecated-item-notice` is hidden on the Affiliate screen (our stylesheet only loads there, so other admin pages are untouched).
+- Admin assets are matched against the screen's exact hook suffix returned by `add_submenu_page()` rather than a substring, guaranteeing they load on this one page and nowhere else.
+
+**Internal**
+- `Referral::count()`, `Tracking::list()/count()`, `Payout::list()/count()` and `Affiliate::count()` now take an args array and share one private `build_where()` per repository, so every filter is applied identically to the rows and the count. `Payout::sum()` added for the history total.
+
+### 1.1.0 — 2026-08-13
+
+**Attribution correctness**
+- **Fix:** the tracking cookie is no longer trusted for conversions processed outside the referred user's own session. An admin approving an offline payment, editing an order status, or publishing a listing could previously have their own `?ref=` cookie credited to someone else's conversion. Order and listing events now attribute through the persisted `_directorist_affiliate_id` user meta unless the current session *is* the converting user.
+- **Fix:** the referred-user ↔ affiliate mapping is now stored at registration **even when the registration commission event is disabled**. Previously, turning that event off silently broke attribution for every later conversion by that user.
+- The first affiliate credited to a user is persisted and never overwritten (first-click semantics survive cookie expiry and device changes).
+- **Fix:** `Payout::mark_paid()` recorded the full submitted ID list on the payout row while only summing validated referrals; it now records and flips exactly the validated set.
+- **Fix:** a referral already marked `paid` could be moved back to `approved` (by the row action or the new bulk action), re-queueing it for a second payment. Paid referrals are now locked to reversal statuses only.
+- Crawler traffic is filtered out of visit tracking, so click counts and conversion rates reflect real visitors.
+
+**Security**
+- Affiliate applications are now gated by two settings — **Accept applications** and **Require login to apply** — plus a per-IP rate limit (5 guest applications/hour). The public form previously created WordPress accounts with no throttle and no way to close applications.
+- CSV export neutralizes spreadsheet formula injection (`=`, `+`, `-`, `@`, tab, CR).
+- `cookie_duration` is clamped to a 1–3650 day range.
+
+**Admin experience**
+- Affiliates and Referrals screens gained **filters, search, and pagination**; Visits is paginated too. Row-level rollups now come from one grouped query instead of two queries per row (an N+1 that scaled with the affiliate count).
+- **Bulk actions** on Referrals: approve, reject, or mark paid in one submit.
+- Dashboard rebuilt around stat tiles with an icon system, a visit→conversion rate, a pending-applications shortcut, and a recent-referrals table.
+- Settings reorganized (General / Commissions / Payout / Notifications / Advanced) with toggle switches, per-field descriptions, a sticky save bar, an unsaved-changes guard, and a shortcode reference card.
+- Payouts screen shows the outstanding balance; select-all checkboxes on both bulk tables.
+- Page header shows a live "Program active/disabled" indicator and a pending-application count on the Affiliates tab.
+
+**Affiliate experience**
+- Front-end dashboard rebuilt: earnings hero, stat tiles with conversion rate, **link builder** for deep links, **payout history**, and clear messaging for pending/suspended/rejected states.
+- New `[directorist_affiliate_link]` shortcode (PRD AFF-016) for page-specific referral links, with the `directorist_affiliate_link_targets` filter.
+- Money now renders in the site's Directorist currency everywhere (admin, dashboard, emails) instead of bare numbers.
+
+**Notifications**
+- Each of the three emails can be toggled independently (PRD AFF-013).
+
+**Compatibility**
+- Minimum WordPress raised to **6.3** (scripts are enqueued with the `strategy => defer` signature introduced in 6.3).
+
+**Design system**
+- Front-end and admin styles split into two token-based stylesheets sharing one visual language; toggle switches, badges with status dots, card surfaces, responsive stacked tables on mobile, RTL-safe logical properties, `prefers-reduced-motion` support, and focus-visible rings throughout.
 
 ### 1.0.0 — 2026-07-28
 - **Internationalization complete:** every user-facing string is translatable. Raw database values (referral types and statuses) now render through translated label helpers — `Referral::type_label()`, `Referral::status_label()`, `Affiliate::status_label()` — in admin tables, the front-end dashboard, and emails. Badge CSS classes still derive from raw statuses, so styling is language-independent (`text-transform: capitalize` removed in favor of properly cased labels).
@@ -326,8 +416,8 @@ Usage examples are in [DOCUMENTATION.md](DOCUMENTATION.md#developer-reference).
 - Payouts are records only — no PayPal/Stripe/etc. integration; money moves outside WordPress (CSV export supports that workflow).
 - Claim-listing and ad-package purchases are not yet distinct commission events (the extensions aren't part of this stack); orders that are neither plan nor featured purchases are ignored.
 - Recurring/renewal commissions are not implemented (each paid order earns once; subscription renewals that create new paid orders do earn again via order dedupe being per-order).
-- Admin tables have fixed query limits (100 rows; 500 approved referrals on the payout screen) and no pagination or search.
-- Visit capture happens on `template_redirect`, so full-page caching can prevent cookie setting for cached hits (standard limitation for cookie-based affiliate tracking).
+- The payout screen still loads up to 500 approved referrals at once (it is a work queue, not a browsable archive); every other list screen is paginated at 20 rows.
+- Visit capture happens on `template_redirect`, so full-page caching can prevent cookie setting for cached hits (standard limitation for cookie-based affiliate tracking). Exclude `?ref=` URLs from your page cache.
 - Visit rows have no retention/cleanup routine; IP anonymization is available but off by default.
 - Both listing triggers record the referral as type `listing_submission`; the trigger used is only distinguishable from the referral's notes.
 - Attribution is cookie-scoped; conversions after cookie expiry credit no one (order events fall back to the affiliate stored at the buyer's registration, when there was one).

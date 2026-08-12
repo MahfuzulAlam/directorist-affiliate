@@ -1,9 +1,13 @@
 /**
  * Directorist Affiliate — front-end and admin behaviour.
  *
- * 1. Copy-to-clipboard for the referral link.
- * 2. AJAX submission for every plugin form (marked with [data-da-ajax]).
+ * 1. Copy-to-clipboard for referral links.
+ * 2. Dashboard link builder (destination select → generated link).
+ * 3. AJAX submission for every plugin form (marked with [data-da-ajax]).
  *    Forms fall back to a normal POST when fetch is unavailable.
+ * 4. Admin niceties: settings sub-tabs, select-all checkboxes.
+ *
+ * Vanilla JS only — no jQuery.
  *
  * @package DirectoristAffiliate
  */
@@ -12,6 +16,10 @@
 	'use strict';
 
 	var config = window.directoristAffiliate || {};
+
+	function text( key, fallback ) {
+		return config[ key ] || fallback;
+	}
 
 	/* -----------------------------------------------------------------------
 	 * Copy referral link
@@ -29,12 +37,19 @@
 	}
 
 	function showCopied( button ) {
-		var original = button.textContent;
+		var original = button.getAttribute( 'data-original-label' );
+
+		if ( null === original ) {
+			original = button.textContent;
+			button.setAttribute( 'data-original-label', original );
+		}
 
 		button.textContent = button.getAttribute( 'data-copied-label' ) || 'Copied!';
 		button.classList.add( 'is-copied' );
 
-		window.setTimeout( function () {
+		window.clearTimeout( button.dataCopyTimer );
+
+		button.dataCopyTimer = window.setTimeout( function () {
 			button.textContent = original;
 			button.classList.remove( 'is-copied' );
 		}, 2000 );
@@ -70,6 +85,182 @@
 	} );
 
 	/* -----------------------------------------------------------------------
+	 * Dashboard link builder
+	 * --------------------------------------------------------------------- */
+
+	document.addEventListener( 'change', function ( event ) {
+		var select = event.target.closest( '[data-da-link-select]' );
+
+		if ( ! select ) {
+			return;
+		}
+
+		var output = document.getElementById( select.getAttribute( 'data-da-link-output' ) );
+
+		if ( output ) {
+			output.value = select.value;
+		}
+	} );
+
+	/* -----------------------------------------------------------------------
+	 * Modal dialogs
+	 *
+	 * Uses the native <dialog> element, so focus trapping, Escape-to-close
+	 * and the backdrop come from the browser. If <dialog> is unsupported the
+	 * form is revealed inline instead of being unreachable.
+	 * --------------------------------------------------------------------- */
+
+	function openModal( dialog ) {
+		if ( typeof dialog.showModal === 'function' ) {
+			dialog.showModal();
+		} else {
+			dialog.setAttribute( 'open', 'open' );
+		}
+
+		var firstField = dialog.querySelector( 'input:not([type="hidden"]), select, textarea' );
+
+		if ( firstField ) {
+			firstField.focus();
+		}
+	}
+
+	document.addEventListener( 'click', function ( event ) {
+		var opener = event.target.closest( '[data-da-modal-open]' );
+
+		if ( opener ) {
+			var dialog = document.getElementById( opener.getAttribute( 'data-da-modal-open' ) );
+
+			if ( dialog ) {
+				event.preventDefault();
+				openModal( dialog );
+			}
+
+			return;
+		}
+
+		var closer = event.target.closest( '[data-da-modal-close]' );
+
+		if ( closer ) {
+			var owner = closer.closest( 'dialog' );
+
+			if ( owner ) {
+				event.preventDefault();
+
+				if ( typeof owner.close === 'function' ) {
+					owner.close();
+				} else {
+					owner.removeAttribute( 'open' );
+				}
+			}
+		}
+	} );
+
+	// Clicking the backdrop (outside the dialog's own box) closes it.
+	document.addEventListener( 'click', function ( event ) {
+		var dialog = event.target;
+
+		if ( 'DIALOG' !== dialog.tagName || ! dialog.open ) {
+			return;
+		}
+
+		var box = dialog.getBoundingClientRect();
+		var inside = event.clientX >= box.left && event.clientX <= box.right &&
+			event.clientY >= box.top && event.clientY <= box.bottom;
+
+		if ( ! inside && typeof dialog.close === 'function' ) {
+			dialog.close();
+		}
+	} );
+
+	/* -----------------------------------------------------------------------
+	 * Date range filter — reveal the custom inputs only for "Custom range"
+	 * --------------------------------------------------------------------- */
+
+	document.addEventListener( 'change', function ( event ) {
+		var preset = event.target.closest( '[data-da-daterange-preset]' );
+
+		if ( ! preset ) {
+			return;
+		}
+
+		var wrapper = preset.closest( '[data-da-daterange]' );
+		var custom  = wrapper ? wrapper.querySelector( '[data-da-daterange-custom]' ) : null;
+
+		if ( ! custom ) {
+			return;
+		}
+
+		var isCustom = 'custom' === preset.value;
+
+		custom.hidden = ! isCustom;
+		wrapper.classList.toggle( 'is-custom', isCustom );
+
+		if ( isCustom ) {
+			var from = custom.querySelector( 'input[type="date"]' );
+
+			if ( from ) {
+				from.focus();
+			}
+
+			return;
+		}
+
+		// Leaving custom mode: drop stale dates so they aren't submitted.
+		Array.prototype.forEach.call( custom.querySelectorAll( 'input[type="date"]' ), function ( input ) {
+			input.value = '';
+		} );
+
+		// Any other preset is self-describing, so apply it immediately.
+		if ( preset.form ) {
+			preset.form.submit();
+		}
+	} );
+
+	/* -----------------------------------------------------------------------
+	 * Select-all checkboxes in admin tables
+	 * --------------------------------------------------------------------- */
+
+	function rowCheckboxes( master ) {
+		var scope = master.closest( 'table' );
+
+		return scope ? Array.prototype.slice.call( scope.querySelectorAll( 'tbody input[type="checkbox"]' ) ) : [];
+	}
+
+	document.addEventListener( 'change', function ( event ) {
+		var master = event.target.closest( '[data-da-check-all]' );
+
+		if ( master ) {
+			rowCheckboxes( master ).forEach( function ( box ) {
+				box.checked = master.checked;
+			} );
+
+			return;
+		}
+
+		// Keep the master checkbox in sync with individual rows.
+		var row = event.target.closest( 'tbody input[type="checkbox"]' );
+
+		if ( ! row ) {
+			return;
+		}
+
+		var table = row.closest( 'table' );
+		var head  = table ? table.querySelector( '[data-da-check-all]' ) : null;
+
+		if ( ! head ) {
+			return;
+		}
+
+		var boxes   = rowCheckboxes( head );
+		var checked = boxes.filter( function ( box ) {
+			return box.checked;
+		} );
+
+		head.checked       = boxes.length > 0 && checked.length === boxes.length;
+		head.indeterminate = checked.length > 0 && checked.length < boxes.length;
+	} );
+
+	/* -----------------------------------------------------------------------
 	 * AJAX forms
 	 * --------------------------------------------------------------------- */
 
@@ -81,26 +272,31 @@
 		var notice;
 
 		if ( isAdminForm( form ) ) {
-			// WordPress-style admin notice above the page title area.
-			notice = form.closest( '.wrap' ).querySelector( '.directorist-affiliate-js-notice' );
+			// A form inside a modal shows its notice in the modal, not behind it.
+			var panel = form.closest( 'dialog' ) ||
+				form.closest( '.directorist-affiliate-tab-panel' ) ||
+				form.closest( '.wrap' );
+
+			if ( ! panel ) {
+				return;
+			}
+
+			notice = panel.querySelector( '.directorist-affiliate-js-notice' );
 
 			if ( ! notice ) {
 				notice = document.createElement( 'div' );
-				notice.className = 'directorist-affiliate-js-notice';
-
-				var anchor = form.closest( '.wrap' ).querySelector( '.wp-header-end' ) ||
-					form.closest( '.wrap' ).querySelector( 'h1' );
-				anchor.parentNode.insertBefore( notice, anchor.nextSibling );
+				panel.insertBefore( notice, panel.firstChild );
 			}
 
 			notice.className = 'notice directorist-affiliate-js-notice ' + ( isSuccess ? 'notice-success' : 'notice-error' );
-			notice.innerHTML = '';
+			notice.textContent = '';
 
 			var paragraph = document.createElement( 'p' );
 			paragraph.textContent = message;
 			notice.appendChild( paragraph );
 		} else {
-			notice = ( form.closest( '.directorist-affiliate-wrap' ) || form.parentNode ).querySelector( '.directorist-affiliate-js-notice' );
+			var wrap = form.closest( '.directorist-affiliate-wrap' ) || form.parentNode;
+			notice   = wrap.querySelector( '.directorist-affiliate-js-notice' );
 
 			if ( ! notice ) {
 				notice = document.createElement( 'div' );
@@ -112,6 +308,7 @@
 			notice.textContent = message;
 		}
 
+		notice.setAttribute( 'role', isSuccess ? 'status' : 'alert' );
 		notice.scrollIntoView( { behavior: 'smooth', block: 'center' } );
 	}
 
@@ -181,6 +378,41 @@
 		activate( known ? initial : sections[ 0 ].getAttribute( 'data-section' ), false );
 	} )();
 
+	/* -----------------------------------------------------------------------
+	 * Unsaved settings guard
+	 * --------------------------------------------------------------------- */
+
+	( function () {
+		var form = document.querySelector( '.directorist-affiliate-settings-tabs form' );
+
+		if ( ! form ) {
+			return;
+		}
+
+		var dirty = false;
+
+		form.addEventListener( 'change', function () {
+			dirty = true;
+		} );
+
+		form.addEventListener( 'submit', function () {
+			dirty = false;
+		} );
+
+		window.addEventListener( 'beforeunload', function ( event ) {
+			if ( ! dirty ) {
+				return;
+			}
+
+			event.preventDefault();
+			event.returnValue = '';
+		} );
+	} )();
+
+	/* -----------------------------------------------------------------------
+	 * Submit handler
+	 * --------------------------------------------------------------------- */
+
 	document.addEventListener( 'submit', function ( event ) {
 		var form = event.target.closest( 'form[data-da-ajax]' );
 
@@ -202,7 +434,7 @@
 
 		if ( button ) {
 			button.disabled    = true;
-			button.textContent = config.submittingLabel || 'Submitting…';
+			button.textContent = text( 'submittingLabel', 'Submitting…' );
 		}
 
 		function restoreButton() {
@@ -226,7 +458,7 @@
 			.then( function ( result ) {
 				var message = result && result.data && result.data.message
 					? result.data.message
-					: ( config.genericError || 'Something went wrong. Please try again.' );
+					: text( 'genericError', 'Something went wrong. Please try again.' );
 
 				restoreButton();
 				showFormNotice( form, message, !! ( result && result.success ) );
@@ -237,7 +469,7 @@
 			} )
 			.catch( function () {
 				restoreButton();
-				showFormNotice( form, config.genericError || 'Something went wrong. Please try again.', false );
+				showFormNotice( form, text( 'genericError', 'Something went wrong. Please try again.' ), false );
 			} );
 	} );
 } )();

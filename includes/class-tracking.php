@@ -65,13 +65,17 @@ final class Directorist_Affiliate_Tracking {
 	 * @return void
 	 */
 	public function capture_visit(): void {
-		if ( is_admin() || ! $this->settings->is_enabled() ) {
+		if ( is_admin() || headers_sent() || ! $this->settings->is_enabled() ) {
 			return;
 		}
 
 		$param = (string) $this->settings->get( 'ref_param', 'ref' );
 
 		if ( empty( $_GET[ $param ] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+			return;
+		}
+
+		if ( $this->is_bot() ) {
 			return;
 		}
 
@@ -188,35 +192,79 @@ final class Directorist_Affiliate_Tracking {
 	/**
 	 * List visits.
 	 *
-	 * @param int $limit Limit.
+	 * @param array<string,mixed> $args Query args (affiliate_id, converted, date_from, date_to, limit, offset).
 	 *
 	 * @return object[]
 	 */
-	public function list( int $limit = 50 ): array {
+	public function list( array $args = array() ): array {
 		global $wpdb;
 
+		list( $where, $params ) = $this->build_where( $args );
+
+		$params[] = isset( $args['limit'] ) ? absint( $args['limit'] ) : 50;
+		$params[] = isset( $args['offset'] ) ? absint( $args['offset'] ) : 0;
+
 		return $wpdb->get_results(
-			$wpdb->prepare( "SELECT * FROM {$this->table()} ORDER BY date_created DESC LIMIT %d", absint( $limit ) )
+			$wpdb->prepare( "SELECT * FROM {$this->table()} WHERE {$where} ORDER BY date_created DESC LIMIT %d OFFSET %d", $params )
 		);
 	}
 
 	/**
-	 * Count visits.
+	 * Count visits matching the same filters as list().
 	 *
-	 * @param int $affiliate_id Optional affiliate ID.
+	 * @param array<string,mixed> $args Query args (affiliate_id, converted, date_from, date_to).
 	 *
 	 * @return int
 	 */
-	public function count( int $affiliate_id = 0 ): int {
+	public function count( array $args = array() ): int {
 		global $wpdb;
 
-		if ( $affiliate_id ) {
-			return (int) $wpdb->get_var(
-				$wpdb->prepare( "SELECT COUNT(*) FROM {$this->table()} WHERE affiliate_id = %d", $affiliate_id )
-			);
+		list( $where, $params ) = $this->build_where( $args );
+
+		$sql = "SELECT COUNT(*) FROM {$this->table()} WHERE {$where}";
+
+		if ( $params ) {
+			return (int) $wpdb->get_var( $wpdb->prepare( $sql, $params ) );
 		}
 
-		return (int) $wpdb->get_var( "SELECT COUNT(*) FROM {$this->table()}" );
+		return (int) $wpdb->get_var( $sql );
+	}
+
+	/**
+	 * Build the shared WHERE clause for list()/count().
+	 *
+	 * `converted` accepts a bool, or '1'/'0' strings from a request; anything
+	 * else (including '') leaves the filter off.
+	 *
+	 * @param array<string,mixed> $args Query args.
+	 *
+	 * @return array{0:string,1:array<int,mixed>} WHERE fragment and its params.
+	 */
+	private function build_where( array $args ): array {
+		$where  = '1=1';
+		$params = array();
+
+		if ( ! empty( $args['affiliate_id'] ) ) {
+			$where   .= ' AND affiliate_id = %d';
+			$params[] = absint( $args['affiliate_id'] );
+		}
+
+		if ( isset( $args['converted'] ) && '' !== $args['converted'] && null !== $args['converted'] ) {
+			$where   .= ' AND converted = %d';
+			$params[] = ( $args['converted'] && '0' !== $args['converted'] ) ? 1 : 0;
+		}
+
+		if ( ! empty( $args['date_from'] ) ) {
+			$where   .= ' AND date_created >= %s';
+			$params[] = (string) $args['date_from'];
+		}
+
+		if ( ! empty( $args['date_to'] ) ) {
+			$where   .= ' AND date_created <= %s';
+			$params[] = (string) $args['date_to'];
+		}
+
+		return array( $where, $params );
 	}
 
 	/**
@@ -230,6 +278,24 @@ final class Directorist_Affiliate_Tracking {
 		$uri    = ! empty( $_SERVER['REQUEST_URI'] ) ? sanitize_text_field( wp_unslash( $_SERVER['REQUEST_URI'] ) ) : '/';
 
 		return $scheme . $host . $uri;
+	}
+
+	/**
+	 * Whether the current request looks like a crawler.
+	 *
+	 * Keeps obvious bot traffic out of the visits table so click counts
+	 * reflect real visitors. Deliberately conservative: unknown agents pass.
+	 *
+	 * @return bool
+	 */
+	private function is_bot(): bool {
+		$user_agent = ! empty( $_SERVER['HTTP_USER_AGENT'] ) ? sanitize_text_field( wp_unslash( $_SERVER['HTTP_USER_AGENT'] ) ) : '';
+
+		if ( '' === $user_agent ) {
+			return true;
+		}
+
+		return (bool) preg_match( '/bot|crawl|spider|slurp|preview|headless|scrape|curl|wget|python-requests|facebookexternalhit/i', $user_agent );
 	}
 
 	/**

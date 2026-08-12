@@ -319,22 +319,25 @@ final class Directorist_Affiliate_Order_Integration {
 	/**
 	 * Resolve the credited affiliate for a buyer.
 	 *
-	 * The tracking cookie wins; the referring affiliate stored at
-	 * registration time is the fallback. Self-referrals never credit.
+	 * The tracking cookie wins, but only when the current session belongs to
+	 * the buyer — admin-side events (offline-payment approval, status edits)
+	 * must attribute via the mapping persisted at registration/conversion,
+	 * never via the admin's own browser cookie. Self-referrals never credit.
 	 *
 	 * @param int $buyer_id Buyer user ID.
 	 *
 	 * @return object|null Approved affiliate row or null.
 	 */
 	private function resolve_affiliate( int $buyer_id ) {
-		$candidates = array_filter(
-			array(
-				$this->plugin->tracking->get_cookie_affiliate_id(),
-				absint( get_user_meta( $buyer_id, '_directorist_affiliate_id', true ) ),
-			)
-		);
+		$candidates = array();
 
-		foreach ( $candidates as $affiliate_id ) {
+		if ( get_current_user_id() === $buyer_id ) {
+			$candidates[] = $this->plugin->tracking->get_cookie_affiliate_id();
+		}
+
+		$candidates[] = absint( get_user_meta( $buyer_id, '_directorist_affiliate_id', true ) );
+
+		foreach ( array_filter( $candidates ) as $affiliate_id ) {
 			$affiliate = $this->plugin->affiliate->get( (int) $affiliate_id );
 
 			if ( ! $affiliate || 'approved' !== $affiliate->status ) {
@@ -343,6 +346,16 @@ final class Directorist_Affiliate_Order_Integration {
 
 			if ( ! empty( $affiliate->user_id ) && (int) $affiliate->user_id === $buyer_id ) {
 				continue;
+			}
+
+			// Persist the mapping (first credit wins) so later order updates
+			// processed outside the buyer's session still attribute correctly.
+			add_user_meta( $buyer_id, '_directorist_affiliate_id', (int) $affiliate->id, true );
+
+			$visit_id = $this->plugin->tracking->get_cookie_visit_id();
+
+			if ( $visit_id ) {
+				add_user_meta( $buyer_id, '_directorist_affiliate_visit_id', $visit_id, true );
 			}
 
 			return $affiliate;

@@ -32,6 +32,24 @@ final class Directorist_Affiliate_Commission {
 	}
 
 	/**
+	 * Format a money amount with the site's Directorist currency.
+	 *
+	 * Falls back to a plain localized number when Directorist's price helper
+	 * is unavailable. Returns plain text — escape at the point of output.
+	 *
+	 * @param float $amount Amount.
+	 *
+	 * @return string
+	 */
+	public static function format_money( float $amount ): string {
+		if ( function_exists( 'directorist_price' ) ) {
+			return (string) directorist_price( $amount, false );
+		}
+
+		return number_format_i18n( $amount, 2 );
+	}
+
+	/**
 	 * Whether a pricing plans extension is active.
 	 *
 	 * Supports Directorist Pricing Plans v4+ and the legacy fee manager.

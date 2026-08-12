@@ -15,6 +15,11 @@ defined( 'ABSPATH' ) || exit;
  */
 final class Directorist_Affiliate_Registration {
 	/**
+	 * Maximum public applications accepted from one IP per hour.
+	 */
+	private const RATE_LIMIT = 5;
+
+	/**
 	 * Affiliate repository.
 	 *
 	 * @var Directorist_Affiliate_Affiliate
@@ -29,14 +34,41 @@ final class Directorist_Affiliate_Registration {
 	private $email;
 
 	/**
+	 * Settings service.
+	 *
+	 * @var Directorist_Affiliate_Settings
+	 */
+	private $settings;
+
+	/**
 	 * Constructor.
 	 *
 	 * @param Directorist_Affiliate_Affiliate $affiliate Affiliate repository.
 	 * @param Directorist_Affiliate_Email     $email Email service.
+	 * @param Directorist_Affiliate_Settings  $settings Settings service.
 	 */
-	public function __construct( Directorist_Affiliate_Affiliate $affiliate, Directorist_Affiliate_Email $email ) {
+	public function __construct( Directorist_Affiliate_Affiliate $affiliate, Directorist_Affiliate_Email $email, Directorist_Affiliate_Settings $settings ) {
 		$this->affiliate = $affiliate;
 		$this->email     = $email;
+		$this->settings  = $settings;
+	}
+
+	/**
+	 * Whether the public application form accepts submissions right now.
+	 *
+	 * @return bool
+	 */
+	public function applications_open(): bool {
+		return $this->settings->is_enabled() && (bool) absint( $this->settings->get( 'enable_applications', 1 ) );
+	}
+
+	/**
+	 * Whether an application requires the visitor to be logged in.
+	 *
+	 * @return bool
+	 */
+	public function requires_login(): bool {
+		return (bool) absint( $this->settings->get( 'applications_require_login', 0 ) );
 	}
 
 	/**
@@ -51,11 +83,32 @@ final class Directorist_Affiliate_Registration {
 	public function process_public( array $request ): array {
 		$submitted_message = __( 'Your affiliate application was submitted and is pending review.', 'directorist-affiliate' );
 
+		if ( ! $this->applications_open() ) {
+			return array(
+				'success' => false,
+				'message' => __( 'Affiliate applications are currently closed.', 'directorist-affiliate' ),
+			);
+		}
+
+		if ( $this->requires_login() && ! is_user_logged_in() ) {
+			return array(
+				'success' => false,
+				'message' => __( 'Please log in to apply for the affiliate program.', 'directorist-affiliate' ),
+			);
+		}
+
 		// Honeypot: bots fill the hidden field; pretend success without saving.
 		if ( ! empty( $request['da_hp'] ) ) {
 			return array(
 				'success' => true,
 				'message' => $submitted_message,
+			);
+		}
+
+		if ( ! is_user_logged_in() && $this->is_rate_limited() ) {
+			return array(
+				'success' => false,
+				'message' => __( 'Too many applications from this network. Please try again later.', 'directorist-affiliate' ),
 			);
 		}
 
@@ -214,6 +267,33 @@ final class Directorist_Affiliate_Registration {
 		);
 
 		return $messages[ $notice ] ?? '';
+	}
+
+	/**
+	 * Whether this IP has exceeded the hourly application limit.
+	 *
+	 * Counts the attempt as it checks, so a burst of submissions from one
+	 * network cannot create an unbounded number of WordPress users.
+	 *
+	 * @return bool
+	 */
+	private function is_rate_limited(): bool {
+		$ip = ! empty( $_SERVER['REMOTE_ADDR'] ) ? sanitize_text_field( wp_unslash( $_SERVER['REMOTE_ADDR'] ) ) : '';
+
+		if ( ! $ip ) {
+			return false;
+		}
+
+		$key   = 'da_apply_' . md5( $ip );
+		$count = (int) get_transient( $key );
+
+		if ( $count >= self::RATE_LIMIT ) {
+			return true;
+		}
+
+		set_transient( $key, $count + 1, HOUR_IN_SECONDS );
+
+		return false;
 	}
 
 	/**

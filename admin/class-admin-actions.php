@@ -58,6 +58,7 @@ final class Directorist_Affiliate_Admin_Actions {
 		$this->handle_add_affiliate();
 		$this->handle_affiliate_action();
 		$this->handle_referral_action();
+		$this->handle_referral_bulk();
 		$this->handle_payout_post();
 		$this->handle_export();
 	}
@@ -173,6 +174,50 @@ final class Directorist_Affiliate_Admin_Actions {
 	}
 
 	/**
+	 * Handle bulk referral moderation from the referrals tab.
+	 *
+	 * @return void
+	 */
+	private function handle_referral_bulk(): void {
+		if ( empty( $_POST['directorist_affiliate_referral_bulk'] ) ) {
+			return;
+		}
+
+		check_admin_referer( 'directorist_affiliate_referral_bulk' );
+
+		$action       = isset( $_POST['bulk_action'] ) ? sanitize_key( wp_unslash( $_POST['bulk_action'] ) ) : '';
+		$referral_ids = isset( $_POST['referral_ids'] ) && is_array( $_POST['referral_ids'] )
+			? array_filter( array_map( 'absint', wp_unslash( $_POST['referral_ids'] ) ) )
+			: array();
+
+		if ( empty( $referral_ids ) || ! in_array( $action, array( 'approve', 'reject', 'paid' ), true ) ) {
+			$this->redirect( 'referrals', array( 'directorist_affiliate_notice' => 'referral_bulk_empty' ) );
+		}
+
+		if ( 'paid' === $action ) {
+			$result = $this->plugin->payout->mark_paid_bulk(
+				$referral_ids,
+				(float) $this->plugin->settings->get( 'minimum_payout', '0.00' )
+			);
+
+			$this->redirect(
+				'referrals',
+				array(
+					'directorist_affiliate_notice' => $result['paid'] ? 'referral_bulk_paid' : 'referral_not_approved',
+				)
+			);
+		}
+
+		$status = 'approve' === $action ? 'approved' : 'rejected';
+
+		foreach ( $referral_ids as $referral_id ) {
+			$this->plugin->referral->update_status( $referral_id, $status );
+		}
+
+		$this->redirect( 'referrals', array( 'directorist_affiliate_notice' => 'referral_bulk_updated' ) );
+	}
+
+	/**
 	 * Handle manual payout form (no-JS fallback).
 	 *
 	 * @return void
@@ -226,18 +271,19 @@ final class Directorist_Affiliate_Admin_Actions {
 		header( 'Content-Type: text/csv; charset=utf-8' );
 		header( 'Content-Disposition: attachment; filename=directorist-affiliate-payouts.csv' );
 
-		$output = fopen( 'php://output', 'w' );
+		$affiliates_map = $this->plugin->affiliate->get_many( wp_list_pluck( $referrals, 'affiliate_id' ) );
+		$output         = fopen( 'php://output', 'w' );
 
 		if ( false !== $output ) {
 			fputcsv( $output, array( 'affiliate_id', 'payout_email', 'referral_id', 'amount', 'date_created' ) );
 
 			foreach ( $referrals as $referral ) {
-				$affiliate = $this->plugin->affiliate->get( (int) $referral->affiliate_id );
+				$affiliate = $affiliates_map[ (int) $referral->affiliate_id ] ?? null;
 				fputcsv(
 					$output,
 					array(
 						$referral->affiliate_id,
-						$affiliate ? $affiliate->payout_email : '',
+						$this->escape_csv_field( $affiliate ? $affiliate->payout_email : '' ),
 						$referral->id,
 						$referral->commission_amount,
 						$referral->date_created,
@@ -247,6 +293,24 @@ final class Directorist_Affiliate_Admin_Actions {
 		}
 
 		exit;
+	}
+
+	/**
+	 * Neutralize spreadsheet formula injection in a CSV cell.
+	 *
+	 * Cells starting with =, +, -, @, tab, or CR are prefixed with an
+	 * apostrophe so spreadsheet apps treat them as text, never formulas.
+	 *
+	 * @param string $value Cell value.
+	 *
+	 * @return string
+	 */
+	private function escape_csv_field( string $value ): string {
+		if ( '' !== $value && in_array( $value[0], array( '=', '+', '-', '@', "\t", "\r" ), true ) ) {
+			return "'" . $value;
+		}
+
+		return $value;
 	}
 
 	/**

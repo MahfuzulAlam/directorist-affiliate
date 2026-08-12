@@ -239,6 +239,26 @@ final class Directorist_Affiliate_Referral {
 	public function list( array $args = array() ): array {
 		global $wpdb;
 
+		list( $where, $params ) = $this->build_where( $args );
+
+		$params[] = isset( $args['limit'] ) ? absint( $args['limit'] ) : 50;
+		$params[] = isset( $args['offset'] ) ? absint( $args['offset'] ) : 0;
+
+		$sql = "SELECT * FROM {$this->table()} WHERE {$where} ORDER BY date_created DESC LIMIT %d OFFSET %d";
+
+		return $wpdb->get_results( $wpdb->prepare( $sql, $params ) );
+	}
+
+	/**
+	 * Build the shared WHERE clause for list()/count().
+	 *
+	 * Supported args: affiliate_id, status, referral_type, date_from, date_to.
+	 *
+	 * @param array<string,mixed> $args Query args.
+	 *
+	 * @return array{0:string,1:array<int,mixed>} WHERE fragment and its params.
+	 */
+	private function build_where( array $args ): array {
 		$where  = '1=1';
 		$params = array();
 
@@ -252,14 +272,22 @@ final class Directorist_Affiliate_Referral {
 			$params[] = sanitize_key( $args['status'] );
 		}
 
-		$limit    = isset( $args['limit'] ) ? absint( $args['limit'] ) : 50;
-		$offset   = isset( $args['offset'] ) ? absint( $args['offset'] ) : 0;
-		$params[] = $limit;
-		$params[] = $offset;
+		if ( ! empty( $args['referral_type'] ) && in_array( $args['referral_type'], $this->types(), true ) ) {
+			$where   .= ' AND referral_type = %s';
+			$params[] = sanitize_key( $args['referral_type'] );
+		}
 
-		$sql = "SELECT * FROM {$this->table()} WHERE {$where} ORDER BY date_created DESC LIMIT %d OFFSET %d";
+		if ( ! empty( $args['date_from'] ) ) {
+			$where   .= ' AND date_created >= %s';
+			$params[] = (string) $args['date_from'];
+		}
 
-		return $wpdb->get_results( $wpdb->prepare( $sql, $params ) );
+		if ( ! empty( $args['date_to'] ) ) {
+			$where   .= ' AND date_created <= %s';
+			$params[] = (string) $args['date_to'];
+		}
+
+		return array( $where, $params );
 	}
 
 	/**
@@ -274,6 +302,15 @@ final class Directorist_Affiliate_Referral {
 		global $wpdb;
 
 		if ( ! in_array( $status, $this->statuses(), true ) ) {
+			return false;
+		}
+
+		// A paid referral is backed by a payout record. Moving it back to a
+		// payable status would queue it for a second payment, so only the
+		// reversal statuses (refund/cancel of the underlying order) may follow.
+		$current = $this->get( $referral_id );
+
+		if ( $current && 'paid' === $current->status && ! in_array( $status, array( 'refunded', 'cancelled' ), true ) ) {
 			return false;
 		}
 
@@ -300,28 +337,16 @@ final class Directorist_Affiliate_Referral {
 	}
 
 	/**
-	 * Count referrals.
+	 * Count referrals matching the same filters as list().
 	 *
-	 * @param string $status Optional status.
-	 * @param int    $affiliate_id Optional affiliate ID.
+	 * @param array<string,mixed> $args Query args (affiliate_id, status, referral_type, date_from, date_to).
 	 *
 	 * @return int
 	 */
-	public function count( string $status = '', int $affiliate_id = 0 ): int {
+	public function count( array $args = array() ): int {
 		global $wpdb;
 
-		$where  = '1=1';
-		$params = array();
-
-		if ( $status && in_array( $status, $this->statuses(), true ) ) {
-			$where   .= ' AND status = %s';
-			$params[] = $status;
-		}
-
-		if ( $affiliate_id ) {
-			$where   .= ' AND affiliate_id = %d';
-			$params[] = $affiliate_id;
-		}
+		list( $where, $params ) = $this->build_where( $args );
 
 		$sql = "SELECT COUNT(*) FROM {$this->table()} WHERE {$where}";
 
@@ -330,6 +355,38 @@ final class Directorist_Affiliate_Referral {
 		}
 
 		return (int) $wpdb->get_var( $sql );
+	}
+
+	/**
+	 * Per-affiliate referral statistics in one grouped query.
+	 *
+	 * Replaces per-row count()/sum_commission() calls on list screens.
+	 *
+	 * @return array<int,object> Affiliate-ID-indexed rows with total_referrals,
+	 *                           total_commission, pending_commission,
+	 *                           approved_commission, paid_commission.
+	 */
+	public function stats_by_affiliate(): array {
+		global $wpdb;
+
+		$rows = $wpdb->get_results(
+			"SELECT affiliate_id,
+				COUNT(*) AS total_referrals,
+				COALESCE(SUM(commission_amount), 0) AS total_commission,
+				COALESCE(SUM(CASE WHEN status = 'pending' THEN commission_amount ELSE 0 END), 0) AS pending_commission,
+				COALESCE(SUM(CASE WHEN status = 'approved' THEN commission_amount ELSE 0 END), 0) AS approved_commission,
+				COALESCE(SUM(CASE WHEN status = 'paid' THEN commission_amount ELSE 0 END), 0) AS paid_commission
+			FROM {$this->table()}
+			GROUP BY affiliate_id"
+		);
+
+		$stats = array();
+
+		foreach ( $rows as $row ) {
+			$stats[ (int) $row->affiliate_id ] = $row;
+		}
+
+		return $stats;
 	}
 
 	/**

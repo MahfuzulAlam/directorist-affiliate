@@ -33,6 +33,21 @@ final class Directorist_Affiliate_View {
 	}
 
 	/**
+	 * Include an admin partial from admin/views/partials/.
+	 *
+	 * Partials get only the context passed here — never the caller's scope —
+	 * so their contract stays explicit.
+	 *
+	 * @param string              $partial Partial file name, e.g. 'filter-bar.php'.
+	 * @param array<string,mixed> $context Variables exposed to the partial.
+	 *
+	 * @return void
+	 */
+	public static function partial( string $partial, array $context = array() ): void {
+		self::output( 'admin/views/partials/' . $partial, $context );
+	}
+
+	/**
 	 * Render a view and return its output as a string.
 	 *
 	 * @param string              $view Plugin-relative view path, e.g. 'public/views/registration-form.php'.

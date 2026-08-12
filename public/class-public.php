@@ -55,7 +55,10 @@ final class Directorist_Affiliate_Public {
 			DIRECTORIST_AFFILIATE_URL . 'assets/js/directorist-affiliate.js',
 			array(),
 			DIRECTORIST_AFFILIATE_VERSION,
-			true
+			array(
+				'in_footer' => true,
+				'strategy'  => 'defer',
+			)
 		);
 
 		wp_localize_script(

@@ -8,9 +8,25 @@
 defined( 'ABSPATH' ) || exit;
 
 /**
- * Sends simple notification emails.
+ * Sends simple notification emails, honoring the notification toggles.
  */
 final class Directorist_Affiliate_Email {
+	/**
+	 * Settings service.
+	 *
+	 * @var Directorist_Affiliate_Settings
+	 */
+	private $settings;
+
+	/**
+	 * Constructor.
+	 *
+	 * @param Directorist_Affiliate_Settings $settings Settings.
+	 */
+	public function __construct( Directorist_Affiliate_Settings $settings ) {
+		$this->settings = $settings;
+	}
+
 	/**
 	 * Notify admin about new application.
 	 *
@@ -19,6 +35,10 @@ final class Directorist_Affiliate_Email {
 	 * @return void
 	 */
 	public function new_application( $affiliate ): void {
+		if ( ! absint( $this->settings->get( 'notify_admin_application', 1 ) ) ) {
+			return;
+		}
+
 		wp_mail(
 			get_option( 'admin_email' ),
 			__( 'New affiliate application', 'directorist-affiliate' ),
@@ -40,6 +60,10 @@ final class Directorist_Affiliate_Email {
 	 * @return void
 	 */
 	public function application_status( $affiliate, string $status ): void {
+		if ( ! absint( $this->settings->get( 'notify_affiliate_status', 1 ) ) ) {
+			return;
+		}
+
 		$email = $this->affiliate_email( $affiliate );
 
 		if ( ! $email ) {
@@ -66,6 +90,10 @@ final class Directorist_Affiliate_Email {
 	 * @return void
 	 */
 	public function referral_created( $affiliate, $referral ): void {
+		if ( ! absint( $this->settings->get( 'notify_affiliate_referral', 1 ) ) ) {
+			return;
+		}
+
 		$email = $this->affiliate_email( $affiliate );
 
 		if ( ! $email ) {
@@ -79,7 +107,7 @@ final class Directorist_Affiliate_Email {
 				/* translators: 1: referral type, 2: commission amount. */
 				__( 'A new "%1$s" referral was recorded with a commission amount of %2$s.', 'directorist-affiliate' ),
 				Directorist_Affiliate_Plugin::instance()->referral->type_label( (string) $referral->referral_type ),
-				number_format_i18n( (float) $referral->commission_amount, 2 )
+				Directorist_Affiliate_Commission::format_money( (float) $referral->commission_amount )
 			)
 		);
 	}

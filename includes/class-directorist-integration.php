@@ -48,12 +48,6 @@ final class Directorist_Affiliate_Directorist_Integration {
 	 * @return void
 	 */
 	public function track_user_registration( int $user_id ): void {
-		$amount = $this->plugin->commission->registration_amount();
-
-		if ( null === $amount ) {
-			return;
-		}
-
 		$affiliate_id = $this->get_affiliate_id_for_user( $user_id );
 
 		if ( ! $affiliate_id ) {
@@ -67,6 +61,23 @@ final class Directorist_Affiliate_Directorist_Integration {
 		}
 
 		if ( ! empty( $affiliate->user_id ) && (int) $affiliate->user_id === $user_id ) {
+			return;
+		}
+
+		// Always persist the referred-user ↔ affiliate mapping, even when the
+		// registration commission event is disabled: later conversions (listing,
+		// plan, featured) and admin-side order updates attribute through it.
+		update_user_meta( $user_id, '_directorist_affiliate_id', $affiliate_id );
+
+		$visit_id = $this->plugin->tracking->get_cookie_visit_id();
+
+		if ( $visit_id ) {
+			update_user_meta( $user_id, '_directorist_affiliate_visit_id', $visit_id );
+		}
+
+		$amount = $this->plugin->commission->registration_amount();
+
+		if ( null === $amount ) {
 			return;
 		}
 
@@ -85,8 +96,6 @@ final class Directorist_Affiliate_Directorist_Integration {
 			return;
 		}
 
-		update_user_meta( $user_id, '_directorist_affiliate_id', $affiliate_id );
-		update_user_meta( $user_id, '_directorist_affiliate_visit_id', $this->plugin->tracking->get_cookie_visit_id() );
 		$this->plugin->tracking->mark_converted( $this->plugin->tracking->get_cookie_visit_id(), $user_id );
 
 		$referral = $this->plugin->referral->get( $referral_id );
@@ -167,7 +176,10 @@ final class Directorist_Affiliate_Directorist_Integration {
 		$user_id      = (int) get_post_field( 'post_author', $listing_id );
 		$affiliate_id = (int) get_user_meta( $user_id, '_directorist_affiliate_id', true );
 
-		if ( ! $affiliate_id ) {
+		// The tracking cookie belongs to the current browser session. Only fall
+		// back to it when that session is the listing author's own — a moderator
+		// publishing the listing must never attribute through their own cookie.
+		if ( ! $affiliate_id && get_current_user_id() === $user_id ) {
 			$affiliate_id = $this->plugin->tracking->get_cookie_affiliate_id();
 		}
 
@@ -183,6 +195,15 @@ final class Directorist_Affiliate_Directorist_Integration {
 
 		if ( ! empty( $affiliate->user_id ) && (int) $affiliate->user_id === $user_id ) {
 			return;
+		}
+
+		// Keep first-click semantics: persist the mapping only when none exists yet.
+		add_user_meta( $user_id, '_directorist_affiliate_id', $affiliate_id, true );
+
+		$cookie_visit_id = $this->plugin->tracking->get_cookie_visit_id();
+
+		if ( $cookie_visit_id ) {
+			add_user_meta( $user_id, '_directorist_affiliate_visit_id', $cookie_visit_id, true );
 		}
 
 		$referral_id = $this->plugin->referral->create(

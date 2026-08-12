@@ -198,8 +198,8 @@ final class Directorist_Affiliate_Plugin {
 		$this->tracking     = new Directorist_Affiliate_Tracking( $this->settings, $this->affiliate );
 		$this->commission   = new Directorist_Affiliate_Commission( $this->settings );
 		$this->payout       = new Directorist_Affiliate_Payout( $this->referral, $this->affiliate );
-		$this->email        = new Directorist_Affiliate_Email();
-		$this->registration = new Directorist_Affiliate_Registration( $this->affiliate, $this->email );
+		$this->email        = new Directorist_Affiliate_Email( $this->settings );
+		$this->registration = new Directorist_Affiliate_Registration( $this->affiliate, $this->email, $this->settings );
 		$this->shortcodes   = new Directorist_Affiliate_Shortcodes( $this );
 	}
 

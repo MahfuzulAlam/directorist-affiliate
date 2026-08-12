@@ -1,42 +1,49 @@
 /**
- * Directorist Affiliate — shared front-end and admin styles.
+ * Directorist Affiliate — front-end styles.
+ *
+ * Scoped to .directorist-affiliate-wrap so nothing leaks into the theme.
+ * Tokens are defined on the wrapper and inherit into every child.
  *
  * @package DirectoristAffiliate
  */
 
-.directorist-affiliate-wrap,
-.directorist-affiliate-admin {
-	--da-color-primary: #2271b1;
-	--da-color-primary-dark: #135e96;
-	--da-color-text: #1d2327;
-	--da-color-muted: #646970;
-	--da-color-border: #dcdcde;
-	--da-color-surface: #ffffff;
-	--da-color-soft: #f6f7f7;
-	--da-color-success: #00713b;
-	--da-color-success-bg: #edfaef;
-	--da-color-warning: #996800;
-	--da-color-warning-bg: #fcf9e8;
-	--da-color-danger: #b32d2e;
-	--da-color-danger-bg: #fcf0f1;
-	--da-color-info: #2271b1;
-	--da-color-info-bg: #f0f6fc;
-	--da-color-neutral: #50575e;
-	--da-color-neutral-bg: #f0f0f1;
-	--da-radius: 8px;
-	--da-shadow: 0 1px 2px rgba(16, 24, 40, 0.06), 0 1px 3px rgba(16, 24, 40, 0.1);
-
-	box-sizing: border-box;
-	color: var(--da-color-text);
-}
-
-.directorist-affiliate-wrap *,
-.directorist-affiliate-admin * {
-	box-sizing: border-box;
-}
-
 .directorist-affiliate-wrap {
-	max-width: 860px;
+	--da-accent: #2563eb;
+	--da-accent-hover: #1d4ed8;
+	--da-accent-soft: rgba(37, 99, 235, 0.08);
+	--da-text: #111827;
+	--da-text-muted: #6b7280;
+	--da-border: #e5e7eb;
+	--da-border-strong: #d1d5db;
+	--da-surface: #ffffff;
+	--da-surface-soft: #f9fafb;
+	--da-success: #047857;
+	--da-success-bg: #ecfdf5;
+	--da-warning: #b45309;
+	--da-warning-bg: #fffbeb;
+	--da-danger: #b91c1c;
+	--da-danger-bg: #fef2f2;
+	--da-info: #1d4ed8;
+	--da-info-bg: #eff6ff;
+	--da-neutral: #4b5563;
+	--da-neutral-bg: #f3f4f6;
+	--da-radius: 12px;
+	--da-radius-sm: 8px;
+	--da-space: 8px;
+	--da-shadow-sm: 0 1px 2px rgba(16, 24, 40, 0.05);
+	--da-shadow: 0 1px 3px rgba(16, 24, 40, 0.08), 0 8px 24px -12px rgba(16, 24, 40, 0.16);
+	--da-ring: 0 0 0 3px rgba(37, 99, 235, 0.18);
+	--da-transition: 0.18s cubic-bezier(0.4, 0, 0.2, 1);
+
+	box-sizing: border-box;
+	max-width: 960px;
+	color: var(--da-text);
+	font-size: 15px;
+	line-height: 1.55;
+}
+
+.directorist-affiliate-wrap * {
+	box-sizing: inherit;
 }
 
 /* ---------------------------------------------------------------------------
@@ -44,125 +51,244 @@
  * ------------------------------------------------------------------------- */
 
 .directorist-affiliate-notice {
-	margin: 12px 0;
-	padding: 12px 16px;
-	border-left: 4px solid var(--da-color-info);
-	border-radius: 0 var(--da-radius) var(--da-radius) 0;
-	background: var(--da-color-info-bg);
+	margin: calc(var(--da-space) * 1.5) 0;
+	padding: 14px 18px;
+	border: 1px solid var(--da-border);
+	border-inline-start: 3px solid var(--da-info);
+	border-radius: var(--da-radius-sm);
+	background: var(--da-info-bg);
 	font-size: 14px;
-	line-height: 1.5;
 }
 
 .directorist-affiliate-notice--success {
-	border-left-color: var(--da-color-success);
-	background: var(--da-color-success-bg);
+	border-inline-start-color: var(--da-success);
+	background: var(--da-success-bg);
+	color: var(--da-success);
 }
 
 .directorist-affiliate-notice--error {
-	border-left-color: var(--da-color-danger);
-	background: var(--da-color-danger-bg);
+	border-inline-start-color: var(--da-danger);
+	background: var(--da-danger-bg);
+	color: var(--da-danger);
 }
 
 /* ---------------------------------------------------------------------------
- * Stat summary cards
+ * Shared surfaces
  * ------------------------------------------------------------------------- */
 
-.directorist-affiliate-summary {
-	display: grid;
-	grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-	gap: 14px;
-	margin: 18px 0;
-}
-
-.directorist-affiliate-summary > div {
-	padding: 18px;
-	border: 1px solid var(--da-color-border);
+.directorist-affiliate-card {
+	margin: calc(var(--da-space) * 2) 0;
+	padding: 22px;
+	border: 1px solid var(--da-border);
 	border-radius: var(--da-radius);
-	background: var(--da-color-surface);
-	box-shadow: var(--da-shadow);
+	background: var(--da-surface);
+	box-shadow: var(--da-shadow-sm);
 }
 
-.directorist-affiliate-summary strong {
+.directorist-affiliate-card h3 {
+	margin: 0 0 6px;
+	font-size: 16px;
+	font-weight: 650;
+}
+
+.directorist-affiliate-section-title {
+	margin: calc(var(--da-space) * 4) 0 calc(var(--da-space) * 1.5);
+	font-size: 16px;
+	font-weight: 650;
+}
+
+.directorist-affiliate-hint {
+	margin: 6px 0 0;
+	color: var(--da-text-muted);
+	font-size: 13px;
+}
+
+.directorist-affiliate-muted {
+	color: var(--da-text-muted);
+}
+
+/* ---------------------------------------------------------------------------
+ * Dashboard hero
+ * ------------------------------------------------------------------------- */
+
+.directorist-affiliate-hero {
+	display: grid;
+	grid-template-columns: minmax(220px, 1fr) minmax(280px, 1.4fr);
+	gap: 24px;
+	align-items: center;
+	padding: 26px;
+	border: 1px solid var(--da-border);
+	border-radius: var(--da-radius);
+	background: linear-gradient(135deg, var(--da-accent-soft), var(--da-surface) 60%);
+	box-shadow: var(--da-shadow-sm);
+}
+
+.directorist-affiliate-hero-main {
+	display: flex;
+	flex-direction: column;
+	align-items: flex-start;
+	gap: 6px;
+}
+
+.directorist-affiliate-hero-label {
+	color: var(--da-text-muted);
+	font-size: 12px;
+	font-weight: 600;
+	letter-spacing: 0.06em;
+	text-transform: uppercase;
+}
+
+.directorist-affiliate-hero-value {
+	font-size: 34px;
+	font-weight: 700;
+	line-height: 1.1;
+	letter-spacing: -0.02em;
+}
+
+.directorist-affiliate-hero-link label {
 	display: block;
+	margin-bottom: 6px;
+	font-size: 13px;
+	font-weight: 600;
+}
+
+/* ---------------------------------------------------------------------------
+ * Stat tiles
+ * ------------------------------------------------------------------------- */
+
+.directorist-affiliate-stat-grid {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+	gap: 14px;
+	margin: calc(var(--da-space) * 2) 0;
+}
+
+.directorist-affiliate-stat {
+	padding: 18px;
+	border: 1px solid var(--da-border);
+	border-radius: var(--da-radius);
+	background: var(--da-surface);
+	box-shadow: var(--da-shadow-sm);
+	transition: box-shadow var(--da-transition), transform var(--da-transition);
+}
+
+.directorist-affiliate-stat:hover {
+	box-shadow: var(--da-shadow);
+	transform: translateY(-1px);
+}
+
+.directorist-affiliate-stat strong {
+	display: block;
+	color: var(--da-text-muted);
 	font-size: 11px;
 	font-weight: 600;
 	letter-spacing: 0.06em;
 	text-transform: uppercase;
-	color: var(--da-color-muted);
 }
 
-.directorist-affiliate-summary span {
+.directorist-affiliate-stat-value {
 	display: block;
 	margin-top: 8px;
 	font-size: 24px;
-	font-weight: 600;
-	line-height: 1.2;
-	color: var(--da-color-text);
+	font-weight: 700;
+	line-height: 1.15;
+	letter-spacing: -0.01em;
+}
+
+.directorist-affiliate-stat-meta {
+	display: block;
+	margin-top: 4px;
+	color: var(--da-text-muted);
+	font-size: 12px;
 }
 
 /* ---------------------------------------------------------------------------
- * Status badges
+ * Badges
  * ------------------------------------------------------------------------- */
 
 .directorist-affiliate-badge {
-	display: inline-block;
+	display: inline-flex;
+	align-items: center;
+	gap: 6px;
 	padding: 3px 10px;
 	border-radius: 999px;
+	background: var(--da-neutral-bg);
+	color: var(--da-neutral);
 	font-size: 12px;
 	font-weight: 600;
-	line-height: 1.5;
-	color: var(--da-color-neutral);
-	background: var(--da-color-neutral-bg);
+	line-height: 1.6;
+	white-space: nowrap;
+}
+
+.directorist-affiliate-badge::before {
+	content: "";
+	width: 6px;
+	height: 6px;
+	border-radius: 50%;
+	background: currentColor;
 }
 
 .directorist-affiliate-badge.is-approved,
 .directorist-affiliate-badge.is-converted {
-	color: var(--da-color-success);
-	background: var(--da-color-success-bg);
+	background: var(--da-success-bg);
+	color: var(--da-success);
 }
 
 .directorist-affiliate-badge.is-pending {
-	color: var(--da-color-warning);
-	background: var(--da-color-warning-bg);
+	background: var(--da-warning-bg);
+	color: var(--da-warning);
 }
 
-.directorist-affiliate-badge.is-rejected {
-	color: var(--da-color-danger);
-	background: var(--da-color-danger-bg);
+.directorist-affiliate-badge.is-rejected,
+.directorist-affiliate-badge.is-refunded {
+	background: var(--da-danger-bg);
+	color: var(--da-danger);
 }
 
 .directorist-affiliate-badge.is-paid {
-	color: var(--da-color-info);
-	background: var(--da-color-info-bg);
-}
-
-.directorist-affiliate-badge.is-suspended,
-.directorist-affiliate-badge.is-cancelled {
-	color: var(--da-color-neutral);
-	background: var(--da-color-neutral-bg);
-}
-
-.directorist-affiliate-badge.is-refunded {
-	color: var(--da-color-danger);
-	background: var(--da-color-danger-bg);
+	background: var(--da-info-bg);
+	color: var(--da-info);
 }
 
 /* ---------------------------------------------------------------------------
- * Front-end form
+ * Forms
  * ------------------------------------------------------------------------- */
 
 .directorist-affiliate-form {
-	padding: 24px;
-	border: 1px solid var(--da-color-border);
+	padding: 28px;
+	border: 1px solid var(--da-border);
 	border-radius: var(--da-radius);
-	background: var(--da-color-surface);
-	box-shadow: var(--da-shadow);
+	background: var(--da-surface);
+	box-shadow: var(--da-shadow-sm);
+}
+
+.directorist-affiliate-form-head {
+	margin-bottom: 22px;
+	padding-bottom: 18px;
+	border-bottom: 1px solid var(--da-border);
+}
+
+.directorist-affiliate-form-head h3 {
+	margin: 0 0 4px;
+	font-size: 20px;
+	font-weight: 700;
+	letter-spacing: -0.01em;
+}
+
+.directorist-affiliate-form-head p {
+	margin: 0;
+	color: var(--da-text-muted);
+	font-size: 14px;
 }
 
 .directorist-affiliate-form-grid {
 	display: grid;
 	grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
 	gap: 0 20px;
+}
+
+.directorist-affiliate-form-full {
+	grid-column: 1 / -1;
 }
 
 .directorist-affiliate-form p {
@@ -172,12 +298,12 @@
 .directorist-affiliate-form label {
 	display: block;
 	margin-bottom: 6px;
-	font-size: 14px;
+	font-size: 13px;
 	font-weight: 600;
 }
 
 .directorist-affiliate-form .required {
-	color: var(--da-color-danger);
+	color: var(--da-danger);
 }
 
 .directorist-affiliate-form input[type="text"],
@@ -185,45 +311,69 @@
 .directorist-affiliate-form input[type="url"],
 .directorist-affiliate-form textarea {
 	width: 100%;
-	padding: 9px 12px;
-	border: 1px solid var(--da-color-border);
-	border-radius: 6px;
-	background: var(--da-color-surface);
+	padding: 11px 14px;
+	border: 1px solid var(--da-border-strong);
+	border-radius: var(--da-radius-sm);
+	background: var(--da-surface);
+	color: var(--da-text);
+	font-family: inherit;
 	font-size: 14px;
 	line-height: 1.5;
-	transition: border-color 0.15s ease, box-shadow 0.15s ease;
+	transition: border-color var(--da-transition), box-shadow var(--da-transition);
+}
+
+.directorist-affiliate-form input::placeholder,
+.directorist-affiliate-form textarea::placeholder {
+	color: #9ca3af;
 }
 
 .directorist-affiliate-form input:focus,
 .directorist-affiliate-form textarea:focus {
 	outline: none;
-	border-color: var(--da-color-primary);
-	box-shadow: 0 0 0 2px rgba(34, 113, 177, 0.18);
+	border-color: var(--da-accent);
+	box-shadow: var(--da-ring);
 }
 
-.directorist-affiliate-form button[type="submit"] {
-	display: inline-block;
-	padding: 10px 22px;
+.directorist-affiliate-form-actions {
+	margin-bottom: 0;
+}
+
+.directorist-affiliate-btn {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	min-height: 44px;
+	padding: 0 26px;
 	border: 0;
-	border-radius: 6px;
-	background: var(--da-color-primary);
+	border-radius: var(--da-radius-sm);
+	background: var(--da-accent);
 	color: #fff;
+	font-family: inherit;
 	font-size: 14px;
 	font-weight: 600;
+	text-decoration: none;
 	cursor: pointer;
-	transition: background 0.15s ease;
+	transition: background var(--da-transition), transform var(--da-transition), box-shadow var(--da-transition);
 }
 
-.directorist-affiliate-form button[type="submit"]:hover,
-.directorist-affiliate-form button[type="submit"]:focus {
-	background: var(--da-color-primary-dark);
+.directorist-affiliate-btn:hover,
+.directorist-affiliate-btn:focus {
+	background: var(--da-accent-hover);
 	color: #fff;
+	box-shadow: 0 4px 12px -4px rgba(37, 99, 235, 0.5);
+	transform: translateY(-1px);
 }
 
-.directorist-affiliate-form button[type="submit"][disabled],
-.directorist-affiliate-admin-form button[type="submit"][disabled] {
-	opacity: 0.6;
-	cursor: wait;
+.directorist-affiliate-btn:focus-visible {
+	outline: 2px solid var(--da-accent);
+	outline-offset: 2px;
+}
+
+.directorist-affiliate-btn[disabled] {
+	opacity: 0.65;
+	cursor: progress;
+	transform: none;
+	box-shadow: none;
 }
 
 /* Honeypot field — visually removed, still present for bots. */
@@ -237,333 +387,233 @@
 }
 
 /* ---------------------------------------------------------------------------
- * Front-end dashboard
+ * Referral link + link builder
  * ------------------------------------------------------------------------- */
-
-.directorist-affiliate-dashboard h3 {
-	margin: 28px 0 12px;
-}
 
 .directorist-affiliate-link-group {
 	display: flex;
 	flex-wrap: wrap;
 	gap: 8px;
 	align-items: stretch;
-	margin-top: 6px;
 }
 
 .directorist-affiliate-link-group input[readonly] {
-	flex: 1 1 280px;
+	flex: 1 1 260px;
 	min-width: 0;
-	padding: 9px 12px;
-	border: 1px solid var(--da-color-border);
-	border-radius: 6px;
-	background: var(--da-color-soft);
+	padding: 11px 14px;
+	border: 1px solid var(--da-border-strong);
+	border-radius: var(--da-radius-sm);
+	background: var(--da-surface-soft);
+	color: var(--da-text);
+	font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
 	font-size: 13px;
-	color: var(--da-color-text);
+}
+
+.directorist-affiliate-link-group input[readonly]:focus {
+	outline: none;
+	border-color: var(--da-accent);
+	box-shadow: var(--da-ring);
 }
 
 .directorist-affiliate-copy {
-	padding: 9px 16px;
-	border: 1px solid var(--da-color-primary);
-	border-radius: 6px;
-	background: var(--da-color-surface);
-	color: var(--da-color-primary);
+	display: inline-flex;
+	align-items: center;
+	gap: 6px;
+	padding: 0 20px;
+	min-height: 44px;
+	border: 1px solid var(--da-accent);
+	border-radius: var(--da-radius-sm);
+	background: var(--da-surface);
+	color: var(--da-accent);
+	font-family: inherit;
 	font-size: 13px;
 	font-weight: 600;
 	cursor: pointer;
-	transition: background 0.15s ease, color 0.15s ease;
+	transition: background var(--da-transition), color var(--da-transition), border-color var(--da-transition);
 }
 
 .directorist-affiliate-copy:hover,
 .directorist-affiliate-copy:focus {
-	background: var(--da-color-primary);
+	background: var(--da-accent);
 	color: #fff;
+}
+
+.directorist-affiliate-copy:focus-visible {
+	outline: 2px solid var(--da-accent);
+	outline-offset: 2px;
 }
 
 .directorist-affiliate-copy.is-copied {
-	border-color: var(--da-color-success);
-	background: var(--da-color-success);
+	border-color: var(--da-success);
+	background: var(--da-success);
 	color: #fff;
 }
 
+.directorist-affiliate-link-builder-row {
+	margin: 12px 0;
+}
+
+.directorist-affiliate-link-builder select {
+	width: 100%;
+	max-width: 320px;
+	padding: 10px 12px;
+	border: 1px solid var(--da-border-strong);
+	border-radius: var(--da-radius-sm);
+	background: var(--da-surface);
+	font-family: inherit;
+	font-size: 14px;
+}
+
+.directorist-affiliate-link-builder select:focus {
+	outline: none;
+	border-color: var(--da-accent);
+	box-shadow: var(--da-ring);
+}
+
+.directorist-affiliate-inline-link {
+	font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+	word-break: break-all;
+}
+
 /* ---------------------------------------------------------------------------
- * Tables (front-end + admin extras)
+ * Tables
  * ------------------------------------------------------------------------- */
 
-.directorist-affiliate-table-wrap {
-	overflow-x: auto;
-	-webkit-overflow-scrolling: touch;
+.directorist-affiliate-table-card {
+	padding: 0;
+	overflow: hidden;
 }
 
 .directorist-affiliate-table {
 	width: 100%;
 	border-collapse: collapse;
-	border: 1px solid var(--da-color-border);
-	border-radius: var(--da-radius);
-	background: var(--da-color-surface);
 	font-size: 14px;
 }
 
 .directorist-affiliate-table th,
 .directorist-affiliate-table td {
-	padding: 12px 14px;
-	border-bottom: 1px solid var(--da-color-border);
-	text-align: left;
+	padding: 13px 18px;
+	border-bottom: 1px solid var(--da-border);
+	text-align: start;
 	vertical-align: middle;
 }
 
 .directorist-affiliate-table thead th {
-	font-size: 12px;
-	font-weight: 600;
-	letter-spacing: 0.04em;
+	background: var(--da-surface-soft);
+	color: var(--da-text-muted);
+	font-size: 11px;
+	font-weight: 650;
+	letter-spacing: 0.06em;
 	text-transform: uppercase;
-	color: var(--da-color-muted);
-	background: var(--da-color-soft);
+	white-space: nowrap;
+}
+
+.directorist-affiliate-table .is-num {
+	text-align: end;
+	font-variant-numeric: tabular-nums;
 }
 
 .directorist-affiliate-table tbody tr:last-child td {
 	border-bottom: 0;
 }
 
+.directorist-affiliate-table tbody tr {
+	transition: background var(--da-transition);
+}
+
 .directorist-affiliate-table tbody tr:hover td {
-	background: var(--da-color-soft);
+	background: var(--da-surface-soft);
 }
 
-/* ---------------------------------------------------------------------------
- * Admin — tabbed shell
- * ------------------------------------------------------------------------- */
-
-.directorist-affiliate-shell {
-	max-width: 1280px;
-	margin-top: 20px;
-	padding: 0 28px 28px;
-	border: 1px solid var(--da-color-border);
-	border-radius: 12px;
-	background: var(--da-color-surface);
-	box-shadow: var(--da-shadow);
+.directorist-affiliate-empty {
+	padding: 32px 18px;
+	text-align: center;
+	color: var(--da-text-muted);
 }
 
-.directorist-affiliate-admin-header {
-	display: flex;
-	flex-wrap: wrap;
-	align-items: baseline;
-	gap: 4px 14px;
-	padding-top: 24px;
-}
-
-.directorist-affiliate-admin .directorist-affiliate-admin-header h1 {
-	display: inline-flex;
-	align-items: center;
-	gap: 10px;
+.directorist-affiliate-empty p {
 	margin: 0;
-	padding: 0;
-	font-size: 24px;
-	font-weight: 700;
-	color: var(--da-color-text);
-}
-
-.directorist-affiliate-version {
-	padding: 3px 10px;
-	border-radius: 999px;
-	background: var(--da-color-info-bg);
-	color: var(--da-color-info);
-	font-size: 11px;
-	font-weight: 600;
-	letter-spacing: 0.03em;
-}
-
-.directorist-affiliate-admin-tagline {
-	margin: 0;
-	color: var(--da-color-muted);
-	font-size: 13px;
-}
-
-.directorist-affiliate-tab-nav {
-	display: flex;
-	flex-wrap: wrap;
-	gap: 2px;
-	margin-top: 18px;
-	border-bottom: 1px solid var(--da-color-border);
-}
-
-.directorist-affiliate-tab-link {
-	display: inline-flex;
-	align-items: center;
-	gap: 7px;
-	margin-bottom: -1px;
-	padding: 11px 16px;
-	border-bottom: 2px solid transparent;
-	border-radius: 6px 6px 0 0;
-	color: var(--da-color-muted);
-	font-size: 13px;
-	font-weight: 600;
-	text-decoration: none;
-	transition: color 0.15s ease, background 0.15s ease, border-color 0.15s ease;
-}
-
-.directorist-affiliate-tab-link .dashicons {
-	font-size: 16px;
-	width: 16px;
-	height: 16px;
-}
-
-.directorist-affiliate-tab-link:hover {
-	color: var(--da-color-primary);
-	background: var(--da-color-soft);
-}
-
-.directorist-affiliate-tab-link:focus {
-	box-shadow: none;
-	outline: none;
-}
-
-.directorist-affiliate-tab-link:focus-visible {
-	outline: 2px solid var(--da-color-primary);
-	outline-offset: -2px;
-}
-
-.directorist-affiliate-tab-link.is-active {
-	color: var(--da-color-primary);
-	border-bottom-color: var(--da-color-primary);
-}
-
-.directorist-affiliate-tab-panel {
-	padding-top: 22px;
-}
-
-/* Settings sub-tabs */
-
-.directorist-affiliate-subtab-nav {
-	display: none;
-	flex-wrap: wrap;
-	gap: 8px;
-	margin-bottom: 6px;
-}
-
-.directorist-affiliate-settings-tabs.is-tabbed .directorist-affiliate-subtab-nav {
-	display: flex;
-}
-
-.directorist-affiliate-subtab-link {
-	padding: 7px 16px;
-	border: 1px solid var(--da-color-border);
-	border-radius: 999px;
-	background: var(--da-color-surface);
-	color: var(--da-color-muted);
-	font-size: 13px;
-	font-weight: 600;
-	cursor: pointer;
-	transition: color 0.15s ease, background 0.15s ease, border-color 0.15s ease;
-}
-
-.directorist-affiliate-subtab-link:hover {
-	color: var(--da-color-primary);
-	border-color: var(--da-color-primary);
-}
-
-.directorist-affiliate-subtab-link:focus-visible {
-	outline: 2px solid var(--da-color-primary);
-	outline-offset: 2px;
-}
-
-.directorist-affiliate-subtab-link.is-active {
-	background: var(--da-color-primary);
-	border-color: var(--da-color-primary);
-	color: #fff;
-}
-
-.directorist-affiliate-settings-tabs.is-tabbed .directorist-affiliate-settings-section {
-	display: none;
-}
-
-.directorist-affiliate-settings-tabs.is-tabbed .directorist-affiliate-settings-section.is-active {
-	display: block;
-}
-
-/* The active pill already names the section when tabbed. */
-.directorist-affiliate-settings-tabs.is-tabbed .directorist-affiliate-settings-section > h2 {
-	display: none;
-}
-
-.directorist-affiliate-tab-panel > h2:first-child,
-.directorist-affiliate-tab-panel > form > h2:first-of-type {
-	margin-top: 0;
+	font-size: 14px;
 }
 
 /* ---------------------------------------------------------------------------
- * Admin
+ * Responsive
  * ------------------------------------------------------------------------- */
 
-.directorist-affiliate-admin .directorist-affiliate-summary span {
-	font-size: 26px;
-}
-
-.directorist-affiliate-detail {
-	max-width: 960px;
-	margin: 18px 0;
-	padding: 20px;
-	border: 1px solid var(--da-color-border);
-	border-radius: var(--da-radius);
-	background: var(--da-color-surface);
-	box-shadow: var(--da-shadow);
-}
-
-.directorist-affiliate-detail h2 {
-	margin-top: 0;
-}
-
-.directorist-affiliate-admin-grid {
-	display: grid;
-	grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-	gap: 4px 16px;
-}
-
-.directorist-affiliate-admin-form label {
-	display: block;
-	margin-bottom: 6px;
-	font-weight: 600;
-}
-
-.directorist-affiliate-admin-form .required {
-	color: var(--da-color-danger);
-}
-
-.directorist-affiliate-admin-form input,
-.directorist-affiliate-admin-form select,
-.directorist-affiliate-admin-form textarea {
-	width: 100%;
-	max-width: 100%;
-}
-
-.directorist-affiliate-admin .widefat.striped {
-	border-radius: var(--da-radius);
-	overflow: hidden;
-}
-
-.directorist-affiliate-admin .widefat th {
-	font-weight: 600;
-}
-
-.directorist-affiliate-row-actions {
-	white-space: nowrap;
-}
-
-/* ---------------------------------------------------------------------------
- * Small screens
- * ------------------------------------------------------------------------- */
-
-@media (max-width: 600px) {
-	.directorist-affiliate-summary {
-		grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
-		gap: 10px;
+@media (max-width: 782px) {
+	.directorist-affiliate-hero {
+		grid-template-columns: 1fr;
+		gap: 18px;
 	}
 
-	.directorist-affiliate-summary span {
-		font-size: 20px;
+	.directorist-affiliate-hero-value {
+		font-size: 28px;
 	}
 
 	.directorist-affiliate-form {
-		padding: 16px;
+		padding: 20px;
+	}
+
+	/* Stacked card rows: each cell labelled by its header. */
+	.directorist-affiliate-table,
+	.directorist-affiliate-table tbody,
+	.directorist-affiliate-table tr,
+	.directorist-affiliate-table td {
+		display: block;
+		width: 100%;
+	}
+
+	.directorist-affiliate-table thead {
+		position: absolute;
+		width: 1px;
+		height: 1px;
+		overflow: hidden;
+		clip-path: inset(50%);
+		white-space: nowrap;
+	}
+
+	.directorist-affiliate-table tr {
+		padding: 6px 0;
+		border-bottom: 1px solid var(--da-border);
+	}
+
+	.directorist-affiliate-table tr:last-child {
+		border-bottom: 0;
+	}
+
+	.directorist-affiliate-table td {
+		display: flex;
+		justify-content: space-between;
+		gap: 16px;
+		padding: 8px 18px;
+		border-bottom: 0;
+		text-align: end;
+	}
+
+	.directorist-affiliate-table td::before {
+		content: attr(data-label);
+		color: var(--da-text-muted);
+		font-size: 12px;
+		font-weight: 600;
+		text-align: start;
+	}
+
+	.directorist-affiliate-table td:not([data-label]) {
+		display: block;
+		text-align: start;
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.directorist-affiliate-wrap *,
+	.directorist-affiliate-wrap *::before,
+	.directorist-affiliate-wrap *::after {
+		transition-duration: 0.01ms !important;
+		animation-duration: 0.01ms !important;
+	}
+
+	.directorist-affiliate-stat:hover,
+	.directorist-affiliate-btn:hover {
+		transform: none;
 	}
 }
