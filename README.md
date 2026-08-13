@@ -6,7 +6,7 @@ Affiliate tracking and fixed-commission referral system for [Directorist](https:
 
 | Item | Value |
 | --- | --- |
-| Version | 1.4.1 (plugin) / 0.2.0 (DB schema) |
+| Version | 1.5.0 (plugin) / 0.2.0 (DB schema) |
 | Author | [wpXplore](https://wpxplore.com) |
 | Website | https://wpxplore.com/tools/directorist-affiliate/ |
 | Requires | WordPress 6.3+, PHP 7.4+ |
@@ -229,7 +229,9 @@ Tab rendering lives in `Directorist_Affiliate_Admin`; all mutations live in `Dir
 
 **Directorist dashboard tab** — The same dashboard renders inside Directorist's user dashboard as an "Affiliate" tab (icon `las la-handshake`) via the `directorist_dashboard_tabs` filter.
 
-The registration shortcode also respects the application gates: it shows a "closed" notice when `enable_applications` is off, a login prompt when `applications_require_login` is on, and an "already applied" notice for users who have an application.
+The registration shortcode also respects the application gates: it shows a "closed" notice when `enable_applications` is off and a login prompt when `applications_require_login` is on.
+
+**Existing affiliates are redirected to their dashboard.** A logged-in user who already has an affiliate record and opens a page containing `[directorist_affiliate_registration]` is sent to the dashboard instead of being shown a form they cannot use. The redirect runs on `template_redirect` (priority 5) — a shortcode renders inside `the_content`, by which point headers are already sent — and bails on any of: no affiliate record, a POST in flight, a page that also hosts the dashboard shortcode, or no dashboard destination. The destination is `dashboard_page` if set, else Directorist's own user dashboard (which carries the Affiliate tab), and is filterable via `directorist_affiliate_dashboard_url`. When no destination exists the form falls back to an "already applied" notice, linking to the dashboard when one is known.
 
 Views are rendered with a tiny `ob_start()`/`extract()` template loader. Assets: `assets/css/directorist-affiliate.css` (front end, registered as `directorist-affiliate`), `assets/css/directorist-affiliate-admin.css` (admin only), and one vanilla JS file shared by both, enqueued with `strategy => defer`.
 
@@ -262,6 +264,7 @@ Stored in one option, `directorist_affiliate_settings` (autoload off):
 | `ref_param` | `ref` | Query-string parameter for referral links |
 | `cookie_duration` | `30` | Cookie lifetime in days (clamped to 1–3650) |
 | `enable_applications` | `1` | Accept new affiliate applications (form shows a "closed" notice when off) |
+| `dashboard_page` | `0` | Page holding `[directorist_affiliate_dashboard]`. Existing affiliates who open the application page are redirected here; `0` falls back to Directorist's user dashboard |
 | `applications_require_login` | `0` | Require a WordPress account to apply; when off, applying creates one |
 | `enable_registration` | `1` | Pay commission on referred user registration |
 | `registration_amount` | `0.00` | Fixed amount per registration |
@@ -312,11 +315,18 @@ Stored in one option, `directorist_affiliate_settings` (autoload off):
 
 Actions: `directorist_affiliate_created( $affiliate_id, $status )`, `directorist_affiliate_status_changed( $affiliate_id, $status )`, `directorist_affiliate_referral_created( $referral_id, $affiliate_id, $type )`, `directorist_affiliate_referral_reversed( $referral_id, $new_status, $order_status )`, `directorist_affiliate_payout_recorded( $payout_id, $affiliate_id, $amount, $referral_ids )`.
 
-Filters: `directorist_affiliate_should_track( $should_track, $code )` (veto tracking, e.g. before cookie consent), `directorist_affiliate_visit_dedupe_window( $seconds )`, `directorist_affiliate_registration_commission( $amount )`, `directorist_affiliate_listing_commission( $amount, $trigger )`, `directorist_affiliate_plan_commission( $amount, $order_total )`, `directorist_affiliate_featured_commission( $amount, $order_total )`, `directorist_affiliate_link_targets( $targets, $code )` (destinations offered by the dashboard link builder).
+Filters: `directorist_affiliate_dashboard_url( $url )` (where existing affiliates are sent), `directorist_affiliate_program_terms( $terms )`, `directorist_affiliate_should_track( $should_track, $code )` (veto tracking, e.g. before cookie consent), `directorist_affiliate_visit_dedupe_window( $seconds )`, `directorist_affiliate_registration_commission( $amount )`, `directorist_affiliate_listing_commission( $amount, $trigger )`, `directorist_affiliate_plan_commission( $amount, $order_total )`, `directorist_affiliate_featured_commission( $amount, $order_total )`, `directorist_affiliate_link_targets( $targets, $code )` (destinations offered by the dashboard link builder).
 
 Usage examples are in [DOCUMENTATION.md](DOCUMENTATION.md#developer-reference).
 
 ## Changelog
+
+### 1.5.0 — 2026-08-13
+
+- **Existing affiliates now land on their dashboard, not the application form.** A logged-in user who already has an affiliate record and opens the application page is redirected to the dashboard. Previously they were shown a notice on a page they had no further use for.
+- New **Affiliate dashboard page** setting (Settings → General) names the page holding `[directorist_affiliate_dashboard]`. Left unset, the redirect falls back to Directorist's user dashboard, which carries the Affiliate tab; with neither available, no redirect happens and the "already applied" notice links to the dashboard where one is known.
+- The redirect runs on `template_redirect` rather than during shortcode rendering, since a shortcode renders inside `the_content` when headers have already been sent. It deliberately stands down for a POST in flight (so a submission completes), for a page that also hosts the dashboard shortcode, and when the destination is the page already being viewed — including the trailing-slash variant.
+- Destination is filterable via `directorist_affiliate_dashboard_url`.
 
 ### 1.4.1 — 2026-08-13
 

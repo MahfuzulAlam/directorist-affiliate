@@ -47,6 +47,83 @@ final class Directorist_Affiliate_Shortcodes {
 		add_shortcode( 'directorist_affiliate_dashboard', array( $this, 'dashboard_shortcode' ) );
 		add_shortcode( 'directorist_affiliate_link', array( $this, 'link_shortcode' ) );
 		add_action( 'template_redirect', array( $this, 'capture_registration_post' ) );
+		add_action( 'template_redirect', array( $this, 'redirect_existing_affiliate' ), 5 );
+	}
+
+	/**
+	 * Send an existing affiliate from the application page to their dashboard.
+	 *
+	 * Runs on template_redirect because a shortcode renders inside the_content,
+	 * by which point headers are already sent.
+	 *
+	 * @return void
+	 */
+	public function redirect_existing_affiliate(): void {
+		if ( is_admin() || wp_doing_ajax() || ! is_singular() || ! is_user_logged_in() ) {
+			return;
+		}
+
+		// A POST is a submission in flight; let it finish before redirecting.
+		if ( ! empty( $_POST ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Missing
+			return;
+		}
+
+		$post = get_post();
+
+		if ( ! $post || ! has_shortcode( (string) $post->post_content, 'directorist_affiliate_registration' ) ) {
+			return;
+		}
+
+		// A page showing both blocks already gives them their dashboard.
+		if ( has_shortcode( (string) $post->post_content, 'directorist_affiliate_dashboard' ) ) {
+			return;
+		}
+
+		if ( ! $this->plugin->affiliate->get_by_user_id( get_current_user_id() ) ) {
+			return;
+		}
+
+		$url = $this->dashboard_url();
+
+		// Never bounce a page to itself.
+		if ( ! $url || untrailingslashit( $url ) === untrailingslashit( (string) get_permalink( $post ) ) ) {
+			return;
+		}
+
+		wp_safe_redirect( $url );
+		exit;
+	}
+
+	/**
+	 * URL of the page carrying the affiliate dashboard.
+	 *
+	 * Prefers the page chosen in settings, then Directorist's own user
+	 * dashboard, which hosts the Affiliate tab.
+	 *
+	 * @return string Empty string when no dashboard destination exists.
+	 */
+	public function dashboard_url(): string {
+		$page_id = absint( $this->plugin->settings->get( 'dashboard_page', 0 ) );
+		$url     = '';
+
+		if ( $page_id && 'publish' === get_post_status( $page_id ) ) {
+			$url = (string) get_permalink( $page_id );
+		}
+
+		if ( ! $url && function_exists( 'get_directorist_option' ) ) {
+			$directorist_dashboard = absint( get_directorist_option( 'user_dashboard', 0 ) );
+
+			if ( $directorist_dashboard ) {
+				$url = (string) get_permalink( $directorist_dashboard );
+			}
+		}
+
+		/**
+		 * Filters where affiliates are sent to view their dashboard.
+		 *
+		 * @param string $url Dashboard URL, or '' when none is configured.
+		 */
+		return (string) apply_filters( 'directorist_affiliate_dashboard_url', $url );
 	}
 
 	/**
@@ -86,11 +163,26 @@ final class Directorist_Affiliate_Shortcodes {
 			);
 		}
 
-		// An approved or pending applicant sees their status instead of the form.
+		// An existing applicant is normally redirected on template_redirect;
+		// this covers the cases a redirect cannot reach — no dashboard page
+		// configured, or the shortcode rendered outside post content.
 		if ( is_user_logged_in() ) {
 			$existing = $this->plugin->affiliate->get_by_user_id( get_current_user_id() );
 
 			if ( $existing ) {
+				$dashboard = $this->dashboard_url();
+
+				if ( $dashboard ) {
+					return $this->notice(
+						sprintf(
+							/* translators: %s: link to the affiliate dashboard. */
+							__( 'You have already applied to the affiliate program. %s', 'directorist-affiliate' ),
+							'<a href="' . esc_url( $dashboard ) . '">' . esc_html__( 'Go to your dashboard', 'directorist-affiliate' ) . '</a>'
+						),
+						true
+					);
+				}
+
 				return $this->notice( __( 'You have already applied to the affiliate program. Your dashboard shows the current status.', 'directorist-affiliate' ) );
 			}
 		}

@@ -127,6 +127,26 @@ $featured_available = Directorist_Affiliate_Commission::is_featured_monetization
 					</div>
 				</div>
 
+				<div class="directorist-affiliate-field">
+					<div class="directorist-affiliate-field-label">
+						<label for="directorist-affiliate-dashboard-page"><?php esc_html_e( 'Affiliate dashboard page', 'directorist-affiliate' ); ?></label>
+						<p class="description"><?php esc_html_e( 'The page holding the [directorist_affiliate_dashboard] shortcode. Affiliates who have already applied are sent here instead of the application form. Leave unset to use the Directorist user dashboard.', 'directorist-affiliate' ); ?></p>
+					</div>
+					<div class="directorist-affiliate-field-control">
+						<?php
+						wp_dropdown_pages(
+							array(
+								'name'              => 'dashboard_page',
+								'id'                => 'directorist-affiliate-dashboard-page',
+								'selected'          => absint( $settings['dashboard_page'] ),
+								'show_option_none'  => __( '— Use the Directorist dashboard —', 'directorist-affiliate' ),
+								'option_none_value' => '0',
+							)
+						);
+						?>
+					</div>
+				</div>
+
 				<div class="directorist-affiliate-field is-toggle">
 					<div class="directorist-affiliate-field-label">
 						<label for="directorist-affiliate-require-login"><?php esc_html_e( 'Require login to apply', 'directorist-affiliate' ); ?></label>

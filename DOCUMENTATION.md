@@ -84,7 +84,7 @@ Go to **Directorist → Affiliate → Settings**. Enter a fixed amount for regis
 Create a page and add the shortcode `[directorist_affiliate_registration]`.
 
 **Step 3 — Publish an "Affiliate Area" page.**
-Create a second page with `[directorist_affiliate_dashboard]`. (The same dashboard also shows up automatically as an **Affiliate** tab in the Directorist user dashboard, so this page is optional but nice to link in menus.)
+Create a second page with `[directorist_affiliate_dashboard]`, then select it under **Settings → General → Affiliate dashboard page**. Two things follow from that: affiliates who revisit your application page are sent straight to their dashboard, and the "already applied" message can link there. (The same dashboard also appears automatically as an **Affiliate** tab in the Directorist user dashboard, so the page is optional — but naming it makes the redirect land somewhere you chose.)
 
 **Step 4 — Approve your first applicant.**
 When someone applies, open **Directorist → Affiliate → Affiliates**, review their row, and click **Approve**. Their status badge flips to green and they receive an email — their referral link is now live.
@@ -190,6 +190,7 @@ Covered in full in the next section.
 | **Cookie duration** | Days a referral is remembered (default 30) | Longer = more generous attribution window |
 | **Attribution model** | **First click** (default) or **Last click** | First click: the first affiliate keeps the credit until the cookie expires — referrals can't be "stolen". Last click: the newest link wins |
 | **Accept applications** | Whether the application form takes new submissions | Off = the form shows a friendly "applications are closed" notice; existing affiliates keep earning |
+| **Affiliate dashboard page** | The page you put `[directorist_affiliate_dashboard]` on | Anyone who has already applied and lands on your application page is sent straight here, instead of seeing a form they can't use. Leave it unset and they go to the Directorist user dashboard instead |
 | **Require login to apply** | Applicants must already have an account | Off (default) = applying creates a WordPress account automatically. Turn **on** if you don't want your application page creating accounts |
 | **Anonymize visitor IP** | Strips the last IP octet in the Visits log | Turn on for GDPR-friendly logging |
 
@@ -247,7 +248,7 @@ What visitors experience:
 - A form grouped into **About you**, **How you will promote us**, and **Getting paid**, with required fields marked by a red asterisk.
 - Submitting happens **instantly, without a page reload** — the button switches to *"Submitting…"*, then either a green success notice replaces the form or a red notice explains what to fix (nothing they typed is lost).
 - **Logged-out visitors** get a WordPress account created automatically and receive the standard set-password email. If their email already has an account, they're asked to log in first. Prefer not to have accounts created this way? Turn on **Require login to apply** in Settings → General.
-- **Logged-in users** see their name and email pre-filled — and if they've already applied, they see their status instead of an empty form.
+- **Logged-in users** see their name and email pre-filled. If they have already applied, they are taken to their dashboard rather than shown a form they cannot submit — set your dashboard page in Settings so they land where you want.
 - One application per person. Bots are filtered by an invisible honeypot, and guest applications are rate-limited per network, so the form can't be used to mass-create accounts.
 - When **Accept applications** is off, the page shows a polite "applications are closed" notice instead of the form.
 

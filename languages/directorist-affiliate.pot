@@ -2,14 +2,14 @@
 # This file is distributed under the GPL v2 or later.
 msgid ""
 msgstr ""
-"Project-Id-Version: Directorist - Affiliate 1.4.0\n"
+"Project-Id-Version: Directorist - Affiliate 1.5.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/directorist-affiliate\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-08-13T06:23:38+00:00\n"
+"POT-Creation-Date: 2026-08-13T06:50:37+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: directorist-affiliate\n"
@@ -299,7 +299,7 @@ msgstr ""
 #: admin/views/dashboard.php:65
 #: admin/views/payouts-history.php:65
 #: admin/views/settings.php:20
-#: admin/views/settings.php:161
+#: admin/views/settings.php:181
 msgid "Commissions"
 msgstr ""
 
@@ -619,17 +619,17 @@ msgid "General"
 msgstr ""
 
 #: admin/views/settings.php:24
-#: admin/views/settings.php:290
+#: admin/views/settings.php:310
 msgid "Payout"
 msgstr ""
 
 #: admin/views/settings.php:28
-#: admin/views/settings.php:316
+#: admin/views/settings.php:336
 msgid "Notifications"
 msgstr ""
 
 #: admin/views/settings.php:32
-#: admin/views/settings.php:364
+#: admin/views/settings.php:384
 msgid "Advanced"
 msgstr ""
 
@@ -652,16 +652,16 @@ msgstr ""
 
 #: admin/views/settings.php:71
 #: admin/views/settings.php:125
-#: admin/views/settings.php:153
-#: admin/views/settings.php:178
-#: admin/views/settings.php:197
-#: admin/views/settings.php:232
-#: admin/views/settings.php:259
-#: admin/views/settings.php:282
-#: admin/views/settings.php:328
-#: admin/views/settings.php:342
-#: admin/views/settings.php:356
+#: admin/views/settings.php:173
+#: admin/views/settings.php:198
+#: admin/views/settings.php:217
+#: admin/views/settings.php:252
+#: admin/views/settings.php:279
+#: admin/views/settings.php:302
+#: admin/views/settings.php:348
+#: admin/views/settings.php:362
 #: admin/views/settings.php:376
+#: admin/views/settings.php:396
 msgid "Enabled"
 msgstr ""
 
@@ -710,216 +710,228 @@ msgid "Show the application form and accept new submissions. Turn off to pause r
 msgstr ""
 
 #: admin/views/settings.php:132
-msgid "Require login to apply"
+msgid "Affiliate dashboard page"
 msgstr ""
 
 #: admin/views/settings.php:133
+msgid "The page holding the [directorist_affiliate_dashboard] shortcode. Affiliates who have already applied are sent here instead of the application form. Leave unset to use the Directorist user dashboard."
+msgstr ""
+
+#: admin/views/settings.php:142
+msgid "— Use the Directorist dashboard —"
+msgstr ""
+
+#: admin/views/settings.php:152
+msgid "Require login to apply"
+msgstr ""
+
+#: admin/views/settings.php:153
 msgid "Applicants must have a WordPress account. When off, applying creates an account automatically."
 msgstr ""
 
-#: admin/views/settings.php:139
+#: admin/views/settings.php:159
 msgid "Required"
 msgstr ""
 
-#: admin/views/settings.php:146
+#: admin/views/settings.php:166
 msgid "Anonymize visitor IP"
 msgstr ""
 
-#: admin/views/settings.php:147
+#: admin/views/settings.php:167
 msgid "Store visit IPs with the last octet removed (recommended for GDPR compliance)."
 msgstr ""
 
-#: admin/views/settings.php:165
+#: admin/views/settings.php:185
 msgid "Free events"
 msgstr ""
 
-#: admin/views/settings.php:166
+#: admin/views/settings.php:186
 msgid "Flat rewards for non-monetary conversions."
 msgstr ""
 
-#: admin/views/settings.php:171
+#: admin/views/settings.php:191
 #: includes/class-referral.php:41
 msgid "User registration"
 msgstr ""
 
-#: admin/views/settings.php:172
+#: admin/views/settings.php:192
 msgid "Pay a flat amount when a referred visitor creates an account."
 msgstr ""
 
-#: admin/views/settings.php:181
+#: admin/views/settings.php:201
 msgid "Registration commission amount"
 msgstr ""
 
-#: admin/views/settings.php:183
+#: admin/views/settings.php:203
 msgid "per signup"
 msgstr ""
 
-#: admin/views/settings.php:190
+#: admin/views/settings.php:210
 #: includes/class-referral.php:42
 msgid "Listing submission"
 msgstr ""
 
-#: admin/views/settings.php:191
+#: admin/views/settings.php:211
 msgid "Pay a flat amount when a referred user adds a listing."
 msgstr ""
 
-#: admin/views/settings.php:200
+#: admin/views/settings.php:220
 msgid "Listing commission amount"
 msgstr ""
 
-#: admin/views/settings.php:202
+#: admin/views/settings.php:222
 msgid "per listing"
 msgstr ""
 
-#: admin/views/settings.php:204
+#: admin/views/settings.php:224
 msgid "Commission trigger"
 msgstr ""
 
-#: admin/views/settings.php:206
+#: admin/views/settings.php:226
 msgid "Credit on submission"
 msgstr ""
 
-#: admin/views/settings.php:207
+#: admin/views/settings.php:227
 msgid "Credit on approval/publish"
 msgstr ""
 
-#: admin/views/settings.php:215
+#: admin/views/settings.php:235
 msgid "Paid orders"
 msgstr ""
 
-#: admin/views/settings.php:216
+#: admin/views/settings.php:236
 msgid "Commissions on completed paid orders. Refunded or cancelled orders reverse their commission automatically."
 msgstr ""
 
-#: admin/views/settings.php:221
+#: admin/views/settings.php:241
 msgid "Pricing plan purchases"
 msgstr ""
 
-#: admin/views/settings.php:223
+#: admin/views/settings.php:243
 msgid "Pay when a referred user buys a pricing plan."
 msgstr ""
 
-#: admin/views/settings.php:225
-#: admin/views/settings.php:252
+#: admin/views/settings.php:245
+#: admin/views/settings.php:272
 msgid "Inactive"
 msgstr ""
 
-#: admin/views/settings.php:225
+#: admin/views/settings.php:245
 msgid "Requires the Directorist Pricing Plans extension."
 msgstr ""
 
-#: admin/views/settings.php:235
+#: admin/views/settings.php:255
 msgid "Plan commission type"
 msgstr ""
 
-#: admin/views/settings.php:237
-#: admin/views/settings.php:264
+#: admin/views/settings.php:257
+#: admin/views/settings.php:284
 msgid "Percentage (%)"
 msgstr ""
 
-#: admin/views/settings.php:238
-#: admin/views/settings.php:265
+#: admin/views/settings.php:258
+#: admin/views/settings.php:285
 msgid "Fixed amount"
 msgstr ""
 
-#: admin/views/settings.php:240
+#: admin/views/settings.php:260
 msgid "Plan commission value"
 msgstr ""
 
-#: admin/views/settings.php:248
+#: admin/views/settings.php:268
 msgid "Featured listing purchases"
 msgstr ""
 
-#: admin/views/settings.php:250
+#: admin/views/settings.php:270
 msgid "Pay when a referred user buys featured status."
 msgstr ""
 
-#: admin/views/settings.php:252
+#: admin/views/settings.php:272
 msgid "Requires Directorist monetization with featured listings enabled."
 msgstr ""
 
-#: admin/views/settings.php:262
+#: admin/views/settings.php:282
 msgid "Featured commission type"
 msgstr ""
 
-#: admin/views/settings.php:267
+#: admin/views/settings.php:287
 msgid "Featured commission value"
 msgstr ""
 
-#: admin/views/settings.php:275
+#: admin/views/settings.php:295
 msgid "Auto-approve commissions"
 msgstr ""
 
-#: admin/views/settings.php:276
+#: admin/views/settings.php:296
 msgid "New referrals are created as Approved (payable immediately) instead of Pending review."
 msgstr ""
 
-#: admin/views/settings.php:295
+#: admin/views/settings.php:315
 #: public/views/affiliate-dashboard.php:276
 msgid "Minimum payout"
 msgstr ""
 
-#: admin/views/settings.php:296
+#: admin/views/settings.php:316
 msgid "Bulk payouts skip affiliates whose selected total is below this amount. Use 0 for no minimum."
 msgstr ""
 
-#: admin/views/settings.php:305
+#: admin/views/settings.php:325
 msgid "Payout instructions"
 msgstr ""
 
-#: admin/views/settings.php:306
+#: admin/views/settings.php:326
 msgid "Shown to affiliates on their dashboard — payment schedule, method, or who to contact."
 msgstr ""
 
-#: admin/views/settings.php:321
+#: admin/views/settings.php:341
 msgid "New application (to admin)"
 msgstr ""
 
-#: admin/views/settings.php:322
+#: admin/views/settings.php:342
 msgid "Email the site admin when someone applies to the program."
 msgstr ""
 
-#: admin/views/settings.php:335
+#: admin/views/settings.php:355
 msgid "Application decision (to affiliate)"
 msgstr ""
 
-#: admin/views/settings.php:336
+#: admin/views/settings.php:356
 msgid "Email the applicant when you approve or reject their application."
 msgstr ""
 
-#: admin/views/settings.php:349
+#: admin/views/settings.php:369
 msgid "New referral (to affiliate)"
 msgstr ""
 
-#: admin/views/settings.php:350
+#: admin/views/settings.php:370
 msgid "Email the affiliate each time one of their referrals converts."
 msgstr ""
 
-#: admin/views/settings.php:369
+#: admin/views/settings.php:389
 msgid "Delete data on uninstall"
 msgstr ""
 
-#: admin/views/settings.php:370
+#: admin/views/settings.php:390
 msgid "Permanently remove all affiliate tables, settings, and related user meta when the plugin is deleted."
 msgstr ""
 
-#: admin/views/settings.php:384
+#: admin/views/settings.php:404
 msgid "Shortcodes"
 msgstr ""
 
-#: admin/views/settings.php:385
+#: admin/views/settings.php:405
 msgid "Place these on any page to expose the affiliate program."
 msgstr ""
 
-#: admin/views/settings.php:390
+#: admin/views/settings.php:410
 msgid "Application form for new affiliates."
 msgstr ""
 
-#: admin/views/settings.php:394
+#: admin/views/settings.php:414
 msgid "Affiliate dashboard: referral link, stats, and history."
 msgstr ""
 
-#: admin/views/settings.php:401
+#: admin/views/settings.php:421
 msgid "Save settings"
 msgstr ""
 
@@ -1255,49 +1267,59 @@ msgstr ""
 msgid "Could not create the affiliate record."
 msgstr ""
 
-#: includes/class-shortcodes.php:75
+#: includes/class-shortcodes.php:152
 msgid "Affiliate applications are currently closed. Please check back later."
 msgstr ""
 
 #. translators: %s: login link.
-#: includes/class-shortcodes.php:82
+#: includes/class-shortcodes.php:159
 #, php-format
 msgid "Please %s to apply for the affiliate program."
 msgstr ""
 
-#: includes/class-shortcodes.php:83
+#: includes/class-shortcodes.php:160
 msgid "log in"
 msgstr ""
 
-#: includes/class-shortcodes.php:94
+#. translators: %s: link to the affiliate dashboard.
+#: includes/class-shortcodes.php:179
+#, php-format
+msgid "You have already applied to the affiliate program. %s"
+msgstr ""
+
+#: includes/class-shortcodes.php:180
+msgid "Go to your dashboard"
+msgstr ""
+
+#: includes/class-shortcodes.php:186
 msgid "You have already applied to the affiliate program. Your dashboard shows the current status."
 msgstr ""
 
-#: includes/class-shortcodes.php:124
+#: includes/class-shortcodes.php:216
 msgid "Please log in to view your affiliate dashboard."
 msgstr ""
 
-#: includes/class-shortcodes.php:130
+#: includes/class-shortcodes.php:222
 msgid "You have not applied for the affiliate program yet."
 msgstr ""
 
-#: includes/class-shortcodes.php:263
+#: includes/class-shortcodes.php:355
 msgid "Home page"
 msgstr ""
 
-#: includes/class-shortcodes.php:264
+#: includes/class-shortcodes.php:356
 msgid "Add listing"
 msgstr ""
 
-#: includes/class-shortcodes.php:265
+#: includes/class-shortcodes.php:357
 msgid "All listings"
 msgstr ""
 
-#: includes/class-shortcodes.php:266
+#: includes/class-shortcodes.php:358
 msgid "Checkout"
 msgstr ""
 
-#: includes/class-shortcodes.php:301
+#: includes/class-shortcodes.php:393
 msgid "Security check failed. Please try again."
 msgstr ""
 
