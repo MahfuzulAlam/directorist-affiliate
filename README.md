@@ -6,7 +6,7 @@ Affiliate tracking and fixed-commission referral system for [Directorist](https:
 
 | Item | Value |
 | --- | --- |
-| Version | 1.4.0 (plugin) / 0.2.0 (DB schema) |
+| Version | 1.4.1 (plugin) / 0.2.0 (DB schema) |
 | Author | [wpXplore](https://wpxplore.com) |
 | Website | https://wpxplore.com/tools/directorist-affiliate/ |
 | Requires | WordPress 6.3+, PHP 7.4+ |
@@ -233,7 +233,7 @@ The registration shortcode also respects the application gates: it shows a "clos
 
 Views are rendered with a tiny `ob_start()`/`extract()` template loader. Assets: `assets/css/directorist-affiliate.css` (front end, registered as `directorist-affiliate`), `assets/css/directorist-affiliate-admin.css` (admin only), and one vanilla JS file shared by both, enqueued with `strategy => defer`.
 
-**Front-end styling is theme-proof by construction.** These blocks render inside whatever theme the site runs, so every rule is scoped to `.directorist-affiliate-wrap` and each element a theme is likely to restyle (`button`, `input`, `table`, `fieldset`, `legend`) is reset explicitly rather than left to inherit — there are no unscoped element selectors in the stylesheet. Typography deliberately inherits the theme's font family so the block belongs to the page; only size, weight and rhythm are the plugin's. Colours are `--da-*` custom properties, so a theme can set `--da-accent` on `.directorist-affiliate-wrap` to match its brand, and a dark palette is supplied under `prefers-color-scheme: dark`. Tables collapse into labelled cards under 720px.
+**Front-end styling is theme-proof by construction.** These blocks render inside whatever theme the site runs, so every rule is scoped to `.directorist-affiliate-wrap` and each element a theme is likely to restyle (`button`, `input`, `table`, `fieldset`, `legend`) is reset explicitly rather than left to inherit — there are no unscoped element selectors in the stylesheet. Typography deliberately inherits the theme's font family so the block belongs to the page; only size, weight and rhythm are the plugin's. Colours are `--da-*` custom properties, so a theme can set `--da-accent` on `.directorist-affiliate-wrap` to match its brand. **The block renders light by default and only goes dark when a theme opts in** by putting `da-dark` on the wrapper or any ancestor — deliberately *not* wired to `prefers-color-scheme`, which reports the visitor's OS preference and says nothing about the theme the block was dropped into. Tables collapse into labelled cards under 720px.
 
 ## List filtering
 
@@ -318,6 +318,12 @@ Usage examples are in [DOCUMENTATION.md](DOCUMENTATION.md#developer-reference).
 
 ## Changelog
 
+### 1.4.1 — 2026-08-13
+
+- **Fix:** the front-end block rendered dark inside light themes. 1.4.0 wired its dark palette to `prefers-color-scheme`, which reports the *visitor's operating system* preference — so anyone browsing with dark mode enabled got a dark affiliate dashboard sitting on a white page. The OS setting says nothing about the theme a block was dropped into, so it was the wrong signal.
+- The block now renders **light by default**, and a dark theme opts in explicitly by adding `da-dark` to the wrapper or any ancestor (e.g. via `body_class`). Themes wanting a different look should override the `--da-*` properties directly.
+- Every colour in the stylesheet now resolves through a token, so both palettes stay consistent; the last hardcoded shadow became `--da-shadow-xs`.
+
 ### 1.4.0 — 2026-08-13
 
 Front-end redesign of both public surfaces, aimed at the questions an affiliate actually has rather than at restyling what was already there.
@@ -336,7 +342,7 @@ Front-end redesign of both public surfaces, aimed at the questions an affiliate 
 
 **Theme resilience**
 - Every rule is scoped to `.directorist-affiliate-wrap`, and buttons, inputs, tables, fieldsets and legends are reset explicitly rather than inheriting — the stylesheet contains no unscoped element selectors. Verified by rendering every state inside a deliberately hostile theme (serif type, double-border buttons, inset inputs, ridged tables).
-- Colours are `--da-*` custom properties: a theme can set `--da-accent` on the wrapper to match its brand. A dark palette ships under `prefers-color-scheme: dark`, so the block no longer glows white inside a dark theme.
+- Colours are `--da-*` custom properties: a theme can set `--da-accent` on the wrapper to match its brand. A dark palette ships as an opt-in `da-dark` class.
 - Font family is inherited from the theme by design; only size, weight and rhythm are the plugin's.
 - Tables collapse to labelled cards under 720px; `prefers-reduced-motion` is respected.
 

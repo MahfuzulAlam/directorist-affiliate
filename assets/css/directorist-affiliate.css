@@ -8,7 +8,10 @@
  * the block belongs to the page; only size, weight and rhythm are ours.
  *
  * Colours are exposed as --da-* custom properties: a theme can override
- * --da-accent on .directorist-affiliate-wrap to match its own brand.
+ * --da-accent on .directorist-affiliate-wrap to match its own brand. The block
+ * renders light by default and only goes dark when a theme opts in with the
+ * `da-dark` class — never off the visitor's OS preference, which says nothing
+ * about the theme this block was dropped into.
  *
  * @package DirectoristAffiliate
  */
@@ -32,6 +35,7 @@
 	--da-radius: 14px;
 	--da-radius-sm: 10px;
 	--da-shadow: 0 1px 2px rgba(19, 26, 38, .04), 0 10px 30px -18px rgba(19, 26, 38, .35);
+	--da-shadow-xs: 0 1px 2px rgba(19, 26, 38, .12);
 	--da-ring: 0 0 0 3px rgba(47, 75, 216, .18);
 	--da-ease: .18s cubic-bezier(.4, 0, .2, 1);
 
@@ -47,26 +51,42 @@
 	gap: 20px;
 }
 
-@media (prefers-color-scheme: dark) {
-	.directorist-affiliate-wrap {
-		--da-accent: #8aa4ff;
-		--da-accent-ink: #0d111c;
-		--da-accent-soft: rgba(138, 164, 255, .12);
-		--da-ink: #e9eefb;
-		--da-ink-soft: #9aa6bf;
-		--da-line: #2a3446;
-		--da-line-strong: #3a465c;
-		--da-surface: #161d2b;
-		--da-sunken: #1d2534;
-		--da-ok: #63cba1;
-		--da-ok-soft: #122a22;
-		--da-warn: #e0a95f;
-		--da-warn-soft: #2b2417;
-		--da-bad: #f0908f;
-		--da-bad-soft: #2e1a1c;
-		--da-shadow: 0 1px 2px rgba(0, 0, 0, .3), 0 10px 30px -18px rgba(0, 0, 0, .8);
-		--da-ring: 0 0 0 3px rgba(138, 164, 255, .25);
-	}
+/**
+ * Dark palette — OPT-IN ONLY.
+ *
+ * Deliberately not wired to `prefers-color-scheme`: that reports the
+ * visitor's operating system preference, which says nothing about the theme
+ * this block is sitting in. A visitor with dark mode enabled browsing a light
+ * theme would otherwise get a dark block on a white page.
+ *
+ * A dark theme opts in by adding `da-dark` to the wrapper, or by setting the
+ * class on any ancestor:
+ *
+ *   add_filter( 'body_class', fn( $c ) => array_merge( $c, [ 'da-dark' ] ) );
+ *
+ * Themes wanting something other than these two palettes should override the
+ * --da-* properties directly instead.
+ */
+.directorist-affiliate-wrap.da-dark,
+.da-dark .directorist-affiliate-wrap {
+	--da-accent: #8aa4ff;
+	--da-accent-ink: #0d111c;
+	--da-accent-soft: rgba(138, 164, 255, .12);
+	--da-ink: #e9eefb;
+	--da-ink-soft: #9aa6bf;
+	--da-line: #2a3446;
+	--da-line-strong: #3a465c;
+	--da-surface: #161d2b;
+	--da-sunken: #1d2534;
+	--da-ok: #63cba1;
+	--da-ok-soft: #122a22;
+	--da-warn: #e0a95f;
+	--da-warn-soft: #2b2417;
+	--da-bad: #f0908f;
+	--da-bad-soft: #2e1a1c;
+	--da-shadow: 0 1px 2px rgba(0, 0, 0, .3), 0 10px 30px -18px rgba(0, 0, 0, .8);
+	--da-shadow-xs: 0 1px 2px rgba(0, 0, 0, .45);
+	--da-ring: 0 0 0 3px rgba(138, 164, 255, .25);
 }
 
 .directorist-affiliate-wrap *,
@@ -394,7 +414,7 @@
 .directorist-affiliate-wrap .da-seg-btn[aria-selected="true"] {
 	background: var(--da-surface);
 	color: var(--da-ink);
-	box-shadow: 0 1px 2px rgba(19, 26, 38, .12);
+	box-shadow: var(--da-shadow-xs);
 }
 
 .da-panel-title { margin-bottom: 10px; }

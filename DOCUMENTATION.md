@@ -284,7 +284,7 @@ Sharing works on any URL: `?ref=CODE` can be appended to the homepage, a listing
 
 **If suspended or rejected:** a banner explains the situation instead of showing a link, and no new referrals are tracked. Commissions already earned stay visible in their history.
 
-> 💡 **Tip for developers:** the block picks up your theme's font automatically, and follows dark mode. To match your brand colour exactly, set `--da-accent` on `.directorist-affiliate-wrap` in your theme's CSS.
+> 💡 **Tip for developers:** the block picks up your theme's font automatically and renders light by default. To match your brand colour, set `--da-accent` on `.directorist-affiliate-wrap` in your theme's CSS. If your theme is dark, add the class `da-dark` to the page body (or the wrapper) and the block switches to a dark palette — it deliberately ignores the visitor's OS dark-mode setting, since that would otherwise put a dark panel on a light page.
 
 ---
 
