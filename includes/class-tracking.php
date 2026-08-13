@@ -15,6 +15,15 @@ final class Directorist_Affiliate_Tracking {
 	private const VISIT_COOKIE     = 'directorist_affiliate_visit';
 
 	/**
+	 * Cookie payload format marker.
+	 *
+	 * Both cookies carry "v1.<id>-<timestamp>.<signature>". Bumping this
+	 * invalidates every cookie in the wild, so only change it when the
+	 * payload layout itself changes.
+	 */
+	private const COOKIE_VERSION = 'v1';
+
+	/**
 	 * Settings service.
 	 *
 	 * @var Directorist_Affiliate_Settings
@@ -75,11 +84,26 @@ final class Directorist_Affiliate_Tracking {
 			return;
 		}
 
-		if ( $this->is_bot() ) {
+		// Crawlers and speculative prefetches are requests no human made.
+		if ( $this->is_bot() || $this->is_prefetch() ) {
 			return;
 		}
 
-		$code      = sanitize_text_field( wp_unslash( $_GET[ $param ] ) ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+		$code = sanitize_text_field( wp_unslash( $_GET[ $param ] ) ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+
+		/**
+		 * Filters whether this request may be tracked at all.
+		 *
+		 * Return false from a consent manager to suppress the tracking
+		 * cookies until the visitor has agreed to them.
+		 *
+		 * @param bool   $should_track Whether to track. Default true.
+		 * @param string $code Referral code from the URL.
+		 */
+		if ( ! apply_filters( 'directorist_affiliate_should_track', true, $code ) ) {
+			return;
+		}
+
 		$affiliate = $this->affiliate->get_approved_by_code( $code );
 
 		if ( ! $affiliate ) {
@@ -90,28 +114,59 @@ final class Directorist_Affiliate_Tracking {
 			return;
 		}
 
+		$affiliate_id = (int) $affiliate->id;
+		$now          = time();
+		$credit       = $this->read_cookie( self::AFFILIATE_COOKIE );
+		$holds_credit = $credit && $credit['id'] === $affiliate_id;
+
 		// First-click attribution: an existing valid credit is never overwritten.
-		if ( 'first_click' === $this->settings->get( 'attribution_model', 'first_click' ) ) {
-			$existing_id = $this->get_cookie_affiliate_id();
+		if ( $credit && ! $holds_credit && 'first_click' === $this->settings->get( 'attribution_model', 'first_click' ) ) {
+			$existing = $this->affiliate->get( $credit['id'] );
 
-			if ( $existing_id && $existing_id !== (int) $affiliate->id ) {
-				$existing = $this->affiliate->get( $existing_id );
-
-				if ( $existing && 'approved' === $existing->status ) {
-					return;
-				}
+			if ( $existing && 'approved' === $existing->status ) {
+				return;
 			}
 		}
 
-		$visit_id = $this->create_visit( $affiliate );
-		$expires  = time() + ( DAY_IN_SECONDS * max( 1, absint( $this->settings->get( 'cookie_duration', 30 ) ) ) );
-		$secure   = is_ssl();
+		// The window is anchored to the first click and does not slide, so
+		// "first click keeps the credit for N days" means exactly N days.
+		$first_seen = $holds_credit ? $credit['time'] : $now;
+		$expires    = $first_seen + ( DAY_IN_SECONDS * max( 1, absint( $this->settings->get( 'cookie_duration', 30 ) ) ) );
 
-		setcookie( self::AFFILIATE_COOKIE, (string) $affiliate->id, $expires, COOKIEPATH ? COOKIEPATH : '/', COOKIE_DOMAIN, $secure, true );
-		setcookie( self::VISIT_COOKIE, (string) $visit_id, $expires, COOKIEPATH ? COOKIEPATH : '/', COOKIE_DOMAIN, $secure, true );
+		if ( $expires <= $now ) {
+			$first_seen = $now;
+			$expires    = $now + ( DAY_IN_SECONDS * max( 1, absint( $this->settings->get( 'cookie_duration', 30 ) ) ) );
+		}
 
-		$_COOKIE[ self::AFFILIATE_COOKIE ] = (string) $affiliate->id;
-		$_COOKIE[ self::VISIT_COOKIE ]     = (string) $visit_id;
+		// One visit row per affiliate per visitor per dedupe window: a reload
+		// or a second click from the same person is not a new click.
+		$visit  = $this->read_cookie( self::VISIT_COOKIE );
+		$recent = $holds_credit && $visit && ( $now - $visit['time'] ) < $this->visit_dedupe_window();
+
+		if ( $recent ) {
+			$visit_id   = $visit['id'];
+			$counted_at = $visit['time'];
+		} else {
+			$visit_id   = $this->create_visit( $affiliate );
+			$counted_at = $now;
+		}
+
+		$this->write_cookie( self::AFFILIATE_COOKIE, $affiliate_id, $first_seen, $expires );
+		$this->write_cookie( self::VISIT_COOKIE, $visit_id, $counted_at, $expires );
+	}
+
+	/**
+	 * How long before the same visitor counts as a new visit for an affiliate.
+	 *
+	 * @return int Seconds.
+	 */
+	private function visit_dedupe_window(): int {
+		/**
+		 * Filters the visit deduplication window.
+		 *
+		 * @param int $seconds Window length. Default one day.
+		 */
+		return max( 0, absint( apply_filters( 'directorist_affiliate_visit_dedupe_window', DAY_IN_SECONDS ) ) );
 	}
 
 	/**
@@ -145,19 +200,115 @@ final class Directorist_Affiliate_Tracking {
 	/**
 	 * Get current cookie affiliate ID.
 	 *
-	 * @return int
+	 * @return int Zero when absent or tampered with.
 	 */
 	public function get_cookie_affiliate_id(): int {
-		return ! empty( $_COOKIE[ self::AFFILIATE_COOKIE ] ) ? absint( wp_unslash( $_COOKIE[ self::AFFILIATE_COOKIE ] ) ) : 0;
+		$cookie = $this->read_cookie( self::AFFILIATE_COOKIE );
+
+		return $cookie ? $cookie['id'] : 0;
 	}
 
 	/**
 	 * Get current cookie visit ID.
 	 *
-	 * @return int
+	 * @return int Zero when absent or tampered with.
 	 */
 	public function get_cookie_visit_id(): int {
-		return ! empty( $_COOKIE[ self::VISIT_COOKIE ] ) ? absint( wp_unslash( $_COOKIE[ self::VISIT_COOKIE ] ) ) : 0;
+		$cookie = $this->read_cookie( self::VISIT_COOKIE );
+
+		return $cookie ? $cookie['id'] : 0;
+	}
+
+	/**
+	 * Sign a cookie payload with the site's auth salt.
+	 *
+	 * @param string $payload Payload to sign.
+	 *
+	 * @return string
+	 */
+	private function sign( string $payload ): string {
+		return substr( hash_hmac( 'sha256', $payload, wp_salt( 'auth' ) ), 0, 32 );
+	}
+
+	/**
+	 * Read and verify one of the tracking cookies.
+	 *
+	 * @param string $name Cookie name.
+	 *
+	 * @return array{id:int,time:int}|null Null when absent, malformed, or the
+	 *                                     signature does not verify.
+	 */
+	private function read_cookie( string $name ): ?array {
+		$raw = isset( $_COOKIE[ $name ] ) ? sanitize_text_field( wp_unslash( $_COOKIE[ $name ] ) ) : '';
+
+		if ( '' === $raw ) {
+			return null;
+		}
+
+		// Unsigned cookies written before 1.3.0 held a bare ID. They are
+		// honored so live referral windows survive the upgrade, and get
+		// replaced with a signed cookie on the visitor's next tracked hit.
+		// This branch can be dropped once the longest cookie duration in use
+		// has elapsed since upgrading.
+		if ( ctype_digit( $raw ) ) {
+			return array(
+				'id'   => (int) $raw,
+				'time' => time(),
+			);
+		}
+
+		$parts = explode( '.', $raw );
+
+		if ( 3 !== count( $parts ) || self::COOKIE_VERSION !== $parts[0] ) {
+			return null;
+		}
+
+		if ( ! hash_equals( $this->sign( $parts[1] ), $parts[2] ) ) {
+			return null;
+		}
+
+		$values = explode( '-', $parts[1] );
+
+		if ( 2 !== count( $values ) ) {
+			return null;
+		}
+
+		return array(
+			'id'   => absint( $values[0] ),
+			'time' => absint( $values[1] ),
+		);
+	}
+
+	/**
+	 * Write a signed tracking cookie.
+	 *
+	 * @param string $name Cookie name.
+	 * @param int    $id Affiliate or visit ID.
+	 * @param int    $timestamp Anchor timestamp carried in the payload.
+	 * @param int    $expires Expiry timestamp.
+	 *
+	 * @return void
+	 */
+	private function write_cookie( string $name, int $id, int $timestamp, int $expires ): void {
+		$payload = absint( $id ) . '-' . absint( $timestamp );
+		$value   = self::COOKIE_VERSION . '.' . $payload . '.' . $this->sign( $payload );
+
+		setcookie(
+			$name,
+			$value,
+			array(
+				'expires'  => $expires,
+				'path'     => COOKIEPATH ? COOKIEPATH : '/',
+				'domain'   => COOKIE_DOMAIN,
+				'secure'   => is_ssl(),
+				'httponly' => true,
+				// Lax still arrives on the top-level click that starts a
+				// referral, while keeping the cookie off cross-site requests.
+				'samesite' => 'Lax',
+			)
+		);
+
+		$_COOKIE[ $name ] = $value;
 	}
 
 	/**
@@ -296,6 +447,33 @@ final class Directorist_Affiliate_Tracking {
 		}
 
 		return (bool) preg_match( '/bot|crawl|spider|slurp|preview|headless|scrape|curl|wget|python-requests|facebookexternalhit/i', $user_agent );
+	}
+
+	/**
+	 * Whether the browser is speculatively fetching, not showing, this page.
+	 *
+	 * Chrome and Safari prefetch links the visitor merely hovered; those
+	 * requests carry a real user agent and would otherwise be logged as
+	 * clicks nobody made.
+	 *
+	 * @return bool
+	 */
+	private function is_prefetch(): bool {
+		$headers = array( 'HTTP_SEC_PURPOSE', 'HTTP_PURPOSE', 'HTTP_X_PURPOSE', 'HTTP_X_MOZ' );
+
+		foreach ( $headers as $header ) {
+			if ( empty( $_SERVER[ $header ] ) ) {
+				continue;
+			}
+
+			$value = strtolower( sanitize_text_field( wp_unslash( $_SERVER[ $header ] ) ) );
+
+			if ( false !== strpos( $value, 'prefetch' ) || false !== strpos( $value, 'prerender' ) || false !== strpos( $value, 'preview' ) ) {
+				return true;
+			}
+		}
+
+		return false;
 	}
 
 	/**

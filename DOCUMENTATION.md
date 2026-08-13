@@ -47,7 +47,7 @@ Turn your visitors into promoters. This guide walks you through every screen of 
 
 1. Someone **applies** to be an affiliate on your site.
 2. You **approve** them — they get a personal referral link like `https://yoursite.com/?ref=their-code`.
-3. Visitors who follow that link are **tracked with a cookie** (30 days by default).
+3. Visitors who follow that link are **tracked with a cookie** (30 days by default, counted from their first click — returning later does not extend it).
 4. When a tracked visitor **registers**, **submits a listing**, or **pays for a pricing plan or featured listing**, the affiliate earns a commission — a fixed amount, or a percentage of the order total for paid purchases. Refunded or cancelled orders take their commission back automatically.
 5. You **approve the referral** and **record the payout**. Money moves through your own channel (PayPal, bank, etc.) — the plugin keeps the books and gives you a CSV for batch payments.
 
@@ -150,7 +150,7 @@ Order-based referrals (plan and featured purchases) also show the **order number
 ![Screenshot: Visits screen](docs/images/admin-visits.png)
 <!-- 📸 IMAGE PLACEHOLDER: Visits table with landing pages, referrer URLs, IPs, and green "Yes" converted badges on a few rows -->
 
-The raw click log per affiliate: the landing page they arrived on, the site they came from, IP, date and time, and a green **Converted** badge once a visit leads to a referral. Filter by affiliate, by whether the visit converted, and by date range — useful for questions like *"how much traffic did Sam send last month, and how much of it converted?"* Scan it before approving big referral batches — dozens of visits from one IP is a red flag. Obvious bot and crawler traffic is filtered out automatically, so these numbers reflect real people. Twenty per page.
+The click log per affiliate: the landing page they arrived on, the site they came from, IP, date and time, and a green **Converted** badge once a visit leads to a referral. The same person reloading a referral link is counted **once per day**, not once per refresh, so these numbers reflect real traffic rather than browser behavior. Filter by affiliate, by whether the visit converted, and by date range — useful for questions like *"how much traffic did Sam send last month, and how much of it converted?"* Scan it before approving big referral batches — dozens of visits from one IP is a red flag. Obvious bot and crawler traffic is filtered out automatically, so these numbers reflect real people. Twenty per page.
 
 ### Payouts — pay day
 
@@ -346,7 +346,7 @@ All emails are plain text via `wp_mail()`. The first three can be switched on or
 ## Privacy & GDPR
 
 - Visits record IP address and browser user agent. Enable **Anonymize visitor IP** (Settings → General) to truncate IPs at collection time.
-- Two cookies (`directorist_affiliate_ref`, `directorist_affiliate_visit`) attribute visits to affiliates. Mention them in your cookie policy/consent tool if your jurisdiction requires it.
+- Two cookies (`directorist_affiliate_ref`, `directorist_affiliate_visit`) attribute visits to affiliates. Mention them in your cookie policy/consent tool if your jurisdiction requires it. If you use a consent plugin, a developer can wire it to the `directorist_affiliate_should_track` filter so no affiliate cookie is set until the visitor agrees.
 - **Delete data on uninstall** (Settings → Advanced) guarantees a clean exit — tables, options, and user meta are removed when you delete the plugin.
 
 ---

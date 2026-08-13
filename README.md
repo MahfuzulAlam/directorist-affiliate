@@ -6,7 +6,7 @@ Affiliate tracking and fixed-commission referral system for [Directorist](https:
 
 | Item | Value |
 | --- | --- |
-| Version | 1.2.1 (plugin) / 0.2.0 (DB schema) |
+| Version | 1.3.0 (plugin) / 0.2.0 (DB schema) |
 | Author | [wpXplore](https://wpxplore.com) |
 | Website | https://wpxplore.com/tools/directorist-affiliate/ |
 | Requires | WordPress 6.3+, PHP 7.4+ |
@@ -169,11 +169,15 @@ Four custom tables (all `dbDelta`-managed, version tracked in option `directoris
 - Runs on the front end only, and only when the system is enabled in settings.
 - The URL parameter name is configurable (`ref` by default) — e.g. `https://site.com/any-page/?ref=42`.
 - The code must belong to an **approved** affiliate; logged-in affiliates visiting their own link are ignored (self-referral guard #1).
-- Two cookies are set for `cookie_duration` days (default 30), `HttpOnly`, `secure` when SSL:
-  - `directorist_affiliate_ref` → affiliate ID
-  - `directorist_affiliate_visit` → visit row ID
+- Two cookies are set, `HttpOnly`, `SameSite=Lax`, `secure` when SSL. Each carries a **signed** payload of `v1.<id>-<timestamp>.<HMAC>`, signed with `wp_salt( 'auth' )` — a tampered or forged value is read as absent:
+  - `directorist_affiliate_ref` → affiliate ID + **first-click timestamp**
+  - `directorist_affiliate_visit` → visit row ID + **last-counted timestamp**
+- Unsigned cookies written before 1.3.0 are still honored so live referral windows survive the upgrade, and are replaced with a signed cookie on the visitor's next tracked hit. That fallback can be removed once the longest cookie duration in use has elapsed since upgrading.
+- **The window does not slide.** Expiry is anchored to the first click, so "first click keeps the credit for 30 days" means exactly 30 days, not 30 days after the visitor's most recent return. Once a window lapses, the next click starts a fresh one.
+- **Visits are deduplicated.** One visit row per affiliate per visitor per window (one day, filterable via `directorist_affiliate_visit_dedupe_window`). Reloading a referral link, or clicking it again the same day, does not manufacture new clicks — which keeps the conversion rate honest.
 - Attribution is configurable: **first click** (default, per PRD — an existing valid credit is never overwritten until the cookie expires) or **last click** (each valid `?ref=` hit overwrites the credit). Every counted hit creates a visit row.
-- Obvious crawler traffic (bot/crawler/spider/headless/curl user agents, and requests with no user agent) is skipped, so click counts and conversion rates reflect real visitors. Capture also bails if headers were already sent.
+- Obvious crawler traffic (bot/crawler/spider/headless/curl user agents, and requests with no user agent) is skipped, as are **speculative prefetches** — Chrome and Safari fetch links on hover with a real browser UA, and those would otherwise log clicks nobody made (`Sec-Purpose`, `Purpose`, `X-Purpose`, `X-Moz`). Capture also bails if headers were already sent.
+- Tracking can be suppressed entirely by a consent manager: return false from `directorist_affiliate_should_track( $should_track, $code )` and no cookie is written.
 
 ## Conversion → referral creation
 
@@ -306,11 +310,30 @@ Stored in one option, `directorist_affiliate_settings` (autoload off):
 
 Actions: `directorist_affiliate_created( $affiliate_id, $status )`, `directorist_affiliate_status_changed( $affiliate_id, $status )`, `directorist_affiliate_referral_created( $referral_id, $affiliate_id, $type )`, `directorist_affiliate_referral_reversed( $referral_id, $new_status, $order_status )`, `directorist_affiliate_payout_recorded( $payout_id, $affiliate_id, $amount, $referral_ids )`.
 
-Filters: `directorist_affiliate_registration_commission( $amount )`, `directorist_affiliate_listing_commission( $amount, $trigger )`, `directorist_affiliate_plan_commission( $amount, $order_total )`, `directorist_affiliate_featured_commission( $amount, $order_total )`, `directorist_affiliate_link_targets( $targets, $code )` (destinations offered by the dashboard link builder).
+Filters: `directorist_affiliate_should_track( $should_track, $code )` (veto tracking, e.g. before cookie consent), `directorist_affiliate_visit_dedupe_window( $seconds )`, `directorist_affiliate_registration_commission( $amount )`, `directorist_affiliate_listing_commission( $amount, $trigger )`, `directorist_affiliate_plan_commission( $amount, $order_total )`, `directorist_affiliate_featured_commission( $amount, $order_total )`, `directorist_affiliate_link_targets( $targets, $code )` (destinations offered by the dashboard link builder).
 
 Usage examples are in [DOCUMENTATION.md](DOCUMENTATION.md#developer-reference).
 
 ## Changelog
+
+### 1.3.0 — 2026-08-13
+
+Tracking correctness and cookie hardening, from an audit of the click/cookie path against how established affiliate platforms handle it.
+
+**Counting**
+- **Fix:** repeat hits on the same referral link created a new visit row every time. The first-click guard only bailed when a *different* affiliate held the credit, so reloading `?ref=CODE` ten times logged ten clicks. Visits are now deduplicated — one row per affiliate per visitor per window (one day, filterable via `directorist_affiliate_visit_dedupe_window`). This directly corrected the conversion rate, whose denominator was inflated.
+- **Fix:** the cookie window slid forward on every visit, because expiry was recomputed from the current time on each capture. An active visitor's 30-day window therefore never ended, contradicting what the setting promises. Expiry is now anchored to the first click; a lapsed window starts fresh on the next click.
+- Speculative prefetches are ignored (`Sec-Purpose`, `Purpose`, `X-Purpose`, `X-Moz`). Chrome and Safari fetch links on hover with a real browser user agent, and those were being logged as clicks nobody made.
+
+**Cookie integrity**
+- Both tracking cookies are now **signed** with `wp_salt( 'auth' )` and carry a versioned payload (`v1.<id>-<timestamp>.<HMAC>`). A tampered or forged cookie is read as absent rather than trusted — previously a hand-edited visit ID could mark an arbitrary visit converted and skew reporting.
+- Unsigned pre-1.3.0 cookies are still honored, so upgrading does not void live referral windows; they are upgraded to signed on the visitor's next tracked hit.
+- **`SameSite=Lax` is now declared explicitly** rather than left to each browser's default, via the array form of `setcookie()`. Lax still arrives on the top-level click that starts a referral.
+
+**Privacy**
+- New `directorist_affiliate_should_track( $should_track, $code )` filter lets a consent manager suppress tracking until the visitor agrees; when vetoed, no cookie is written and no visit is logged.
+
+**Note on the visits figure:** because reloads no longer count, visit numbers after upgrading will read lower than before — and more accurately. Historical rows are untouched.
 
 ### 1.2.1 — 2026-08-13
 
