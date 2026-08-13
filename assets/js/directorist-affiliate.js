@@ -217,6 +217,77 @@
 	} );
 
 	/* -----------------------------------------------------------------------
+	 * Activity panels on the affiliate dashboard
+	 *
+	 * Progressive enhancement: without JS both panels render stacked under
+	 * their own headings, so nothing is unreachable.
+	 * --------------------------------------------------------------------- */
+
+	Array.prototype.forEach.call( document.querySelectorAll( '[data-da-panels]' ), function ( group ) {
+		var buttons = Array.prototype.slice.call( group.querySelectorAll( '[data-panel-target]' ) );
+		var panels  = Array.prototype.slice.call( group.querySelectorAll( '[data-panel]' ) );
+
+		if ( ! buttons.length || ! panels.length ) {
+			return;
+		}
+
+		group.classList.add( 'is-tabbed' );
+
+		function show( name ) {
+			buttons.forEach( function ( button ) {
+				var active = button.getAttribute( 'data-panel-target' ) === name;
+
+				button.setAttribute( 'aria-selected', active ? 'true' : 'false' );
+				button.setAttribute( 'tabindex', active ? '0' : '-1' );
+			} );
+
+			panels.forEach( function ( panel ) {
+				panel.classList.toggle( 'is-active', panel.getAttribute( 'data-panel' ) === name );
+			} );
+		}
+
+		buttons.forEach( function ( button, index ) {
+			button.addEventListener( 'click', function () {
+				show( button.getAttribute( 'data-panel-target' ) );
+			} );
+
+			// Left/right arrows move between tabs, per the tablist pattern.
+			button.addEventListener( 'keydown', function ( event ) {
+				if ( 'ArrowRight' !== event.key && 'ArrowLeft' !== event.key ) {
+					return;
+				}
+
+				event.preventDefault();
+
+				var next = buttons[ ( index + ( 'ArrowRight' === event.key ? 1 : buttons.length - 1 ) ) % buttons.length ];
+				next.focus();
+				show( next.getAttribute( 'data-panel-target' ) );
+			} );
+		} );
+
+		show( panels[ 0 ].getAttribute( 'data-panel' ) );
+	} );
+
+	/* -----------------------------------------------------------------------
+	 * Native share sheet, where the device offers one
+	 * --------------------------------------------------------------------- */
+
+	if ( navigator.share ) {
+		Array.prototype.forEach.call( document.querySelectorAll( '[data-da-share]' ), function ( button ) {
+			button.hidden = false;
+
+			button.addEventListener( 'click', function () {
+				navigator.share( {
+					text: button.getAttribute( 'data-share-text' ) || '',
+					url: button.getAttribute( 'data-share-url' ) || ''
+				} ).catch( function () {
+					// Visitor dismissed the sheet; nothing to recover from.
+				} );
+			} );
+		} );
+	}
+
+	/* -----------------------------------------------------------------------
 	 * Select-all checkboxes in admin tables
 	 * --------------------------------------------------------------------- */
 

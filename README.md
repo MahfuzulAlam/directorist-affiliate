@@ -6,7 +6,7 @@ Affiliate tracking and fixed-commission referral system for [Directorist](https:
 
 | Item | Value |
 | --- | --- |
-| Version | 1.3.0 (plugin) / 0.2.0 (DB schema) |
+| Version | 1.4.0 (plugin) / 0.2.0 (DB schema) |
 | Author | [wpXplore](https://wpxplore.com) |
 | Website | https://wpxplore.com/tools/directorist-affiliate/ |
 | Requires | WordPress 6.3+, PHP 7.4+ |
@@ -223,8 +223,8 @@ Tab rendering lives in `Directorist_Affiliate_Admin`; all mutations live in `Dir
 
 **Shortcodes**
 
-- `[directorist_affiliate_registration]` — Application form (name, email, website, promotional channel, payout email, note) with an invisible **honeypot anti-spam field** (bot submissions are silently discarded). For visitors who aren't logged in it **creates a WordPress account** via the shared `Affiliate::register_user()` helper (username derived from the email local-part, random password, standard new-user email). If the email already belongs to an account, it asks them to log in first. One application per user.
-- `[directorist_affiliate_dashboard]` — For logged-in affiliates: an earnings hero with status badge and their referral URL + **copy-to-clipboard button** (only once approved), stat tiles (visits with conversion rate, referrals, pending/approved/paid), a **link builder** for deep links to Add Listing / All Listings / Checkout, payout email and instructions, their last 20 referrals, and their **payout history**.
+- `[directorist_affiliate_registration]` — Application form opening with a **"What you earn" panel built from live settings** (`Commission::program_terms()` — only events that are enabled *and* whose dependency is active, plus the cookie duration), so applicants can see the offer before committing. Fields are grouped into *About you* / *How you will promote us* / *Getting paid*, with an invisible **honeypot anti-spam field** (bot submissions are silently discarded). For visitors who aren't logged in it **creates a WordPress account** via the shared `Affiliate::register_user()` helper (username derived from the email local-part, random password, standard new-user email). If the email already belongs to an account, it asks them to log in first. One application per user.
+- `[directorist_affiliate_dashboard]` — For logged-in affiliates. Built around the three questions an affiliate actually has: **share block** (referral link with copy button, WhatsApp/X/Facebook/email share links, native share sheet where the device offers one, and how long a click stays credited); **stat tiles** led by *Ready to be paid* with a **progress bar toward the payout minimum** and how much is still to go, then pending, paid-to-date and traffic with conversion rate; a **link builder** for deep links; an **Activity** card whose Referrals / Payouts panels switch via a segmented control (both render stacked without JavaScript); and a *How you get paid* card with payout email, referral code and minimum. Status-specific banners cover pending, suspended, and rejected accounts.
 - `[directorist_affiliate_link page="add-listing" text="Add your business"]` — Renders the current affiliate's referral link to a named Directorist page (`home`, `add-listing`, `all-listings`, `dashboard`, `checkout`) or an explicit same-site `url`. Outputs nothing for visitors who are not approved affiliates.
 
 **Directorist dashboard tab** — The same dashboard renders inside Directorist's user dashboard as an "Affiliate" tab (icon `las la-handshake`) via the `directorist_dashboard_tabs` filter.
@@ -232,6 +232,8 @@ Tab rendering lives in `Directorist_Affiliate_Admin`; all mutations live in `Dir
 The registration shortcode also respects the application gates: it shows a "closed" notice when `enable_applications` is off, a login prompt when `applications_require_login` is on, and an "already applied" notice for users who have an application.
 
 Views are rendered with a tiny `ob_start()`/`extract()` template loader. Assets: `assets/css/directorist-affiliate.css` (front end, registered as `directorist-affiliate`), `assets/css/directorist-affiliate-admin.css` (admin only), and one vanilla JS file shared by both, enqueued with `strategy => defer`.
+
+**Front-end styling is theme-proof by construction.** These blocks render inside whatever theme the site runs, so every rule is scoped to `.directorist-affiliate-wrap` and each element a theme is likely to restyle (`button`, `input`, `table`, `fieldset`, `legend`) is reset explicitly rather than left to inherit — there are no unscoped element selectors in the stylesheet. Typography deliberately inherits the theme's font family so the block belongs to the page; only size, weight and rhythm are the plugin's. Colours are `--da-*` custom properties, so a theme can set `--da-accent` on `.directorist-affiliate-wrap` to match its brand, and a dark palette is supplied under `prefers-color-scheme: dark`. Tables collapse into labelled cards under 720px.
 
 ## List filtering
 
@@ -315,6 +317,31 @@ Filters: `directorist_affiliate_should_track( $should_track, $code )` (veto trac
 Usage examples are in [DOCUMENTATION.md](DOCUMENTATION.md#developer-reference).
 
 ## Changelog
+
+### 1.4.0 — 2026-08-13
+
+Front-end redesign of both public surfaces, aimed at the questions an affiliate actually has rather than at restyling what was already there.
+
+**Signup page**
+- Opens with a **"What you earn" panel generated from live settings** — commission rates per event and the cookie duration. Previously the form asked people to apply without ever stating the offer, which is the single biggest thing standing between a visitor and an application.
+- Fields grouped into *About you* / *How you will promote us* / *Getting paid*, each with its own hint; the payout email now explains that it can differ from the login email, and logged-out applicants are told an account will be created for them.
+- Invalid fields only turn red once they have been filled in, so a fresh form is never a wall of errors.
+
+**Affiliate dashboard**
+- **Share block** is now the top of the page, not a stat: the referral link with a copy button, one-tap share to WhatsApp / X / Facebook / email, the native share sheet on devices that offer one, and a plain statement of how long a click stays credited.
+- **"Ready to be paid" leads the stats**, with a **progress bar toward the payout minimum** and the exact amount still to go. An affiliate's first question is when they get paid, and nothing on the old dashboard answered it.
+- Referrals and payouts moved into one **Activity** card with a segmented control instead of two stacked tables, cutting the scroll roughly in half. Both panels render stacked when JavaScript is off, and the tabs are arrow-key navigable.
+- Pending, suspended and rejected accounts get their own explanatory banner rather than a bare status pill.
+- Empty states say what to do next instead of only noting that a table is empty.
+
+**Theme resilience**
+- Every rule is scoped to `.directorist-affiliate-wrap`, and buttons, inputs, tables, fieldsets and legends are reset explicitly rather than inheriting — the stylesheet contains no unscoped element selectors. Verified by rendering every state inside a deliberately hostile theme (serif type, double-border buttons, inset inputs, ridged tables).
+- Colours are `--da-*` custom properties: a theme can set `--da-accent` on the wrapper to match its brand. A dark palette ships under `prefers-color-scheme: dark`, so the block no longer glows white inside a dark theme.
+- Font family is inherited from the theme by design; only size, weight and rhythm are the plugin's.
+- Tables collapse to labelled cards under 720px; `prefers-reduced-motion` is respected.
+
+**New**
+- `Commission::program_terms()` exposes the live program terms, filterable via `directorist_affiliate_program_terms`.
 
 ### 1.3.0 — 2026-08-13
 

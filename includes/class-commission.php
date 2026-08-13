@@ -50,6 +50,76 @@ final class Directorist_Affiliate_Commission {
 	}
 
 	/**
+	 * The program's live terms, for display to prospective affiliates.
+	 *
+	 * Only events that are enabled (and whose dependency is active) appear,
+	 * so the signup page always states what is actually payable today.
+	 *
+	 * @return array<int,array{label:string,value:string}>
+	 */
+	public function program_terms(): array {
+		$terms = array();
+
+		if ( absint( $this->settings->get( 'enable_plan_commission', 1 ) ) && self::is_pricing_plans_active() ) {
+			$terms[] = array(
+				'label' => __( 'Plan purchases', 'directorist-affiliate' ),
+				'value' => $this->rate_label( 'plan_commission_type', 'plan_commission_value' ),
+			);
+		}
+
+		if ( absint( $this->settings->get( 'enable_featured_commission', 1 ) ) && self::is_featured_monetization_active() ) {
+			$terms[] = array(
+				'label' => __( 'Featured listings', 'directorist-affiliate' ),
+				'value' => $this->rate_label( 'featured_commission_type', 'featured_commission_value' ),
+			);
+		}
+
+		$registration = (float) $this->settings->get( 'registration_amount', '0.00' );
+
+		if ( absint( $this->settings->get( 'enable_registration', 1 ) ) && $registration > 0 ) {
+			$terms[] = array(
+				'label' => __( 'New sign-ups', 'directorist-affiliate' ),
+				'value' => self::format_money( $registration ),
+			);
+		}
+
+		$listing = (float) $this->settings->get( 'listing_amount', '0.00' );
+
+		if ( absint( $this->settings->get( 'enable_listing', 1 ) ) && $listing > 0 ) {
+			$terms[] = array(
+				'label' => __( 'New listings', 'directorist-affiliate' ),
+				'value' => self::format_money( $listing ),
+			);
+		}
+
+		/**
+		 * Filters the program terms shown to prospective affiliates.
+		 *
+		 * @param array<int,array{label:string,value:string}> $terms Terms.
+		 */
+		return (array) apply_filters( 'directorist_affiliate_program_terms', $terms );
+	}
+
+	/**
+	 * Render one event's rate as a display string.
+	 *
+	 * @param string $type_key Settings key holding the commission type.
+	 * @param string $value_key Settings key holding the commission value.
+	 *
+	 * @return string
+	 */
+	private function rate_label( string $type_key, string $value_key ): string {
+		$value = (float) $this->settings->get( $value_key, '0.00' );
+
+		if ( 'percentage' === $this->settings->get( $type_key, 'percentage' ) ) {
+			/* translators: %s: commission percentage. */
+			return sprintf( __( '%s%%', 'directorist-affiliate' ), number_format_i18n( $value, ( floor( $value ) === $value ) ? 0 : 2 ) );
+		}
+
+		return self::format_money( $value );
+	}
+
+	/**
 	 * Whether a pricing plans extension is active.
 	 *
 	 * Supports Directorist Pricing Plans v4+ and the legacy fee manager.

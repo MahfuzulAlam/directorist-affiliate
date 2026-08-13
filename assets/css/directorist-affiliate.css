@@ -1,473 +1,639 @@
 /**
  * Directorist Affiliate — front-end styles.
  *
- * Scoped to .directorist-affiliate-wrap so nothing leaks into the theme.
- * Tokens are defined on the wrapper and inherit into every child.
+ * These blocks render inside whatever theme the site runs, so every rule is
+ * scoped to .directorist-affiliate-wrap and every element that a theme is
+ * likely to style (button, input, table, fieldset) is reset explicitly rather
+ * than inheriting. Typography deliberately inherits the theme's font family so
+ * the block belongs to the page; only size, weight and rhythm are ours.
+ *
+ * Colours are exposed as --da-* custom properties: a theme can override
+ * --da-accent on .directorist-affiliate-wrap to match its own brand.
  *
  * @package DirectoristAffiliate
  */
 
 .directorist-affiliate-wrap {
-	--da-accent: #2563eb;
-	--da-accent-hover: #1d4ed8;
-	--da-accent-soft: rgba(37, 99, 235, 0.08);
-	--da-text: #111827;
-	--da-text-muted: #6b7280;
-	--da-border: #e5e7eb;
-	--da-border-strong: #d1d5db;
+	--da-accent: #2f4bd8;
+	--da-accent-ink: #ffffff;
+	--da-accent-soft: rgba(47, 75, 216, 0.08);
+	--da-ink: #131a26;
+	--da-ink-soft: #5c6880;
+	--da-line: #e4e8f0;
+	--da-line-strong: #cfd6e4;
 	--da-surface: #ffffff;
-	--da-surface-soft: #f9fafb;
-	--da-success: #047857;
-	--da-success-bg: #ecfdf5;
-	--da-warning: #b45309;
-	--da-warning-bg: #fffbeb;
-	--da-danger: #b91c1c;
-	--da-danger-bg: #fef2f2;
-	--da-info: #1d4ed8;
-	--da-info-bg: #eff6ff;
-	--da-neutral: #4b5563;
-	--da-neutral-bg: #f3f4f6;
-	--da-radius: 12px;
-	--da-radius-sm: 8px;
-	--da-space: 8px;
-	--da-shadow-sm: 0 1px 2px rgba(16, 24, 40, 0.05);
-	--da-shadow: 0 1px 3px rgba(16, 24, 40, 0.08), 0 8px 24px -12px rgba(16, 24, 40, 0.16);
-	--da-ring: 0 0 0 3px rgba(37, 99, 235, 0.18);
-	--da-transition: 0.18s cubic-bezier(0.4, 0, 0.2, 1);
+	--da-sunken: #f6f8fc;
+	--da-ok: #04724d;
+	--da-ok-soft: #e6f6ef;
+	--da-warn: #9a5b00;
+	--da-warn-soft: #fdf3e2;
+	--da-bad: #b22222;
+	--da-bad-soft: #fdeeee;
+	--da-radius: 14px;
+	--da-radius-sm: 10px;
+	--da-shadow: 0 1px 2px rgba(19, 26, 38, .04), 0 10px 30px -18px rgba(19, 26, 38, .35);
+	--da-ring: 0 0 0 3px rgba(47, 75, 216, .18);
+	--da-ease: .18s cubic-bezier(.4, 0, .2, 1);
 
 	box-sizing: border-box;
-	max-width: 960px;
-	color: var(--da-text);
-	font-size: 15px;
+	max-width: 1000px;
+	margin-inline: auto;
+	color: var(--da-ink);
+	font-size: 16px;
 	line-height: 1.55;
-}
-
-.directorist-affiliate-wrap * {
-	box-sizing: inherit;
-}
-
-/* ---------------------------------------------------------------------------
- * Notices
- * ------------------------------------------------------------------------- */
-
-.directorist-affiliate-notice {
-	margin: calc(var(--da-space) * 1.5) 0;
-	padding: 14px 18px;
-	border: 1px solid var(--da-border);
-	border-inline-start: 3px solid var(--da-info);
-	border-radius: var(--da-radius-sm);
-	background: var(--da-info-bg);
-	font-size: 14px;
-}
-
-.directorist-affiliate-notice--success {
-	border-inline-start-color: var(--da-success);
-	background: var(--da-success-bg);
-	color: var(--da-success);
-}
-
-.directorist-affiliate-notice--error {
-	border-inline-start-color: var(--da-danger);
-	background: var(--da-danger-bg);
-	color: var(--da-danger);
-}
-
-/* ---------------------------------------------------------------------------
- * Shared surfaces
- * ------------------------------------------------------------------------- */
-
-.directorist-affiliate-card {
-	margin: calc(var(--da-space) * 2) 0;
-	padding: 22px;
-	border: 1px solid var(--da-border);
-	border-radius: var(--da-radius);
-	background: var(--da-surface);
-	box-shadow: var(--da-shadow-sm);
-}
-
-.directorist-affiliate-card h3 {
-	margin: 0 0 6px;
-	font-size: 16px;
-	font-weight: 650;
-}
-
-.directorist-affiliate-section-title {
-	margin: calc(var(--da-space) * 4) 0 calc(var(--da-space) * 1.5);
-	font-size: 16px;
-	font-weight: 650;
-}
-
-.directorist-affiliate-hint {
-	margin: 6px 0 0;
-	color: var(--da-text-muted);
-	font-size: 13px;
-}
-
-.directorist-affiliate-muted {
-	color: var(--da-text-muted);
-}
-
-/* ---------------------------------------------------------------------------
- * Dashboard hero
- * ------------------------------------------------------------------------- */
-
-.directorist-affiliate-hero {
-	display: grid;
-	grid-template-columns: minmax(220px, 1fr) minmax(280px, 1.4fr);
-	gap: 24px;
-	align-items: center;
-	padding: 26px;
-	border: 1px solid var(--da-border);
-	border-radius: var(--da-radius);
-	background: linear-gradient(135deg, var(--da-accent-soft), var(--da-surface) 60%);
-	box-shadow: var(--da-shadow-sm);
-}
-
-.directorist-affiliate-hero-main {
+	text-align: start;
 	display: flex;
 	flex-direction: column;
-	align-items: flex-start;
-	gap: 6px;
+	gap: 20px;
 }
 
-.directorist-affiliate-hero-label {
-	color: var(--da-text-muted);
-	font-size: 12px;
-	font-weight: 600;
-	letter-spacing: 0.06em;
-	text-transform: uppercase;
+@media (prefers-color-scheme: dark) {
+	.directorist-affiliate-wrap {
+		--da-accent: #8aa4ff;
+		--da-accent-ink: #0d111c;
+		--da-accent-soft: rgba(138, 164, 255, .12);
+		--da-ink: #e9eefb;
+		--da-ink-soft: #9aa6bf;
+		--da-line: #2a3446;
+		--da-line-strong: #3a465c;
+		--da-surface: #161d2b;
+		--da-sunken: #1d2534;
+		--da-ok: #63cba1;
+		--da-ok-soft: #122a22;
+		--da-warn: #e0a95f;
+		--da-warn-soft: #2b2417;
+		--da-bad: #f0908f;
+		--da-bad-soft: #2e1a1c;
+		--da-shadow: 0 1px 2px rgba(0, 0, 0, .3), 0 10px 30px -18px rgba(0, 0, 0, .8);
+		--da-ring: 0 0 0 3px rgba(138, 164, 255, .25);
+	}
 }
 
-.directorist-affiliate-hero-value {
-	font-size: 34px;
-	font-weight: 700;
-	line-height: 1.1;
-	letter-spacing: -0.02em;
+.directorist-affiliate-wrap *,
+.directorist-affiliate-wrap *::before,
+.directorist-affiliate-wrap *::after { box-sizing: inherit; }
+
+.directorist-affiliate-wrap h2,
+.directorist-affiliate-wrap h3 {
+	margin: 0;
+	color: var(--da-ink);
+	font-weight: 650;
+	line-height: 1.25;
+	letter-spacing: -.01em;
+	text-transform: none;
 }
 
-.directorist-affiliate-hero-link label {
-	display: block;
-	margin-bottom: 6px;
-	font-size: 13px;
-	font-weight: 600;
+.directorist-affiliate-wrap h2 { font-size: 1.0625rem; }
+.directorist-affiliate-wrap h3 { font-size: .9375rem; }
+.directorist-affiliate-wrap p { margin: 0; }
+.directorist-affiliate-wrap code {
+	padding: .1em .45em;
+	border-radius: 5px;
+	background: var(--da-sunken);
+	font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+	font-size: .875em;
 }
 
-/* ---------------------------------------------------------------------------
- * Stat tiles
- * ------------------------------------------------------------------------- */
-
-.directorist-affiliate-stat-grid {
-	display: grid;
-	grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-	gap: 14px;
-	margin: calc(var(--da-space) * 2) 0;
-}
-
-.directorist-affiliate-stat {
-	padding: 18px;
-	border: 1px solid var(--da-border);
-	border-radius: var(--da-radius);
-	background: var(--da-surface);
-	box-shadow: var(--da-shadow-sm);
-	transition: box-shadow var(--da-transition), transform var(--da-transition);
-}
-
-.directorist-affiliate-stat:hover {
-	box-shadow: var(--da-shadow);
-	transform: translateY(-1px);
-}
-
-.directorist-affiliate-stat strong {
-	display: block;
-	color: var(--da-text-muted);
-	font-size: 11px;
-	font-weight: 600;
-	letter-spacing: 0.06em;
-	text-transform: uppercase;
-}
-
-.directorist-affiliate-stat-value {
-	display: block;
-	margin-top: 8px;
-	font-size: 24px;
-	font-weight: 700;
-	line-height: 1.15;
-	letter-spacing: -0.01em;
-}
-
-.directorist-affiliate-stat-meta {
-	display: block;
-	margin-top: 4px;
-	color: var(--da-text-muted);
-	font-size: 12px;
-}
-
-/* ---------------------------------------------------------------------------
- * Badges
- * ------------------------------------------------------------------------- */
-
-.directorist-affiliate-badge {
-	display: inline-flex;
-	align-items: center;
-	gap: 6px;
-	padding: 3px 10px;
-	border-radius: 999px;
-	background: var(--da-neutral-bg);
-	color: var(--da-neutral);
-	font-size: 12px;
-	font-weight: 600;
-	line-height: 1.6;
+.da-muted { color: var(--da-ink-soft); font-size: .875rem; }
+.da-num { text-align: end; font-variant-numeric: tabular-nums; }
+.da-sr {
+	position: absolute !important;
+	width: 1px; height: 1px;
+	margin: -1px; padding: 0;
+	overflow: hidden;
+	clip-path: inset(50%);
 	white-space: nowrap;
 }
 
-.directorist-affiliate-badge::before {
-	content: "";
-	width: 6px;
+/* --------------------------------------------------------------- surfaces */
+
+.da-card {
+	padding: 22px;
+	border: 1px solid var(--da-line);
+	border-radius: var(--da-radius);
+	background: var(--da-surface);
+	box-shadow: var(--da-shadow);
+	display: flex;
+	flex-direction: column;
+	gap: 14px;
+}
+
+.directorist-affiliate-notice {
+	padding: 14px 18px;
+	border: 1px solid var(--da-line);
+	border-inline-start: 3px solid var(--da-accent);
+	border-radius: var(--da-radius-sm);
+	background: var(--da-sunken);
+	font-size: .9375rem;
+}
+
+.directorist-affiliate-notice--success {
+	border-inline-start-color: var(--da-ok);
+	background: var(--da-ok-soft);
+	color: var(--da-ok);
+}
+
+.directorist-affiliate-notice--error {
+	border-inline-start-color: var(--da-bad);
+	background: var(--da-bad-soft);
+	color: var(--da-bad);
+}
+
+/* ----------------------------------------------------------- status banner */
+
+.da-banner {
+	display: flex;
+	gap: 12px;
+	padding: 16px 18px;
+	border: 1px solid var(--da-line);
+	border-radius: var(--da-radius);
+	background: var(--da-surface);
+}
+
+.da-banner strong { display: block; font-size: .9375rem; }
+.da-banner p { margin-top: 3px; color: var(--da-ink-soft); font-size: .875rem; }
+
+.da-banner-dot {
+	flex: 0 0 auto;
+	width: 9px; height: 9px;
+	margin-top: 7px;
+	border-radius: 50%;
+	background: var(--da-ink-soft);
+}
+
+.da-banner--pending { background: var(--da-warn-soft); border-color: transparent; }
+.da-banner--pending .da-banner-dot { background: var(--da-warn); }
+.da-banner--stopped { background: var(--da-bad-soft); border-color: transparent; }
+.da-banner--stopped .da-banner-dot { background: var(--da-bad); }
+
+/* --------------------------------------------------------- the share block */
+
+.da-share {
+	display: flex;
+	flex-direction: column;
+	gap: 14px;
+	padding: 24px;
+	border-radius: var(--da-radius);
+	background:
+		linear-gradient(180deg, var(--da-accent-soft), transparent 70%),
+		var(--da-surface);
+	border: 1px solid var(--da-line);
+	box-shadow: var(--da-shadow);
+}
+
+.da-share-head p { margin-top: 4px; color: var(--da-ink-soft); font-size: .875rem; }
+
+.da-copyfield {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 8px;
+}
+
+.directorist-affiliate-wrap .da-copyfield input {
+	flex: 1 1 260px;
+	min-width: 0;
+	height: 46px;
+	padding: 0 14px;
+	border: 1px solid var(--da-line-strong);
+	border-radius: var(--da-radius-sm);
+	background: var(--da-sunken);
+	color: var(--da-ink);
+	font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+	font-size: .8125rem;
+}
+
+.directorist-affiliate-wrap .da-copyfield input:focus {
+	outline: none;
+	border-color: var(--da-accent);
+	box-shadow: var(--da-ring);
+}
+
+.da-share-actions {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 8px;
+	align-items: center;
+}
+
+.da-share-label {
+	color: var(--da-ink-soft);
+	font-size: .75rem;
+	font-weight: 600;
+	letter-spacing: .06em;
+	text-transform: uppercase;
+}
+
+.directorist-affiliate-wrap .da-chip {
+	display: inline-flex;
+	align-items: center;
+	height: 32px;
+	padding: 0 14px;
+	border: 1px solid var(--da-line-strong);
+	border-radius: 999px;
+	background: var(--da-surface);
+	color: var(--da-ink-soft);
+	font-size: .8125rem;
+	font-weight: 600;
+	text-decoration: none;
+	cursor: pointer;
+	transition: color var(--da-ease), border-color var(--da-ease), background var(--da-ease);
+}
+
+.directorist-affiliate-wrap .da-chip:hover,
+.directorist-affiliate-wrap .da-chip:focus-visible {
+	border-color: var(--da-accent);
+	background: var(--da-accent-soft);
+	color: var(--da-accent);
+	text-decoration: none;
+}
+
+/* ------------------------------------------------------------------ stats */
+
+.da-stats {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+	gap: 14px;
+}
+
+.da-stat {
+	display: flex;
+	flex-direction: column;
+	gap: 4px;
+	padding: 18px;
+	border: 1px solid var(--da-line);
+	border-radius: var(--da-radius);
+	background: var(--da-surface);
+	box-shadow: var(--da-shadow);
+}
+
+.da-stat--lead {
+	grid-column: span 2;
+	/* Browsers without color-mix() drop this line and keep the plain border. */
+	border-color: color-mix(in srgb, var(--da-accent) 35%, var(--da-line));
+	background: linear-gradient(180deg, var(--da-accent-soft), transparent 60%), var(--da-surface);
+}
+
+.da-stat-label {
+	color: var(--da-ink-soft);
+	font-size: .6875rem;
+	font-weight: 700;
+	letter-spacing: .08em;
+	text-transform: uppercase;
+}
+
+.da-stat-value {
+	font-size: 1.75rem;
+	font-weight: 700;
+	line-height: 1.1;
+	letter-spacing: -.02em;
+	font-variant-numeric: tabular-nums;
+}
+
+.da-stat--lead .da-stat-value { font-size: 2.125rem; color: var(--da-accent); }
+.da-stat-meta { color: var(--da-ink-soft); font-size: .8125rem; }
+
+.da-progress {
 	height: 6px;
+	margin: 6px 0 2px;
+	border-radius: 999px;
+	background: var(--da-line);
+	overflow: hidden;
+}
+
+.da-progress > span {
+	display: block;
+	height: 100%;
+	border-radius: inherit;
+	background: var(--da-accent);
+	transition: width var(--da-ease);
+}
+
+/* ----------------------------------------------------------------- badges */
+
+.da-badge {
+	display: inline-flex;
+	align-items: center;
+	gap: 6px;
+	padding: 2px 10px;
+	border-radius: 999px;
+	background: var(--da-sunken);
+	color: var(--da-ink-soft);
+	font-size: .75rem;
+	font-weight: 600;
+	white-space: nowrap;
+}
+
+.da-badge::before {
+	content: "";
+	width: 6px; height: 6px;
 	border-radius: 50%;
 	background: currentColor;
 }
 
-.directorist-affiliate-badge.is-approved,
-.directorist-affiliate-badge.is-converted {
-	background: var(--da-success-bg);
-	color: var(--da-success);
-}
+.da-badge.is-approved { background: var(--da-ok-soft); color: var(--da-ok); }
+.da-badge.is-pending { background: var(--da-warn-soft); color: var(--da-warn); }
+.da-badge.is-paid { background: var(--da-accent-soft); color: var(--da-accent); }
+.da-badge.is-rejected,
+.da-badge.is-refunded,
+.da-badge.is-cancelled { background: var(--da-bad-soft); color: var(--da-bad); }
 
-.directorist-affiliate-badge.is-pending {
-	background: var(--da-warning-bg);
-	color: var(--da-warning);
-}
+/* ----------------------------------------------------------- link builder */
 
-.directorist-affiliate-badge.is-rejected,
-.directorist-affiliate-badge.is-refunded {
-	background: var(--da-danger-bg);
-	color: var(--da-danger);
-}
-
-.directorist-affiliate-badge.is-paid {
-	background: var(--da-info-bg);
-	color: var(--da-info);
-}
-
-/* ---------------------------------------------------------------------------
- * Forms
- * ------------------------------------------------------------------------- */
-
-.directorist-affiliate-form {
-	padding: 28px;
-	border: 1px solid var(--da-border);
-	border-radius: var(--da-radius);
-	background: var(--da-surface);
-	box-shadow: var(--da-shadow-sm);
-}
-
-.directorist-affiliate-form-head {
-	margin-bottom: 22px;
-	padding-bottom: 18px;
-	border-bottom: 1px solid var(--da-border);
-}
-
-.directorist-affiliate-form-head h3 {
-	margin: 0 0 4px;
-	font-size: 20px;
-	font-weight: 700;
-	letter-spacing: -0.01em;
-}
-
-.directorist-affiliate-form-head p {
-	margin: 0;
-	color: var(--da-text-muted);
-	font-size: 14px;
-}
-
-.directorist-affiliate-form-grid {
-	display: grid;
-	grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-	gap: 0 20px;
-}
-
-.directorist-affiliate-form-full {
-	grid-column: 1 / -1;
-}
-
-.directorist-affiliate-form p {
-	margin: 0 0 18px;
-}
-
-.directorist-affiliate-form label {
-	display: block;
-	margin-bottom: 6px;
-	font-size: 13px;
-	font-weight: 600;
-}
-
-.directorist-affiliate-form .required {
-	color: var(--da-danger);
-}
-
-.directorist-affiliate-form input[type="text"],
-.directorist-affiliate-form input[type="email"],
-.directorist-affiliate-form input[type="url"],
-.directorist-affiliate-form textarea {
+.da-builder-row select {
 	width: 100%;
-	padding: 11px 14px;
-	border: 1px solid var(--da-border-strong);
+	max-width: 340px;
+	height: 42px;
+	padding: 0 12px;
+	border: 1px solid var(--da-line-strong);
 	border-radius: var(--da-radius-sm);
 	background: var(--da-surface);
-	color: var(--da-text);
-	font-family: inherit;
-	font-size: 14px;
-	line-height: 1.5;
-	transition: border-color var(--da-transition), box-shadow var(--da-transition);
+	color: var(--da-ink);
+	font: inherit;
+	font-size: .9375rem;
 }
 
-.directorist-affiliate-form input::placeholder,
-.directorist-affiliate-form textarea::placeholder {
-	color: #9ca3af;
-}
-
-.directorist-affiliate-form input:focus,
-.directorist-affiliate-form textarea:focus {
+.da-builder-row select:focus {
 	outline: none;
 	border-color: var(--da-accent);
 	box-shadow: var(--da-ring);
 }
 
-.directorist-affiliate-form-actions {
-	margin-bottom: 0;
+/* --------------------------------------------------------------- activity */
+
+.da-activity-head {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 12px;
+	align-items: center;
+	justify-content: space-between;
 }
 
-.directorist-affiliate-btn {
+/* The segmented control only appears once JS can drive it; without JS both
+   panels render stacked under their own headings. */
+.da-seg { display: none; gap: 4px; padding: 4px; border-radius: 999px; background: var(--da-sunken); }
+.da-activity.is-tabbed .da-seg { display: inline-flex; }
+.da-activity.is-tabbed .da-panel { display: none; }
+.da-activity.is-tabbed .da-panel.is-active { display: block; }
+.da-activity.is-tabbed .da-panel-title { display: none; }
+.da-panel + .da-panel { margin-top: 22px; }
+
+.directorist-affiliate-wrap .da-seg-btn {
+	height: 30px;
+	padding: 0 16px;
+	border: 0;
+	border-radius: 999px;
+	background: transparent;
+	color: var(--da-ink-soft);
+	font: inherit;
+	font-size: .8125rem;
+	font-weight: 600;
+	cursor: pointer;
+	transition: background var(--da-ease), color var(--da-ease);
+}
+
+.directorist-affiliate-wrap .da-seg-btn[aria-selected="true"] {
+	background: var(--da-surface);
+	color: var(--da-ink);
+	box-shadow: 0 1px 2px rgba(19, 26, 38, .12);
+}
+
+.da-panel-title { margin-bottom: 10px; }
+
+/* ----------------------------------------------------------------- tables */
+
+.da-tablewrap { overflow-x: auto; }
+
+.directorist-affiliate-wrap .da-table {
+	width: 100%;
+	margin: 0;
+	border: 0;
+	border-collapse: collapse;
+	font-size: .9375rem;
+}
+
+.directorist-affiliate-wrap .da-table th,
+.directorist-affiliate-wrap .da-table td {
+	padding: 12px 14px;
+	border: 0;
+	border-bottom: 1px solid var(--da-line);
+	text-align: start;
+	vertical-align: middle;
+	background: none;
+}
+
+.directorist-affiliate-wrap .da-table thead th {
+	color: var(--da-ink-soft);
+	font-size: .6875rem;
+	font-weight: 700;
+	letter-spacing: .07em;
+	text-transform: uppercase;
+	white-space: nowrap;
+}
+
+.directorist-affiliate-wrap .da-table tbody tr:last-child td { border-bottom: 0; }
+.directorist-affiliate-wrap .da-table tbody tr:hover td { background: var(--da-sunken); }
+
+.da-empty {
+	padding: 34px 18px;
+	border: 1px dashed var(--da-line-strong);
+	border-radius: var(--da-radius-sm);
+	text-align: center;
+	color: var(--da-ink-soft);
+}
+
+.da-empty-title { color: var(--da-ink); font-weight: 650; margin-bottom: 4px; }
+.da-empty p { font-size: .875rem; }
+
+/* ------------------------------------------------------------- definitions */
+
+.da-deflist {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+	gap: 14px 22px;
+	margin: 0;
+}
+
+.da-deflist dt {
+	margin-bottom: 2px;
+	color: var(--da-ink-soft);
+	font-size: .6875rem;
+	font-weight: 700;
+	letter-spacing: .07em;
+	text-transform: uppercase;
+}
+
+.da-deflist dd { margin: 0; font-size: .9375rem; word-break: break-word; }
+
+/* ------------------------------------------------------------ signup page */
+
+.da-terms {
+	padding: 22px;
+	border: 1px solid var(--da-line);
+	border-radius: var(--da-radius);
+	background: linear-gradient(180deg, var(--da-accent-soft), transparent 65%), var(--da-surface);
+	box-shadow: var(--da-shadow);
+}
+
+.da-terms-list {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+	gap: 14px;
+	margin: 14px 0 0;
+	padding: 0;
+	list-style: none;
+}
+
+.da-terms-list li { display: flex; flex-direction: column; gap: 2px; }
+
+.da-terms-value {
+	color: var(--da-accent);
+	font-size: 1.5rem;
+	font-weight: 700;
+	line-height: 1.1;
+	letter-spacing: -.02em;
+	font-variant-numeric: tabular-nums;
+}
+
+.da-terms-label { color: var(--da-ink-soft); font-size: .8125rem; }
+.da-terms-note { margin-top: 14px; color: var(--da-ink-soft); font-size: .8125rem; }
+
+.da-form { gap: 22px; padding: 26px; }
+.da-form-head h2 { font-size: 1.25rem; }
+.da-form-head p { margin-top: 5px; color: var(--da-ink-soft); font-size: .9375rem; }
+
+.directorist-affiliate-wrap .da-fieldset {
+	margin: 0;
+	padding: 0;
+	border: 0;
+	border-top: 1px solid var(--da-line);
+	padding-top: 18px;
+	display: flex;
+	flex-direction: column;
+	gap: 16px;
+}
+
+.directorist-affiliate-wrap .da-fieldset legend {
+	padding: 0;
+	color: var(--da-ink-soft);
+	font-size: .6875rem;
+	font-weight: 700;
+	letter-spacing: .08em;
+	text-transform: uppercase;
+	float: left;
+	width: 100%;
+	margin-bottom: 16px;
+}
+
+.da-grid {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+	gap: 16px;
+}
+
+.da-field { display: flex; flex-direction: column; gap: 6px; }
+
+.directorist-affiliate-wrap .da-field label {
+	margin: 0;
+	color: var(--da-ink);
+	font-size: .875rem;
+	font-weight: 600;
+}
+
+.da-req { color: var(--da-bad); margin-inline-start: 3px; }
+.da-hint { color: var(--da-ink-soft); font-size: .8125rem; }
+
+.directorist-affiliate-wrap .da-field input,
+.directorist-affiliate-wrap .da-field textarea {
+	width: 100%;
+	padding: 11px 14px;
+	border: 1px solid var(--da-line-strong);
+	border-radius: var(--da-radius-sm);
+	background: var(--da-surface);
+	color: var(--da-ink);
+	font: inherit;
+	font-size: .9375rem;
+	line-height: 1.5;
+	transition: border-color var(--da-ease), box-shadow var(--da-ease);
+}
+
+.directorist-affiliate-wrap .da-field textarea { resize: vertical; min-height: 96px; }
+
+.directorist-affiliate-wrap .da-field input::placeholder,
+.directorist-affiliate-wrap .da-field textarea::placeholder { color: var(--da-ink-soft); opacity: .75; }
+
+.directorist-affiliate-wrap .da-field input:focus,
+.directorist-affiliate-wrap .da-field textarea:focus {
+	outline: none;
+	border-color: var(--da-accent);
+	box-shadow: var(--da-ring);
+}
+
+/* Only flag invalid fields after the visitor has had a go at them. */
+.directorist-affiliate-wrap .da-field input:not(:placeholder-shown):invalid { border-color: var(--da-bad); }
+
+.da-form-foot {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 10px 16px;
+	align-items: center;
+	padding-top: 18px;
+	border-top: 1px solid var(--da-line);
+}
+
+/* ---------------------------------------------------------------- buttons */
+
+.directorist-affiliate-wrap .da-btn {
 	display: inline-flex;
 	align-items: center;
 	justify-content: center;
-	min-height: 44px;
-	padding: 0 26px;
-	border: 0;
+	height: 46px;
+	padding: 0 22px;
+	border: 1px solid transparent;
 	border-radius: var(--da-radius-sm);
 	background: var(--da-accent);
-	color: #fff;
-	font-family: inherit;
-	font-size: 14px;
-	font-weight: 600;
+	color: var(--da-accent-ink);
+	font: inherit;
+	font-size: .9375rem;
+	font-weight: 650;
 	text-decoration: none;
+	white-space: nowrap;
 	cursor: pointer;
-	transition: background var(--da-transition), transform var(--da-transition), box-shadow var(--da-transition);
+	transition: filter var(--da-ease), transform var(--da-ease), box-shadow var(--da-ease);
 }
 
-.directorist-affiliate-btn:hover,
-.directorist-affiliate-btn:focus {
-	background: var(--da-accent-hover);
-	color: #fff;
-	box-shadow: 0 4px 12px -4px rgba(37, 99, 235, 0.5);
+.directorist-affiliate-wrap .da-btn:hover,
+.directorist-affiliate-wrap .da-btn:focus-visible {
+	filter: brightness(1.08);
+	color: var(--da-accent-ink);
 	transform: translateY(-1px);
+	box-shadow: 0 6px 16px -8px var(--da-accent);
 }
 
-.directorist-affiliate-btn:focus-visible {
-	outline: 2px solid var(--da-accent);
-	outline-offset: 2px;
+.directorist-affiliate-wrap .da-btn:focus-visible { outline: 2px solid var(--da-accent); outline-offset: 2px; }
+.directorist-affiliate-wrap .da-btn[disabled] { opacity: .6; cursor: progress; transform: none; box-shadow: none; }
+
+.directorist-affiliate-wrap .da-btn--copy {
+	background: var(--da-surface);
+	border-color: var(--da-accent);
+	color: var(--da-accent);
+	min-width: 104px;
 }
 
-.directorist-affiliate-btn[disabled] {
-	opacity: 0.65;
-	cursor: progress;
-	transform: none;
-	box-shadow: none;
+.directorist-affiliate-wrap .da-btn--copy:hover { background: var(--da-accent-soft); }
+
+.directorist-affiliate-wrap .da-btn--copy.is-copied {
+	border-color: var(--da-ok);
+	background: var(--da-ok-soft);
+	color: var(--da-ok);
 }
 
-/* Honeypot field — visually removed, still present for bots. */
+/* Honeypot: removed visually, still reachable for bots. */
 .directorist-affiliate-hp {
 	position: absolute !important;
 	left: -9999px !important;
-	width: 1px;
-	height: 1px;
+	width: 1px; height: 1px;
 	margin: 0;
 	overflow: hidden;
-}
-
-/* ---------------------------------------------------------------------------
- * Referral link + link builder
- * ------------------------------------------------------------------------- */
-
-.directorist-affiliate-link-group {
-	display: flex;
-	flex-wrap: wrap;
-	gap: 8px;
-	align-items: stretch;
-}
-
-.directorist-affiliate-link-group input[readonly] {
-	flex: 1 1 260px;
-	min-width: 0;
-	padding: 11px 14px;
-	border: 1px solid var(--da-border-strong);
-	border-radius: var(--da-radius-sm);
-	background: var(--da-surface-soft);
-	color: var(--da-text);
-	font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
-	font-size: 13px;
-}
-
-.directorist-affiliate-link-group input[readonly]:focus {
-	outline: none;
-	border-color: var(--da-accent);
-	box-shadow: var(--da-ring);
-}
-
-.directorist-affiliate-copy {
-	display: inline-flex;
-	align-items: center;
-	gap: 6px;
-	padding: 0 20px;
-	min-height: 44px;
-	border: 1px solid var(--da-accent);
-	border-radius: var(--da-radius-sm);
-	background: var(--da-surface);
-	color: var(--da-accent);
-	font-family: inherit;
-	font-size: 13px;
-	font-weight: 600;
-	cursor: pointer;
-	transition: background var(--da-transition), color var(--da-transition), border-color var(--da-transition);
-}
-
-.directorist-affiliate-copy:hover,
-.directorist-affiliate-copy:focus {
-	background: var(--da-accent);
-	color: #fff;
-}
-
-.directorist-affiliate-copy:focus-visible {
-	outline: 2px solid var(--da-accent);
-	outline-offset: 2px;
-}
-
-.directorist-affiliate-copy.is-copied {
-	border-color: var(--da-success);
-	background: var(--da-success);
-	color: #fff;
-}
-
-.directorist-affiliate-link-builder-row {
-	margin: 12px 0;
-}
-
-.directorist-affiliate-link-builder select {
-	width: 100%;
-	max-width: 320px;
-	padding: 10px 12px;
-	border: 1px solid var(--da-border-strong);
-	border-radius: var(--da-radius-sm);
-	background: var(--da-surface);
-	font-family: inherit;
-	font-size: 14px;
-}
-
-.directorist-affiliate-link-builder select:focus {
-	outline: none;
-	border-color: var(--da-accent);
-	box-shadow: var(--da-ring);
 }
 
 .directorist-affiliate-inline-link {
@@ -475,131 +641,50 @@
 	word-break: break-all;
 }
 
-/* ---------------------------------------------------------------------------
- * Tables
- * ------------------------------------------------------------------------- */
+/* ------------------------------------------------------------- small screens */
 
-.directorist-affiliate-table-card {
-	padding: 0;
-	overflow: hidden;
-}
+@media (max-width: 720px) {
+	.directorist-affiliate-wrap { font-size: 15px; }
+	.da-stat--lead { grid-column: 1 / -1; }
+	.da-share, .da-card, .da-terms { padding: 18px; }
+	.da-form { padding: 20px; }
+	.directorist-affiliate-wrap .da-btn { width: 100%; }
+	.directorist-affiliate-wrap .da-btn--copy { width: auto; flex: 1 1 auto; }
 
-.directorist-affiliate-table {
-	width: 100%;
-	border-collapse: collapse;
-	font-size: 14px;
-}
+	/* Rows become labelled cards rather than a sideways-scrolling table. */
+	.directorist-affiliate-wrap .da-table,
+	.directorist-affiliate-wrap .da-table tbody,
+	.directorist-affiliate-wrap .da-table tr,
+	.directorist-affiliate-wrap .da-table td { display: block; width: 100%; }
 
-.directorist-affiliate-table th,
-.directorist-affiliate-table td {
-	padding: 13px 18px;
-	border-bottom: 1px solid var(--da-border);
-	text-align: start;
-	vertical-align: middle;
-}
-
-.directorist-affiliate-table thead th {
-	background: var(--da-surface-soft);
-	color: var(--da-text-muted);
-	font-size: 11px;
-	font-weight: 650;
-	letter-spacing: 0.06em;
-	text-transform: uppercase;
-	white-space: nowrap;
-}
-
-.directorist-affiliate-table .is-num {
-	text-align: end;
-	font-variant-numeric: tabular-nums;
-}
-
-.directorist-affiliate-table tbody tr:last-child td {
-	border-bottom: 0;
-}
-
-.directorist-affiliate-table tbody tr {
-	transition: background var(--da-transition);
-}
-
-.directorist-affiliate-table tbody tr:hover td {
-	background: var(--da-surface-soft);
-}
-
-.directorist-affiliate-empty {
-	padding: 32px 18px;
-	text-align: center;
-	color: var(--da-text-muted);
-}
-
-.directorist-affiliate-empty p {
-	margin: 0;
-	font-size: 14px;
-}
-
-/* ---------------------------------------------------------------------------
- * Responsive
- * ------------------------------------------------------------------------- */
-
-@media (max-width: 782px) {
-	.directorist-affiliate-hero {
-		grid-template-columns: 1fr;
-		gap: 18px;
-	}
-
-	.directorist-affiliate-hero-value {
-		font-size: 28px;
-	}
-
-	.directorist-affiliate-form {
-		padding: 20px;
-	}
-
-	/* Stacked card rows: each cell labelled by its header. */
-	.directorist-affiliate-table,
-	.directorist-affiliate-table tbody,
-	.directorist-affiliate-table tr,
-	.directorist-affiliate-table td {
-		display: block;
-		width: 100%;
-	}
-
-	.directorist-affiliate-table thead {
+	.directorist-affiliate-wrap .da-table thead {
 		position: absolute;
-		width: 1px;
-		height: 1px;
+		width: 1px; height: 1px;
 		overflow: hidden;
 		clip-path: inset(50%);
-		white-space: nowrap;
 	}
 
-	.directorist-affiliate-table tr {
+	.directorist-affiliate-wrap .da-table tr {
 		padding: 6px 0;
-		border-bottom: 1px solid var(--da-border);
+		border-bottom: 1px solid var(--da-line);
 	}
 
-	.directorist-affiliate-table tr:last-child {
-		border-bottom: 0;
-	}
+	.directorist-affiliate-wrap .da-table tr:last-child { border-bottom: 0; }
 
-	.directorist-affiliate-table td {
+	.directorist-affiliate-wrap .da-table td {
 		display: flex;
 		justify-content: space-between;
 		gap: 16px;
-		padding: 8px 18px;
+		padding: 7px 2px;
 		border-bottom: 0;
 		text-align: end;
 	}
 
-	.directorist-affiliate-table td::before {
+	.directorist-affiliate-wrap .da-table td::before {
 		content: attr(data-label);
-		color: var(--da-text-muted);
-		font-size: 12px;
+		color: var(--da-ink-soft);
+		font-size: .75rem;
 		font-weight: 600;
-		text-align: start;
-	}
-
-	.directorist-affiliate-table td:not([data-label]) {
-		display: block;
 		text-align: start;
 	}
 }
@@ -608,12 +693,9 @@
 	.directorist-affiliate-wrap *,
 	.directorist-affiliate-wrap *::before,
 	.directorist-affiliate-wrap *::after {
-		transition-duration: 0.01ms !important;
-		animation-duration: 0.01ms !important;
+		transition-duration: .01ms !important;
+		animation-duration: .01ms !important;
 	}
 
-	.directorist-affiliate-stat:hover,
-	.directorist-affiliate-btn:hover {
-		transform: none;
-	}
+	.directorist-affiliate-wrap .da-btn:hover { transform: none; }
 }

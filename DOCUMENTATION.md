@@ -243,7 +243,8 @@ Add `[directorist_affiliate_registration]` to any page:
 
 What visitors experience:
 
-- A clean two-column form: **Name**, **Email**, **Website**, **Promotional channel**, **Payout email**, and an optional note. Required fields are marked with a red asterisk.
+- **The offer first.** Above the form, a panel shows exactly what they would earn — your live commission rates per event, and how long a referred visitor stays credited to them. It is generated from your settings, so it is never out of date, and events you have switched off (or whose extension is inactive) simply do not appear.
+- A form grouped into **About you**, **How you will promote us**, and **Getting paid**, with required fields marked by a red asterisk.
 - Submitting happens **instantly, without a page reload** — the button switches to *"Submitting…"*, then either a green success notice replaces the form or a red notice explains what to fix (nothing they typed is lost).
 - **Logged-out visitors** get a WordPress account created automatically and receive the standard set-password email. If their email already has an account, they're asked to log in first. Prefer not to have accounts created this way? Turn on **Require login to apply** in Settings → General.
 - **Logged-in users** see their name and email pre-filled — and if they've already applied, they see their status instead of an empty form.
@@ -267,22 +268,23 @@ Add `[directorist_affiliate_dashboard]` to a page — and/or rely on the **Affil
 ![Screenshot: affiliate dashboard with stats, referral link and copy button](docs/images/frontend-affiliate-dashboard.png)
 <!-- 📸 IMAGE PLACEHOLDER: approved affiliate's dashboard — stat cards, referral link field with "Copy link" button, referral history table -->
 
-**While pending:** their stat cards plus a notice — *"Your application is being reviewed. Your referral link will appear here once you are approved."* No link is shown yet.
+**While pending:** a banner explaining that the application is under review and that they will be emailed either way. No referral link is shown yet.
 
 **Once approved:**
 
-- **An earnings headline** — total lifetime earnings in your site's currency, with their status badge, and their **referral link** beside it with a one-click **Copy** button (it flashes *"Copied!"* in green). Clicking the field selects the whole URL.
-- **Stat tiles** — visits (with the share that converted), referrals, and pending / approved / paid totals.
+- **Their referral link, front and centre** — with a **Copy** button, one-tap sharing to WhatsApp, X, Facebook or email, and (on phones) the device's own share sheet. Underneath, a plain sentence telling them how long a click stays credited to them.
+- **"Ready to be paid" as the headline figure**, followed by pending, paid-to-date and traffic. If you have set a **minimum payout**, a progress bar shows how close they are and exactly how much more they need — this is the question affiliates ask most often, so it is answered without them having to write to you.
 - **Link builder** — a dropdown of key destinations (Home, Add Listing, All Listings, Checkout); picking one instantly produces the ready-to-share link with their code attached.
-- **Payout details** — their payout email and your payout instructions.
-- **Referral history** — their last 20 referrals with amount, status badge, and date.
-- **Payout history** — every payment you've recorded for them: amount, method, and date.
+- **Activity** — referrals and payouts in one card, switched with a tab rather than stacked, so the page stays short.
+- **How you get paid** — their payout email, referral code, your minimum, and your payout instructions.
 
 Sharing works on any URL: `?ref=CODE` can be appended to the homepage, a listing, a category — every entry page counts.
 
 > ⚠️ **Note for affiliates:** self-referrals don't count (the plugin blocks them). If a visitor clicks two different affiliate links, whichever wins depends on your **Attribution model** setting — first click by default.
 
-**If suspended or rejected:** they see a clear explanation instead of a link, and no new referrals are tracked. Commissions already earned stay in their history.
+**If suspended or rejected:** a banner explains the situation instead of showing a link, and no new referrals are tracked. Commissions already earned stay visible in their history.
+
+> 💡 **Tip for developers:** the block picks up your theme's font automatically, and follows dark mode. To match your brand colour exactly, set `--da-accent` on `.directorist-affiliate-wrap` in your theme's CSS.
 
 ---
 

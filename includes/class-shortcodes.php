@@ -101,9 +101,11 @@ final class Directorist_Affiliate_Shortcodes {
 
 		$user    = wp_get_current_user();
 		$context = array(
-			'message'      => $this->registration_result ? $this->registration_result['message'] : '',
-			'message_type' => $this->registration_result ? ( $this->registration_result['success'] ? 'success' : 'error' ) : '',
-			'user'         => $user instanceof WP_User ? $user : null,
+			'message'         => $this->registration_result ? $this->registration_result['message'] : '',
+			'message_type'    => $this->registration_result ? ( $this->registration_result['success'] ? 'success' : 'error' ) : '',
+			'user'            => $user instanceof WP_User ? $user : null,
+			'terms'           => $this->plugin->commission->program_terms(),
+			'cookie_duration' => absint( $this->plugin->settings->get( 'cookie_duration', 30 ) ),
 		);
 
 		return $this->render( 'registration-form.php', $context );
@@ -150,6 +152,9 @@ final class Directorist_Affiliate_Shortcodes {
 				'referral_url'        => $this->referral_url( (string) $affiliate->referral_code ),
 				'link_targets'        => $this->link_targets( (string) $affiliate->referral_code ),
 				'payout_instructions' => $this->plugin->settings->get( 'payout_instructions', '' ),
+				'minimum_payout'      => (float) $this->plugin->settings->get( 'minimum_payout', '0.00' ),
+				'cookie_duration'     => absint( $this->plugin->settings->get( 'cookie_duration', 30 ) ),
+				'site_name'           => get_bloginfo( 'name' ),
 			)
 		);
 	}
