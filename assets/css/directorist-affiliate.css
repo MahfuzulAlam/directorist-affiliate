@@ -481,14 +481,6 @@
 
 .da-hint.is-error { color: var(--da-bad); }
 
-.da-quick {
-	display: flex;
-	flex-wrap: wrap;
-	gap: 8px;
-	align-items: center;
-	padding-top: 14px;
-	border-top: 1px solid var(--da-line);
-}
 
 @media (max-width: 720px) {
 	.da-builder-row { grid-template-columns: 1fr; }

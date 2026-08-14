@@ -51,6 +51,14 @@ final class Directorist_Affiliate_Link_Search {
 	 */
 	public function types(): array {
 		$types = array(
+			// Needs no input: the default, so the dashboard always opens with
+			// a usable referral link already in the box.
+			'home'   => array(
+				'label'  => __( 'Home page', 'directorist-affiliate' ),
+				'hint'   => __( 'Your main referral link. Sends people to the front page of the site.', 'directorist-affiliate' ),
+				'kind'   => 'none',
+				'source' => '',
+			),
 			'page'   => array(
 				'label'  => __( 'Page', 'directorist-affiliate' ),
 				'hint'   => __( 'Any published page on this site, such as a landing or pricing page.', 'directorist-affiliate' ),

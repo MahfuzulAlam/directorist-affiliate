@@ -32,8 +32,7 @@
 		var customGroup  = builder.querySelector( '[data-da-builder-custom]' );
 		var customInput  = builder.querySelector( '#da-builder-url' );
 		var customStatus = builder.querySelector( '[data-da-builder-custom-status]' );
-		var output       = builder.querySelector( '[data-da-builder-output]' );
-		var outputInput  = builder.querySelector( '#directorist-affiliate-built-link' );
+		var outputInput  = builder.querySelector( '[data-da-builder-output] input' );
 
 		if ( ! typeSelect || ! searchInput || ! resultList || ! outputInput ) {
 			return;
@@ -71,9 +70,46 @@
 			} );
 		}
 
+		var shareLinks = builder.querySelectorAll( '[data-da-share-net]' );
+		var shareText  = config.shareText || '';
+
+		/**
+		 * Point the output field and every share button at one link.
+		 *
+		 * Share targets are rebuilt here rather than left at their rendered
+		 * value, so sharing always sends whatever the affiliate just built.
+		 *
+		 * @param {string} link Referral link, or '' to fall back to the home link.
+		 */
 		function showOutput( link ) {
-			outputInput.value = link;
-			output.hidden = ! link;
+			var current = link || config.homeLink || '';
+
+			outputInput.value = current;
+
+			shareLinks.forEach( function ( anchor ) {
+				var url = encodeURIComponent( current );
+				var msg = encodeURIComponent( shareText );
+				var href;
+
+				switch ( anchor.getAttribute( 'data-da-share-net' ) ) {
+					case 'whatsapp':
+						href = 'https://wa.me/?text=' + encodeURIComponent( shareText + ' ' + current );
+						break;
+					case 'x':
+						href = 'https://x.com/intent/tweet?text=' + msg + '&url=' + url;
+						break;
+					case 'facebook':
+						href = 'https://www.facebook.com/sharer/sharer.php?u=' + url;
+						break;
+					case 'email':
+						href = 'mailto:?subject=' + msg + '&body=' + url;
+						break;
+					default:
+						return;
+				}
+
+				anchor.setAttribute( 'href', href );
+			} );
 		}
 
 		function closeList() {
@@ -192,14 +228,15 @@
 				hint.textContent = option.getAttribute( 'data-hint' ) || '';
 			}
 
-			var isCustom = 'url' === kind;
-
-			searchGroup.hidden = isCustom;
-			customGroup.hidden = ! isCustom;
+			// 'none' needs no input at all — the home link is already correct.
+			searchGroup.hidden = 'post_type' !== kind && 'taxonomy' !== kind;
+			customGroup.hidden = 'url' !== kind;
 
 			searchInput.value = '';
 			customInput.value = '';
 			status.textContent = '';
+			customStatus.textContent = '';
+			customStatus.classList.remove( 'is-error' );
 			closeList();
 			showOutput( '' );
 		}
@@ -280,13 +317,6 @@
 
 		customInput.addEventListener( 'blur', checkCustom );
 
-		// Quick links are already complete referral URLs.
-		builder.querySelectorAll( '[data-da-quick-link]' ).forEach( function ( button ) {
-			button.addEventListener( 'click', function () {
-				showOutput( button.getAttribute( 'data-da-quick-link' ) );
-				output.scrollIntoView( { behavior: 'smooth', block: 'nearest' } );
-			} );
-		} );
 
 		applyType();
 	} );

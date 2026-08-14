@@ -2,14 +2,14 @@
 # This file is distributed under the GPL v2 or later.
 msgid ""
 msgstr ""
-"Project-Id-Version: Directorist - Affiliate 1.6.0\n"
+"Project-Id-Version: Directorist - Affiliate 1.7.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/directorist-affiliate\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-08-14T13:24:09+00:00\n"
+"POT-Creation-Date: 2026-08-14T13:42:24+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: directorist-affiliate\n"
@@ -55,8 +55,8 @@ msgstr ""
 #: admin/class-admin.php:110
 #: admin/views/affiliates.php:142
 #: admin/views/dashboard.php:58
-#: public/views/affiliate-dashboard.php:242
-#: public/views/affiliate-dashboard.php:248
+#: public/views/affiliate-dashboard.php:213
+#: public/views/affiliate-dashboard.php:219
 msgid "Referrals"
 msgstr ""
 
@@ -65,8 +65,8 @@ msgid "Visits"
 msgstr ""
 
 #: admin/class-admin.php:120
-#: public/views/affiliate-dashboard.php:243
-#: public/views/affiliate-dashboard.php:281
+#: public/views/affiliate-dashboard.php:214
+#: public/views/affiliate-dashboard.php:252
 msgid "Payouts"
 msgstr ""
 
@@ -139,7 +139,7 @@ msgstr ""
 
 #: admin/views/affiliates.php:39
 #: admin/views/affiliates.php:81
-#: public/views/affiliate-dashboard.php:91
+#: public/views/affiliate-dashboard.php:132
 #: public/views/registration-form.php:78
 msgid "Email"
 msgstr ""
@@ -148,7 +148,7 @@ msgstr ""
 #: admin/views/affiliates.php:84
 #: admin/views/payouts-history.php:64
 #: admin/views/payouts-unpaid.php:103
-#: public/views/affiliate-dashboard.php:316
+#: public/views/affiliate-dashboard.php:287
 #: public/views/registration-form.php:108
 msgid "Payout email"
 msgstr ""
@@ -158,8 +158,8 @@ msgstr ""
 #: admin/views/affiliates.php:140
 #: admin/views/dashboard.php:101
 #: admin/views/referrals.php:95
-#: public/views/affiliate-dashboard.php:256
-#: public/views/affiliate-dashboard.php:265
+#: public/views/affiliate-dashboard.php:227
+#: public/views/affiliate-dashboard.php:236
 msgid "Status"
 msgstr ""
 
@@ -341,8 +341,8 @@ msgstr ""
 
 #: admin/views/dashboard.php:100
 #: admin/views/referrals.php:94
-#: public/views/affiliate-dashboard.php:255
-#: public/views/affiliate-dashboard.php:264
+#: public/views/affiliate-dashboard.php:226
+#: public/views/affiliate-dashboard.php:235
 msgid "Commission"
 msgstr ""
 
@@ -350,8 +350,8 @@ msgstr ""
 #: admin/views/payouts-unpaid.php:106
 #: admin/views/referrals.php:96
 #: admin/views/visits.php:45
-#: public/views/affiliate-dashboard.php:257
-#: public/views/affiliate-dashboard.php:266
+#: public/views/affiliate-dashboard.php:228
+#: public/views/affiliate-dashboard.php:237
 msgid "Date"
 msgstr ""
 
@@ -433,14 +433,14 @@ msgstr ""
 
 #: admin/views/payouts-history.php:63
 #: admin/views/payouts-unpaid.php:105
-#: public/views/affiliate-dashboard.php:287
-#: public/views/affiliate-dashboard.php:295
+#: public/views/affiliate-dashboard.php:258
+#: public/views/affiliate-dashboard.php:266
 msgid "Amount"
 msgstr ""
 
 #: admin/views/payouts-history.php:66
-#: public/views/affiliate-dashboard.php:289
-#: public/views/affiliate-dashboard.php:297
+#: public/views/affiliate-dashboard.php:260
+#: public/views/affiliate-dashboard.php:268
 msgid "Date paid"
 msgstr ""
 
@@ -576,8 +576,8 @@ msgid "Select all referrals"
 msgstr ""
 
 #: admin/views/referrals.php:91
-#: public/views/affiliate-dashboard.php:254
-#: public/views/affiliate-dashboard.php:263
+#: public/views/affiliate-dashboard.php:225
+#: public/views/affiliate-dashboard.php:234
 msgid "Event"
 msgstr ""
 
@@ -867,7 +867,7 @@ msgid "New referrals are created as Approved (payable immediately) instead of Pe
 msgstr ""
 
 #: admin/views/settings.php:315
-#: public/views/affiliate-dashboard.php:325
+#: public/views/affiliate-dashboard.php:296
 msgid "Minimum payout"
 msgstr ""
 
@@ -1018,7 +1018,7 @@ msgid "Choose what you want to link to."
 msgstr ""
 
 #: includes/class-ajax.php:73
-#: includes/class-shortcodes.php:114
+#: includes/class-shortcodes.php:122
 msgid "Nothing matched. Try a different word from the title."
 msgstr ""
 
@@ -1185,71 +1185,79 @@ msgstr ""
 msgid "A new \"%1$s\" referral was recorded with a commission amount of %2$s."
 msgstr ""
 
-#: includes/class-link-search.php:55
+#: includes/class-link-search.php:57
+msgid "Home page"
+msgstr ""
+
+#: includes/class-link-search.php:58
+msgid "Your main referral link. Sends people to the front page of the site."
+msgstr ""
+
+#: includes/class-link-search.php:63
 msgid "Page"
 msgstr ""
 
-#: includes/class-link-search.php:56
+#: includes/class-link-search.php:64
 msgid "Any published page on this site, such as a landing or pricing page."
 msgstr ""
 
-#: includes/class-link-search.php:61
+#: includes/class-link-search.php:69
 msgid "Post"
 msgstr ""
 
-#: includes/class-link-search.php:62
+#: includes/class-link-search.php:70
 msgid "A published blog post — useful when you have written about the site."
 msgstr ""
 
-#: includes/class-link-search.php:70
+#: includes/class-link-search.php:78
 msgid "Listing"
 msgstr ""
 
-#: includes/class-link-search.php:71
+#: includes/class-link-search.php:79
 msgid "A single published listing. Send people straight to the business you are recommending."
 msgstr ""
 
-#: includes/class-link-search.php:79
+#: includes/class-link-search.php:87
 msgid "Category"
 msgstr ""
 
-#: includes/class-link-search.php:80
+#: includes/class-link-search.php:88
 msgid "A listing category archive, for example every restaurant in the directory."
 msgstr ""
 
-#: includes/class-link-search.php:88
+#: includes/class-link-search.php:96
 msgid "Location"
 msgstr ""
 
-#: includes/class-link-search.php:89
+#: includes/class-link-search.php:97
 msgid "A location archive, for example every listing in one city."
 msgstr ""
 
-#: includes/class-link-search.php:96
+#: includes/class-link-search.php:104
 msgid "Custom link"
 msgstr ""
 
-#: includes/class-link-search.php:97
+#: includes/class-link-search.php:105
 msgid "Paste any address on this website. Links to other websites cannot be tracked, so they are not accepted."
 msgstr ""
 
-#: includes/class-link-search.php:300
+#: includes/class-link-search.php:308
 msgid "Enter a link from this website."
 msgstr ""
 
-#: includes/class-link-search.php:315
+#: includes/class-link-search.php:323
 msgid "That does not look like a valid web address."
 msgstr ""
 
-#: includes/class-link-search.php:319
+#: includes/class-link-search.php:327
 msgid "Only links on this website can be tracked. Check the address and try again."
 msgstr ""
 
-#: includes/class-link-search.php:325
+#: includes/class-link-search.php:333
 msgid "That is an admin address, so it will not work as a referral link."
 msgstr ""
 
-#: includes/class-link-search.php:374
+#: includes/class-link-search.php:382
 msgid "(no title)"
 msgstr ""
 
@@ -1349,91 +1357,76 @@ msgstr ""
 msgid "Could not create the affiliate record."
 msgstr ""
 
-#: includes/class-shortcodes.php:113
+#. translators: %s: site name.
+#: includes/class-shortcodes.php:117
+#: public/views/affiliate-dashboard.php:16
+#, php-format
+msgid "I recommend %s — take a look:"
+msgstr ""
+
+#: includes/class-shortcodes.php:121
 msgid "Searching…"
 msgstr ""
 
-#: includes/class-shortcodes.php:115
+#: includes/class-shortcodes.php:123
 msgid "Could not search right now. Please try again."
 msgstr ""
 
 #. translators: %d: minimum number of characters.
-#: includes/class-shortcodes.php:118
+#: includes/class-shortcodes.php:126
 #, php-format
 msgid "Type at least %d character."
 msgid_plural "Type at least %d characters."
 msgstr[0] ""
 msgstr[1] ""
 
-#: includes/class-shortcodes.php:121
+#: includes/class-shortcodes.php:129
 #, php-format
 msgid "%d results available. Use the arrow keys to choose one."
 msgstr ""
 
-#: includes/class-shortcodes.php:122
+#: includes/class-shortcodes.php:130
 msgid "Checking the address…"
 msgstr ""
 
-#: includes/class-shortcodes.php:183
+#: includes/class-shortcodes.php:191
 msgid "Affiliate applications are currently closed. Please check back later."
 msgstr ""
 
 #. translators: %s: login link.
-#: includes/class-shortcodes.php:190
+#: includes/class-shortcodes.php:198
 #, php-format
 msgid "Please %s to apply for the affiliate program."
 msgstr ""
 
-#: includes/class-shortcodes.php:191
+#: includes/class-shortcodes.php:199
 msgid "log in"
 msgstr ""
 
 #. translators: %s: link to the affiliate dashboard.
-#: includes/class-shortcodes.php:210
+#: includes/class-shortcodes.php:218
 #, php-format
 msgid "You have already applied to the affiliate program. %s"
 msgstr ""
 
-#: includes/class-shortcodes.php:211
+#: includes/class-shortcodes.php:219
 msgid "Go to your dashboard"
 msgstr ""
 
-#: includes/class-shortcodes.php:217
+#: includes/class-shortcodes.php:225
 msgid "You have already applied to the affiliate program. Your dashboard shows the current status."
 msgstr ""
 
-#: includes/class-shortcodes.php:247
+#: includes/class-shortcodes.php:255
 msgid "Please log in to view your affiliate dashboard."
 msgstr ""
 
-#: includes/class-shortcodes.php:253
+#: includes/class-shortcodes.php:261
 msgid "You have not applied for the affiliate program yet."
 msgstr ""
 
-#: includes/class-shortcodes.php:393
-msgid "Home page"
-msgstr ""
-
-#: includes/class-shortcodes.php:394
-msgid "Add listing"
-msgstr ""
-
-#: includes/class-shortcodes.php:395
-msgid "All listings"
-msgstr ""
-
-#: includes/class-shortcodes.php:396
-msgid "Checkout"
-msgstr ""
-
-#: includes/class-shortcodes.php:431
+#: includes/class-shortcodes.php:404
 msgid "Security check failed. Please try again."
-msgstr ""
-
-#. translators: %s: site name.
-#: public/views/affiliate-dashboard.php:16
-#, php-format
-msgid "I recommend %s — take a look:"
 msgstr ""
 
 #: public/views/affiliate-dashboard.php:33
@@ -1461,7 +1454,7 @@ msgid "New referrals are not being tracked. Get in touch if you think this was a
 msgstr ""
 
 #: public/views/affiliate-dashboard.php:59
-#: public/views/affiliate-dashboard.php:216
+#: public/views/affiliate-dashboard.php:120
 msgid "Your referral link"
 msgstr ""
 
@@ -1473,158 +1466,136 @@ msgid_plural "Anyone who arrives through this link stays credited to you for %d 
 msgstr[0] ""
 msgstr[1] ""
 
-#: public/views/affiliate-dashboard.php:79
-msgid "Referral link"
-msgstr ""
-
 #: public/views/affiliate-dashboard.php:81
-#: public/views/affiliate-dashboard.php:218
-msgid "Copied"
+msgid "Where should it point?"
 msgstr ""
 
 #: public/views/affiliate-dashboard.php:82
-#: public/views/affiliate-dashboard.php:219
+msgid "Choose the kind of content first. A search box appears next to it so you can find the exact item by name, and your link updates as you pick."
+msgstr ""
+
+#: public/views/affiliate-dashboard.php:97
+msgid "Find it by name"
+msgstr ""
+
+#: public/views/affiliate-dashboard.php:106
+msgid "Start typing a title…"
+msgstr ""
+
+#: public/views/affiliate-dashboard.php:113
+msgid "Paste the address"
+msgstr ""
+
+#: public/views/affiliate-dashboard.php:115
+msgid "Only addresses on this website can be tracked."
+msgstr ""
+
+#: public/views/affiliate-dashboard.php:122
+msgid "Copied"
+msgstr ""
+
+#: public/views/affiliate-dashboard.php:123
 msgid "Copy"
 msgstr ""
 
-#: public/views/affiliate-dashboard.php:87
+#: public/views/affiliate-dashboard.php:128
 msgid "Share via"
 msgstr ""
 
-#: public/views/affiliate-dashboard.php:93
-msgid "More…"
+#: public/views/affiliate-dashboard.php:136
+msgid "Building links to other pages needs JavaScript. The link above works as it is."
 msgstr ""
 
-#: public/views/affiliate-dashboard.php:101
+#: public/views/affiliate-dashboard.php:143
 msgid "Ready to be paid"
 msgstr ""
 
 #. translators: %s: percentage toward the payout minimum.
-#: public/views/affiliate-dashboard.php:104
+#: public/views/affiliate-dashboard.php:146
 #, php-format
 msgid "%s%% of the payout minimum"
 msgstr ""
 
 #. translators: %s: remaining amount before a payout can be made.
-#: public/views/affiliate-dashboard.php:113
+#: public/views/affiliate-dashboard.php:155
 #, php-format
 msgid "%s to go before your next payout"
 msgstr ""
 
-#: public/views/affiliate-dashboard.php:119
+#: public/views/affiliate-dashboard.php:161
 msgid "You have reached the payout minimum"
 msgstr ""
 
-#: public/views/affiliate-dashboard.php:123
+#: public/views/affiliate-dashboard.php:165
 msgid "Approved and awaiting payment"
 msgstr ""
 
-#: public/views/affiliate-dashboard.php:128
+#: public/views/affiliate-dashboard.php:170
 msgid "Pending review"
 msgstr ""
 
-#: public/views/affiliate-dashboard.php:130
+#: public/views/affiliate-dashboard.php:172
 msgid "Not approved yet"
 msgstr ""
 
-#: public/views/affiliate-dashboard.php:134
+#: public/views/affiliate-dashboard.php:176
 msgid "Paid to date"
 msgstr ""
 
 #. translators: %s: lifetime earnings.
-#: public/views/affiliate-dashboard.php:141
+#: public/views/affiliate-dashboard.php:183
 #, php-format
 msgid "%s earned in total"
 msgstr ""
 
-#: public/views/affiliate-dashboard.php:150
+#: public/views/affiliate-dashboard.php:192
 msgid "Traffic"
 msgstr ""
 
 #. translators: 1: number of referrals, 2: conversion rate.
-#: public/views/affiliate-dashboard.php:157
+#: public/views/affiliate-dashboard.php:199
 #, php-format
 msgid "%1$s referrals · %2$s%% converted"
 msgstr ""
 
-#: public/views/affiliate-dashboard.php:170
-msgid "Build a link to anywhere on the site"
-msgstr ""
-
-#: public/views/affiliate-dashboard.php:171
-msgid "Pick what you want to promote and we will attach your referral code to it."
-msgstr ""
-
-#: public/views/affiliate-dashboard.php:177
-msgid "What are you linking to?"
-msgstr ""
-
-#: public/views/affiliate-dashboard.php:178
-msgid "Choose the kind of content first. A search box appears next to it so you can find the exact item by name."
-msgstr ""
-
-#: public/views/affiliate-dashboard.php:193
-msgid "Find it by name"
-msgstr ""
-
-#: public/views/affiliate-dashboard.php:202
-msgid "Start typing a title…"
-msgstr ""
-
-#: public/views/affiliate-dashboard.php:209
-msgid "Paste the address"
-msgstr ""
-
 #: public/views/affiliate-dashboard.php:211
-msgid "Only addresses on this website can be tracked."
-msgstr ""
-
-#: public/views/affiliate-dashboard.php:225
-msgid "Quick links"
-msgstr ""
-
-#: public/views/affiliate-dashboard.php:233
-msgid "The link builder needs JavaScript. You can still add your referral code to any address by appending it manually."
-msgstr ""
-
-#: public/views/affiliate-dashboard.php:240
 msgid "Activity"
 msgstr ""
 
-#: public/views/affiliate-dashboard.php:241
+#: public/views/affiliate-dashboard.php:212
 msgid "Activity type"
 msgstr ""
 
-#: public/views/affiliate-dashboard.php:274
+#: public/views/affiliate-dashboard.php:245
 msgid "No referrals yet"
 msgstr ""
 
-#: public/views/affiliate-dashboard.php:275
+#: public/views/affiliate-dashboard.php:246
 msgid "Share your link above. Anything your visitors do here shows up on this list."
 msgstr ""
 
-#: public/views/affiliate-dashboard.php:275
+#: public/views/affiliate-dashboard.php:246
 msgid "Referrals appear here once your account is approved."
 msgstr ""
 
-#: public/views/affiliate-dashboard.php:288
-#: public/views/affiliate-dashboard.php:296
+#: public/views/affiliate-dashboard.php:259
+#: public/views/affiliate-dashboard.php:267
 msgid "Method"
 msgstr ""
 
-#: public/views/affiliate-dashboard.php:305
+#: public/views/affiliate-dashboard.php:276
 msgid "No payouts yet"
 msgstr ""
 
-#: public/views/affiliate-dashboard.php:306
+#: public/views/affiliate-dashboard.php:277
 msgid "Once approved commissions are paid out, each payment is listed here."
 msgstr ""
 
-#: public/views/affiliate-dashboard.php:313
+#: public/views/affiliate-dashboard.php:284
 msgid "How you get paid"
 msgstr ""
 
-#: public/views/affiliate-dashboard.php:320
+#: public/views/affiliate-dashboard.php:291
 msgid "Your code"
 msgstr ""
 

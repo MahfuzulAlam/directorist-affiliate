@@ -6,7 +6,7 @@ Affiliate tracking and fixed-commission referral system for [Directorist](https:
 
 | Item | Value |
 | --- | --- |
-| Version | 1.6.0 (plugin) / 0.2.0 (DB schema) |
+| Version | 1.7.0 (plugin) / 0.2.0 (DB schema) |
 | Author | [wpXplore](https://wpxplore.com) |
 | Website | https://wpxplore.com/tools/directorist-affiliate/ |
 | Requires | WordPress 6.3+, PHP 7.4+ |
@@ -225,7 +225,7 @@ Tab rendering lives in `Directorist_Affiliate_Admin`; all mutations live in `Dir
 **Shortcodes**
 
 - `[directorist_affiliate_registration]` — Application form opening with a **"What you earn" panel built from live settings** (`Commission::program_terms()` — only events that are enabled *and* whose dependency is active, plus the cookie duration), so applicants can see the offer before committing. Fields are grouped into *About you* / *How you will promote us* / *Getting paid*, with an invisible **honeypot anti-spam field** (bot submissions are silently discarded). For visitors who aren't logged in it **creates a WordPress account** via the shared `Affiliate::register_user()` helper (username derived from the email local-part, random password, standard new-user email). If the email already belongs to an account, it asks them to log in first. One application per user.
-- `[directorist_affiliate_dashboard]` — For logged-in affiliates. Built around the three questions an affiliate actually has: **share block** (referral link with copy button, WhatsApp/X/Facebook/email share links, native share sheet where the device offers one, and how long a click stays credited); **stat tiles** led by *Ready to be paid* with a **progress bar toward the payout minimum** and how much is still to go, then pending, paid-to-date and traffic with conversion rate; a **link builder** (see below); an **Activity** card whose Referrals / Payouts panels switch via a segmented control (both render stacked without JavaScript); and a *How you get paid* card with payout email, referral code and minimum. Status-specific banners cover pending, suspended, and rejected accounts.
+- `[directorist_affiliate_dashboard]` — For logged-in affiliates. Built around the three questions an affiliate actually has: **"Your referral link"** — one block combining the link, the builder and the share buttons (see below); **stat tiles** led by *Ready to be paid* with a **progress bar toward the payout minimum** and how much is still to go, then pending, paid-to-date and traffic with conversion rate;  an **Activity** card whose Referrals / Payouts panels switch via a segmented control (both render stacked without JavaScript); and a *How you get paid* card with payout email, referral code and minimum. Status-specific banners cover pending, suspended, and rejected accounts.
 - `[directorist_affiliate_link page="add-listing" text="Add your business"]` — Renders the current affiliate's referral link to a named Directorist page (`home`, `add-listing`, `all-listings`, `dashboard`, `checkout`) or an explicit same-site `url`. Outputs nothing for visitors who are not approved affiliates.
 
 **Directorist dashboard tab** — The same dashboard renders inside Directorist's user dashboard as an "Affiliate" tab (icon `las la-handshake`) via the `directorist_dashboard_tabs` filter.
@@ -234,7 +234,7 @@ The registration shortcode also respects the application gates: it shows a "clos
 
 ### Link builder
 
-The dashboard builder resolves a referral link to anything on the site. A type dropdown (`Directorist_Affiliate_Link_Search::types()`) offers **Page, Post, Listing, Category, Location, Custom link**; the Directorist entries drop out automatically when the post type or taxonomy is not registered, so it never offers a search that cannot return anything.
+The dashboard's single **"Your referral link"** section holds the link field, the builder controls and the share buttons. A type dropdown (`Directorist_Affiliate_Link_Search::types()`) offers **Home page, Page, Post, Listing, Category, Location, Custom link**. **Home page** is the default and needs no input (`kind => none`), so the section opens with a usable referral link already in the box; the Directorist entries drop out automatically when the post type or taxonomy is not registered, so it never offers a search that cannot return anything.
 
 Picking a content type reveals a title search; picking Custom link reveals a URL field instead. Both are backed by AJAX:
 
@@ -248,6 +248,8 @@ Both go through `guard_affiliate()`: nonce (`directorist_affiliate_link_builder`
 Searches match **titles only** (`posts_search` filtered for the duration of one query; taxonomies use `name__like`), because an affiliate is looking for something they can already name and body-copy matches are noise. Terms shorter than 2 characters are never queried, terms are capped at 100 characters, and results are limited to published, non-password-protected content.
 
 Custom URLs are validated server-side, since only the server knows what counts as "on this site": the host must match `home_url()` (ignoring `www.`), the scheme must be http(s), and `/wp-admin` and `wp-login.php` are refused. Bare paths (`/pricing/`) and scheme-less hosts are resolved rather than rejected. Every refusal explains itself.
+
+The **Share via** buttons (WhatsApp, X, Facebook, email) are rebuilt in JavaScript whenever the link changes, so sharing always sends whatever was just built rather than the rendered home link. They are plain anchors, so they still work — pointed at the home referral link — without JavaScript.
 
 The builder's JavaScript lives in its own file (`assets/js/link-builder.js`) enqueued **only by the dashboard shortcode, and only for approved affiliates** — it never loads elsewhere on the site. The combobox implements the ARIA pattern (arrow keys, Enter, Escape), debounces at 300ms, and aborts superseded requests so a slow earlier search cannot overwrite a newer one.
 
@@ -335,11 +337,21 @@ Stored in one option, `directorist_affiliate_settings` (autoload off):
 
 Actions: `directorist_affiliate_created( $affiliate_id, $status )`, `directorist_affiliate_status_changed( $affiliate_id, $status )`, `directorist_affiliate_referral_created( $referral_id, $affiliate_id, $type )`, `directorist_affiliate_referral_reversed( $referral_id, $new_status, $order_status )`, `directorist_affiliate_payout_recorded( $payout_id, $affiliate_id, $amount, $referral_ids )`.
 
-Filters: `directorist_affiliate_link_types( $types )` (content types in the link builder), `directorist_affiliate_dashboard_url( $url )` (where existing affiliates are sent), `directorist_affiliate_program_terms( $terms )`, `directorist_affiliate_should_track( $should_track, $code )` (veto tracking, e.g. before cookie consent), `directorist_affiliate_visit_dedupe_window( $seconds )`, `directorist_affiliate_registration_commission( $amount )`, `directorist_affiliate_listing_commission( $amount, $trigger )`, `directorist_affiliate_plan_commission( $amount, $order_total )`, `directorist_affiliate_featured_commission( $amount, $order_total )`, `directorist_affiliate_link_targets( $targets, $code )` (destinations offered by the dashboard link builder).
+Filters: `directorist_affiliate_link_types( $types )` (content types in the link builder; replaced the removed `directorist_affiliate_link_targets`), `directorist_affiliate_dashboard_url( $url )` (where existing affiliates are sent), `directorist_affiliate_program_terms( $terms )`, `directorist_affiliate_should_track( $should_track, $code )` (veto tracking, e.g. before cookie consent), `directorist_affiliate_visit_dedupe_window( $seconds )`, `directorist_affiliate_registration_commission( $amount )`, `directorist_affiliate_listing_commission( $amount, $trigger )`, `directorist_affiliate_plan_commission( $amount, $order_total )`, `directorist_affiliate_featured_commission( $amount, $order_total )`, `directorist_affiliate_link_targets( $targets, $code )` (destinations offered by the dashboard link builder).
 
 Usage examples are in [DOCUMENTATION.md](DOCUMENTATION.md#developer-reference).
 
 ## Changelog
+
+### 1.7.0 — 2026-08-14
+
+The dashboard had two blocks doing the same job — a "Your referral link" section at the top and a separate link builder further down. They are now one section, titled **Your referral link**.
+
+- The builder lives in that section: the link field, the type dropdown, the search/URL input and the share buttons are together, with the cookie-duration sentence explaining how long a click stays credited.
+- New **Home page** type, first in the dropdown and needing no input. It is the default, so the section still opens with a working referral link already filled in — merging the two blocks would otherwise have left an affiliate with an empty box on arrival.
+- **Share via** now follows the link being built. Previously the share targets were rendered once from the home URL; picking a listing and then sharing would have sent the home page. They are rebuilt whenever the link changes, and still work without JavaScript (pointed at the home referral link).
+- Removed the **Quick links** row — the pages it offered (Add listing, All listings, Checkout) are all reachable through the Page search. The `directorist_affiliate_link_targets` filter went with it; `directorist_affiliate_link_types` is the extension point now. **Breaking** for anyone who had hooked the old filter.
+- Removed the **More…** native share button.
 
 ### 1.6.0 — 2026-08-14
 

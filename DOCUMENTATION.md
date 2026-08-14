@@ -273,9 +273,9 @@ Add `[directorist_affiliate_dashboard]` to a page — and/or rely on the **Affil
 
 **Once approved:**
 
-- **Their referral link, front and centre** — with a **Copy** button, one-tap sharing to WhatsApp, X, Facebook or email, and (on phones) the device's own share sheet. Underneath, a plain sentence telling them how long a click stays credited to them.
+- **Their referral link, front and centre.** One section does the whole job: the link with a **Copy** button, controls to point it anywhere on the site, and one-tap sharing to WhatsApp, X, Facebook or email. A plain sentence tells them how long a click stays credited.
 - **"Ready to be paid" as the headline figure**, followed by pending, paid-to-date and traffic. If you have set a **minimum payout**, a progress bar shows how close they are and exactly how much more they need — this is the question affiliates ask most often, so it is answered without them having to write to you.
-- **Link builder** — this is where affiliates promote something specific. They pick what they're linking to (**Page, Post, Listing, Category, Location** or **Custom link**), then start typing a name; matching items appear in a list and choosing one produces the finished referral link. Custom link lets them paste any address on your site — links to other websites are refused, because a referral can only be tracked on your own domain. The four original shortcuts (Home, Add Listing, All Listings, Checkout) remain as one-click **Quick links**.
+- **Pointing the link somewhere specific** — inside that same section, they pick what they're linking to (**Home page, Page, Post, Listing, Category, Location** or **Custom link**). Home page is selected by default, so the link is ready to share the moment the page loads. Choosing anything else reveals a search box: type part of a title, pick from the list, and the link updates. Custom link lets them paste any address on your site — links to other websites are refused, because a referral can only be tracked on your own domain. **The share buttons always match the link they just built.**
 - **Activity** — referrals and payouts in one card, switched with a tab rather than stacked, so the page stays short.
 - **How you get paid** — their payout email, referral code, your minimum, and your payout instructions.
 

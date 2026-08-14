@@ -97,9 +97,11 @@ final class Directorist_Affiliate_Shortcodes {
 	/**
 	 * Enqueue and localize the link builder script.
 	 *
+	 * @param string $code Affiliate referral code.
+	 *
 	 * @return void
 	 */
-	private function enqueue_link_builder(): void {
+	private function enqueue_link_builder( string $code ): void {
 		wp_enqueue_script( 'directorist-affiliate-link-builder' );
 
 		wp_localize_script(
@@ -109,6 +111,12 @@ final class Directorist_Affiliate_Shortcodes {
 				'ajaxUrl'   => admin_url( 'admin-ajax.php' ),
 				'nonce'     => wp_create_nonce( 'directorist_affiliate_link_builder' ),
 				'minLength' => Directorist_Affiliate_Link_Search::MIN_TERM_LENGTH,
+				'homeLink'  => $this->referral_url( $code ),
+				'shareText' => sprintf(
+					/* translators: %s: site name. */
+					__( 'I recommend %s — take a look:', 'directorist-affiliate' ),
+					get_bloginfo( 'name' )
+				),
 				'i18n'      => array(
 					'searching'  => __( 'Searching…', 'directorist-affiliate' ),
 					'noResults'  => __( 'Nothing matched. Try a different word from the title.', 'directorist-affiliate' ),
@@ -263,7 +271,7 @@ final class Directorist_Affiliate_Shortcodes {
 		// The link builder is only usable by approved affiliates, so its
 		// script loads only for them — and only on this shortcode's page.
 		if ( 'approved' === $affiliate->status ) {
-			$this->enqueue_link_builder();
+			$this->enqueue_link_builder( (string) $affiliate->referral_code );
 		}
 
 		return $this->render(
@@ -280,7 +288,6 @@ final class Directorist_Affiliate_Shortcodes {
 				'approved_commission' => $this->plugin->referral->sum_commission( 'approved', (int) $affiliate->id ),
 				'paid_commission'     => $this->plugin->referral->sum_commission( 'paid', (int) $affiliate->id ),
 				'referral_url'        => $this->referral_url( (string) $affiliate->referral_code ),
-				'link_targets'        => $this->link_targets( (string) $affiliate->referral_code ),
 				'payout_instructions' => $this->plugin->settings->get( 'payout_instructions', '' ),
 				'minimum_payout'      => (float) $this->plugin->settings->get( 'minimum_payout', '0.00' ),
 				'cookie_duration'     => absint( $this->plugin->settings->get( 'cookie_duration', 30 ) ),
@@ -379,40 +386,6 @@ final class Directorist_Affiliate_Shortcodes {
 		$page_id = absint( get_directorist_option( $option_map[ $page ], 0 ) );
 
 		return $page_id ? (string) get_permalink( $page_id ) : '';
-	}
-
-	/**
-	 * Destination options for the dashboard link builder.
-	 *
-	 * @param string $code Referral code.
-	 *
-	 * @return array<string,string> Referral URL => label.
-	 */
-	private function link_targets( string $code ): array {
-		$pages = array(
-			'home'         => __( 'Home page', 'directorist-affiliate' ),
-			'add-listing'  => __( 'Add listing', 'directorist-affiliate' ),
-			'all-listings' => __( 'All listings', 'directorist-affiliate' ),
-			'checkout'     => __( 'Checkout', 'directorist-affiliate' ),
-		);
-
-		$targets = array();
-
-		foreach ( $pages as $page => $label ) {
-			$url = $this->page_url( $page );
-
-			if ( $url ) {
-				$targets[ $this->referral_url( $code, $url ) ] = $label;
-			}
-		}
-
-		/**
-		 * Filters the destinations offered by the dashboard link builder.
-		 *
-		 * @param array<string,string> $targets Referral URL => label.
-		 * @param string               $code Affiliate referral code.
-		 */
-		return (array) apply_filters( 'directorist_affiliate_link_targets', $targets, $code );
 	}
 
 	/**

@@ -269,25 +269,6 @@
 	} );
 
 	/* -----------------------------------------------------------------------
-	 * Native share sheet, where the device offers one
-	 * --------------------------------------------------------------------- */
-
-	if ( navigator.share ) {
-		Array.prototype.forEach.call( document.querySelectorAll( '[data-da-share]' ), function ( button ) {
-			button.hidden = false;
-
-			button.addEventListener( 'click', function () {
-				navigator.share( {
-					text: button.getAttribute( 'data-share-text' ) || '',
-					url: button.getAttribute( 'data-share-url' ) || ''
-				} ).catch( function () {
-					// Visitor dismissed the sheet; nothing to recover from.
-				} );
-			} );
-		} );
-	}
-
-	/* -----------------------------------------------------------------------
 	 * Select-all checkboxes in admin tables
 	 * --------------------------------------------------------------------- */
 
