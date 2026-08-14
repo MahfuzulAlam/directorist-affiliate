@@ -6,7 +6,7 @@ Affiliate tracking and fixed-commission referral system for [Directorist](https:
 
 | Item | Value |
 | --- | --- |
-| Version | 1.11.0 (plugin) / 0.3.0 (DB schema) |
+| Version | 1.11.1 (plugin) / 0.3.0 (DB schema) |
 | Author | [wpXplore](https://wpxplore.com) |
 | Website | https://wpxplore.com/tools/directorist-affiliate/ |
 | Requires | WordPress 6.3+, PHP 7.4+ |
@@ -226,7 +226,7 @@ Tab rendering lives in `Directorist_Affiliate_Admin`; all mutations live in `Dir
 **Shortcodes**
 
 - `[directorist_affiliate_registration]` — Application form opening with a **"What you earn" panel built from live settings** (`Commission::program_terms()` — only events that are enabled *and* whose dependency is active, plus the cookie duration), so applicants can see the offer before committing. Fields are grouped into *About you* / *How you will promote us* / *Getting paid*, with an invisible **honeypot anti-spam field** (bot submissions are silently discarded). For visitors who aren't logged in it **creates a WordPress account** via the shared `Affiliate::register_user()` helper (username derived from the email local-part, random password, standard new-user email). If the email already belongs to an account, it asks them to log in first. One application per user.
-- `[directorist_affiliate_dashboard]` — For logged-in affiliates. Built around the three questions an affiliate actually has: **"Your referral link"** — one block combining the link, the builder and the share buttons (see below); **stat tiles** led by *Ready to be paid* with a **progress bar toward the payout minimum** and how much is still to go, then pending, paid-to-date and traffic with conversion rate;  an **Activity** card whose Referrals / Payouts panels switch via a segmented control (both render stacked without JavaScript); and a *How you get paid* card with payout email, referral code, minimum, and a **Request payout** button. Status-specific banners cover pending, suspended, and rejected accounts.
+- `[directorist_affiliate_dashboard]` — For logged-in affiliates, split into five tabs. **Summary** (default) carries the earnings tiles — *Ready to be paid* leading, with a progress bar toward the payout minimum and the shortfall, then pending, paid-to-date, and traffic. The conversion rate is **converted visits ÷ visits**, not referrals ÷ visits — one visit can produce several referrals, so the latter can exceed 100%. **Your link** holds the referral link, the link builder and the share buttons in one block. **Referrals** lists their referral history. **Payouts** holds *How you get paid* (referral code, minimum, instructions), the **Request payout** button and payout history. **Settings** holds the payout method and its details. Tabs that would be empty are not rendered: an unapproved affiliate sees neither *Your link* nor *Settings*, and status-specific banners explain pending, suspended and rejected accounts instead.
 - `[directorist_affiliate_link page="add-listing" text="Add your business"]` — Renders the current affiliate's referral link to a named Directorist page (`home`, `add-listing`, `all-listings`, `dashboard`, `checkout`) or an explicit same-site `url`. Outputs nothing for visitors who are not approved affiliates.
 
 **Directorist dashboard tab** — The same dashboard renders inside Directorist's user dashboard as an "Affiliate" tab (icon `las la-handshake`) via the `directorist_dashboard_tabs` filter.
@@ -374,11 +374,21 @@ Stored in one option, `directorist_affiliate_settings` (autoload off):
 
 Actions: `directorist_affiliate_created( $affiliate_id, $status )`, `directorist_affiliate_status_changed( $affiliate_id, $status )`, `directorist_affiliate_referral_created( $referral_id, $affiliate_id, $type )`, `directorist_affiliate_referral_reversed( $referral_id, $new_status, $order_status )`, `directorist_affiliate_payout_requested( $payout_id, $affiliate_id, $amount )`, `directorist_affiliate_payout_recorded( $payout_id, $affiliate_id, $amount, $referral_ids )`, `directorist_affiliate_payout_rejected( $payout_id, $affiliate_id )`.
 
-Filters: `directorist_affiliate_link_types( $types )` (content types in the link builder; replaced the removed `directorist_affiliate_link_targets`), `directorist_affiliate_dashboard_url( $url )` (where existing affiliates are sent), `directorist_affiliate_program_terms( $terms )`, `directorist_affiliate_should_track( $should_track, $code )` (veto tracking, e.g. before cookie consent), `directorist_affiliate_visit_dedupe_window( $seconds )`, `directorist_affiliate_registration_commission( $amount )`, `directorist_affiliate_listing_commission( $amount, $trigger )`, `directorist_affiliate_plan_commission( $amount, $order_total )`, `directorist_affiliate_featured_commission( $amount, $order_total )`, `directorist_affiliate_link_targets( $targets, $code )` (destinations offered by the dashboard link builder).
+Filters: `directorist_affiliate_link_types( $types )` (content types in the link builder), `directorist_affiliate_payout_methods( $methods )` (how affiliates can be paid), `directorist_affiliate_dashboard_url( $url )` (where existing affiliates are sent), `directorist_affiliate_program_terms( $terms )`, `directorist_affiliate_should_track( $should_track, $code )` (veto tracking, e.g. before cookie consent), `directorist_affiliate_visit_dedupe_window( $seconds )`, `directorist_affiliate_registration_commission( $amount )`, `directorist_affiliate_listing_commission( $amount, $trigger )`, `directorist_affiliate_plan_commission( $amount, $order_total )`, `directorist_affiliate_featured_commission( $amount, $order_total )`.
 
 Usage examples are in [DOCUMENTATION.md](DOCUMENTATION.md#developer-reference).
 
 ## Changelog
+
+### 1.11.1 — 2026-08-14
+
+Documentation corrections, found by auditing the docs against the code. No behaviour change.
+
+- The `[directorist_affiliate_dashboard]` reference still described the **pre-tabs layout** — an "Activity card with a segmented control" and inline stat tiles. The 1.10.0 edit meant to update it targeted wording that had already changed in 1.8.0, so it silently matched nothing. It now describes all five tabs and which one holds what.
+- `directorist_affiliate_link_targets` was still listed as an available filter in both the README filter list and the DOCUMENTATION hooks table, though it was removed in 1.7.0. Replaced with `directorist_affiliate_payout_methods`, which was shipped in 1.9.0 but never documented.
+- The **conversion rate is now defined** where the tiles are described: converted visits ÷ visits, not referrals ÷ visits.
+
+Mentions of removed features that remain inside older changelog entries are deliberate — a changelog records what a version did, including things later taken out.
 
 ### 1.11.0 — 2026-08-14
 

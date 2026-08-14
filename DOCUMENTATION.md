@@ -404,7 +404,6 @@ Example — a "promote us" call to action for approved affiliates:
 | `directorist_affiliate_listing_commission` | Commission for a referred listing | `$amount, $trigger` |
 | `directorist_affiliate_plan_commission` | Commission for a referred plan purchase | `$amount, $order_total` |
 | `directorist_affiliate_featured_commission` | Commission for a referred featured purchase | `$amount, $order_total` |
-| `directorist_affiliate_link_targets` | Destinations offered by the dashboard link builder | `$targets, $code` |
 
 Example — double listing commissions during a promotion:
 

@@ -3,7 +3,7 @@
  * Plugin Name: Directorist - Affiliate
  * Plugin URI: https://wpxplore.com/tools/directorist-affiliate/
  * Description: Affiliate tracking and commissions for Directorist — referrals for registrations, listing submissions, and paid plan/featured orders.
- * Version: 1.11.0
+ * Version: 1.11.1
  * Requires at least: 6.3
  * Requires PHP: 7.4
  * Requires Plugins: directorist
@@ -19,7 +19,7 @@
 
 defined( 'ABSPATH' ) || exit;
 
-define( 'DIRECTORIST_AFFILIATE_VERSION', '1.11.0' );
+define( 'DIRECTORIST_AFFILIATE_VERSION', '1.11.1' );
 define( 'DIRECTORIST_AFFILIATE_DB_VERSION', '0.3.0' );
 define( 'DIRECTORIST_AFFILIATE_MIN_DIRECTORIST', '8.7.3' );
 define( 'DIRECTORIST_AFFILIATE_FILE', __FILE__ );
