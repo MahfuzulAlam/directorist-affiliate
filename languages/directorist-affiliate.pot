@@ -2,14 +2,14 @@
 # This file is distributed under the GPL v2 or later.
 msgid ""
 msgstr ""
-"Project-Id-Version: Directorist - Affiliate 1.12.0\n"
+"Project-Id-Version: Directorist - Affiliate 1.13.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/directorist-affiliate\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-08-14T17:36:32+00:00\n"
+"POT-Creation-Date: 2026-08-14T17:47:19+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: directorist-affiliate\n"
@@ -701,7 +701,7 @@ msgid "Notifications"
 msgstr ""
 
 #: admin/views/settings.php:32
-#: admin/views/settings.php:508
+#: admin/views/settings.php:551
 msgid "Advanced"
 msgstr ""
 
@@ -730,12 +730,8 @@ msgstr ""
 #: admin/views/settings.php:318
 #: admin/views/settings.php:345
 #: admin/views/settings.php:368
-#: admin/views/settings.php:444
-#: admin/views/settings.php:458
-#: admin/views/settings.php:472
-#: admin/views/settings.php:486
-#: admin/views/settings.php:500
-#: admin/views/settings.php:520
+#: admin/views/settings.php:481
+#: admin/views/settings.php:563
 msgid "Enabled"
 msgstr ""
 
@@ -1025,71 +1021,106 @@ msgstr ""
 msgid "Shown to affiliates on their dashboard — payment schedule, method, or who to contact."
 msgstr ""
 
-#: admin/views/settings.php:437
+#: admin/views/settings.php:438
+#: includes/class-email-templates.php:49
 msgid "New application (to admin)"
 msgstr ""
 
-#: admin/views/settings.php:438
+#: admin/views/settings.php:439
 msgid "Email the site admin when someone applies to the program."
 msgstr ""
 
-#: admin/views/settings.php:451
+#: admin/views/settings.php:442
 msgid "Application decision (to affiliate)"
 msgstr ""
 
-#: admin/views/settings.php:452
+#: admin/views/settings.php:443
 msgid "Email the applicant when you approve or reject their application."
 msgstr ""
 
-#: admin/views/settings.php:465
+#: admin/views/settings.php:446
+#: includes/class-email-templates.php:70
 msgid "New referral (to affiliate)"
 msgstr ""
 
-#: admin/views/settings.php:466
+#: admin/views/settings.php:447
 msgid "Email the affiliate each time one of their referrals converts."
 msgstr ""
 
-#: admin/views/settings.php:479
+#: admin/views/settings.php:450
 msgid "Payout requested (to you)"
 msgstr ""
 
-#: admin/views/settings.php:480
+#: admin/views/settings.php:451
 msgid "Email you when an affiliate asks to be paid, so requests do not sit unnoticed."
 msgstr ""
 
-#: admin/views/settings.php:493
+#: admin/views/settings.php:454
 msgid "Payout decision (to affiliate)"
 msgstr ""
 
-#: admin/views/settings.php:494
+#: admin/views/settings.php:455
 msgid "Email the affiliate when you pay or decline their payout request."
 msgstr ""
 
-#: admin/views/settings.php:513
-msgid "Delete data on uninstall"
+#: admin/views/settings.php:490
+msgid "Edit content"
+msgstr ""
+
+#: admin/views/settings.php:505
+#: public/views/affiliate-dashboard.php:448
+msgid "Close"
+msgstr ""
+
+#: admin/views/settings.php:511
+msgid "Leave a field empty to use the wording that ships with the plugin, which stays translatable through your language files."
 msgstr ""
 
 #: admin/views/settings.php:514
+msgid "Subject"
+msgstr ""
+
+#: admin/views/settings.php:525
+msgid "Message"
+msgstr ""
+
+#: admin/views/settings.php:535
+msgid "Placeholders you can use"
+msgstr ""
+
+#: admin/views/settings.php:543
+msgid "Done"
+msgstr ""
+
+#: admin/views/settings.php:544
+msgid "Changes are saved with the Save settings button."
+msgstr ""
+
+#: admin/views/settings.php:556
+msgid "Delete data on uninstall"
+msgstr ""
+
+#: admin/views/settings.php:557
 msgid "Permanently remove all affiliate tables, settings, and related user meta when the plugin is deleted."
 msgstr ""
 
-#: admin/views/settings.php:528
+#: admin/views/settings.php:571
 msgid "Shortcodes"
 msgstr ""
 
-#: admin/views/settings.php:529
+#: admin/views/settings.php:572
 msgid "Place these on any page to expose the affiliate program."
 msgstr ""
 
-#: admin/views/settings.php:534
+#: admin/views/settings.php:577
 msgid "Application form for new affiliates."
 msgstr ""
 
-#: admin/views/settings.php:538
+#: admin/views/settings.php:581
 msgid "Affiliate dashboard: referral link, stats, and history."
 msgstr ""
 
-#: admin/views/settings.php:545
+#: admin/views/settings.php:588
 msgid "Save settings"
 msgstr ""
 
@@ -1313,76 +1344,95 @@ msgstr ""
 msgid "Created from Directorist listing %s trigger."
 msgstr ""
 
-#: includes/class-email.php:44
+#: includes/class-email-templates.php:51
 msgid "New affiliate application"
 msgstr ""
 
-#. translators: 1: affiliate email, 2: admin URL.
-#: includes/class-email.php:47
-#, php-format
+#: includes/class-email-templates.php:52
 msgid ""
-"A new Directorist affiliate application was submitted by %1$s.\n"
+"A new affiliate application was submitted by {affiliate_email}.\n"
 "\n"
-"Review it here: %2$s"
+"Review it here: {admin_url}"
 msgstr ""
 
-#: includes/class-email.php:74
+#: includes/class-email-templates.php:56
+msgid "Application approved (to affiliate)"
+msgstr ""
+
+#: includes/class-email-templates.php:58
 msgid "Your affiliate application was approved"
 msgstr ""
 
-#: includes/class-email.php:75
-msgid "Your affiliate application was rejected"
+#: includes/class-email-templates.php:59
+msgid ""
+"Good news — your affiliate application for {site_name} has been approved.\n"
+"\n"
+"Your referral link is waiting on your dashboard: {dashboard_url}"
 msgstr ""
 
-#: includes/class-email.php:78
-msgid "Your Directorist affiliate application has been approved. You can now use your referral link from the affiliate dashboard."
+#: includes/class-email-templates.php:63
+msgid "Application rejected (to affiliate)"
 msgstr ""
 
-#: includes/class-email.php:79
-msgid "Your Directorist affiliate application has been rejected."
+#: includes/class-email-templates.php:65
+msgid "Your affiliate application was not approved"
 msgstr ""
 
-#: includes/class-email.php:105
-msgid "New affiliate referral recorded"
+#: includes/class-email-templates.php:66
+msgid "Thank you for applying to the {site_name} affiliate program. On this occasion your application was not approved."
 msgstr ""
 
-#. translators: 1: referral type, 2: commission amount.
-#: includes/class-email.php:108
-#, php-format
-msgid "A new \"%1$s\" referral was recorded with a commission amount of %2$s."
+#: includes/class-email-templates.php:72
+msgid "You earned a new referral"
 msgstr ""
 
-#: includes/class-email.php:130
+#: includes/class-email-templates.php:73
+msgid ""
+"A new \"{referral_type}\" referral was recorded, earning you {amount}.\n"
+"\n"
+"See it on your dashboard: {dashboard_url}"
+msgstr ""
+
+#: includes/class-email-templates.php:77
+msgid "Payout requested (to admin)"
+msgstr ""
+
+#: includes/class-email-templates.php:79
 msgid "New affiliate payout request"
 msgstr ""
 
-#. translators: 1: affiliate name, 2: amount, 3: admin URL.
-#: includes/class-email.php:133
-#, php-format
+#: includes/class-email-templates.php:80
 msgid ""
-"%1$s has requested a payout of %2$s.\n"
+"{affiliate_name} has requested a payout of {amount}, to be paid by {payout_method}.\n"
 "\n"
-"Review it here: %3$s"
+"Review it here: {admin_url}"
 msgstr ""
 
-#: includes/class-email.php:164
+#: includes/class-email-templates.php:84
+msgid "Payout paid (to affiliate)"
+msgstr ""
+
+#: includes/class-email-templates.php:86
 msgid "Your payout has been sent"
 msgstr ""
 
-#. translators: %s: amount paid.
-#: includes/class-email.php:167
-#, php-format
-msgid "Your payout of %s has been marked as paid."
+#: includes/class-email-templates.php:87
+msgid ""
+"Your payout of {amount} has been marked as paid, via {payout_method}.\n"
+"\n"
+"Thank you for promoting {site_name}."
 msgstr ""
 
-#: includes/class-email.php:171
+#: includes/class-email-templates.php:91
+msgid "Payout declined (to affiliate)"
+msgstr ""
+
+#: includes/class-email-templates.php:93
 msgid "Your payout request was declined"
 msgstr ""
 
-#. translators: %s: requested amount.
-#: includes/class-email.php:174
-#, php-format
-msgid "Your payout request of %s was not approved. Your commissions remain in your balance."
+#: includes/class-email-templates.php:94
+msgid "Your payout request of {amount} was not approved. Those commissions stay in your balance, so you can request them again."
 msgstr ""
 
 #: includes/class-link-search.php:57
@@ -1612,12 +1662,12 @@ msgstr ""
 msgid "Manual payout marked from admin."
 msgstr ""
 
-#: includes/class-plugin.php:175
+#: includes/class-plugin.php:182
 msgid "Directorist - Affiliate requires Directorist to be installed and active."
 msgstr ""
 
 #. translators: %s: minimum Directorist version.
-#: includes/class-plugin.php:194
+#: includes/class-plugin.php:201
 #, php-format
 msgid "Directorist - Affiliate requires Directorist %s or newer."
 msgstr ""
@@ -1994,10 +2044,6 @@ msgstr ""
 
 #: public/views/affiliate-dashboard.php:447
 msgid "Request a payout"
-msgstr ""
-
-#: public/views/affiliate-dashboard.php:448
-msgid "Close"
 msgstr ""
 
 #: public/views/affiliate-dashboard.php:455

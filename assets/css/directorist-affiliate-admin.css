@@ -1356,3 +1356,90 @@ a.directorist-affiliate-subtab-link.is-active {
 .directorist-affiliate-checkbox input {
 	margin: 0;
 }
+
+/* ---------------------------------------------------------------------------
+ * Email template editor
+ * ------------------------------------------------------------------------- */
+
+.directorist-affiliate-modal-body {
+	display: flex;
+	flex-direction: column;
+	gap: 16px;
+	padding: 20px 22px;
+}
+
+.directorist-affiliate-modal-body > .description {
+	margin: 0;
+}
+
+.directorist-affiliate-field.is-stacked {
+	display: flex;
+	flex-direction: column;
+	gap: 6px;
+	padding: 0;
+	border: 0;
+}
+
+.directorist-affiliate-field.is-stacked label {
+	font-size: 13px;
+	font-weight: 600;
+}
+
+.directorist-affiliate-admin .directorist-affiliate-field.is-stacked input,
+.directorist-affiliate-admin .directorist-affiliate-field.is-stacked textarea {
+	width: 100%;
+	max-width: none;
+	border-radius: var(--da-radius-sm);
+	border-color: var(--da-border-strong);
+	font-size: 13px;
+}
+
+.directorist-affiliate-admin .directorist-affiliate-field.is-stacked textarea {
+	line-height: 1.6;
+	resize: vertical;
+}
+
+.directorist-affiliate-tokens {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 6px;
+	align-items: center;
+	padding: 12px 14px;
+	border-radius: var(--da-radius-sm);
+	background: var(--da-surface-soft);
+}
+
+.directorist-affiliate-tokens-label {
+	width: 100%;
+	color: var(--da-text-muted);
+	font-size: 11px;
+	font-weight: 700;
+	letter-spacing: 0.06em;
+	text-transform: uppercase;
+}
+
+.directorist-affiliate-tokens code {
+	padding: 3px 8px;
+	border-radius: 5px;
+	background: var(--da-surface);
+	border: 1px solid var(--da-border);
+	font-size: 12px;
+}
+
+.directorist-affiliate-edit-email {
+	display: inline-flex !important;
+	align-items: center;
+	gap: 5px;
+	margin-inline-start: 12px !important;
+}
+
+.directorist-affiliate-edit-email .dashicons {
+	width: 15px;
+	height: 15px;
+	font-size: 15px;
+}
+
+.directorist-affiliate-modal-actions .description {
+	margin: 0;
+	margin-inline-end: auto;
+}

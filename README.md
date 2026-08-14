@@ -6,16 +6,17 @@ Affiliate tracking and fixed-commission referral system for [Directorist](https:
 
 | Item | Value |
 | --- | --- |
-| Version | 1.12.0 (plugin) / 0.3.0 (DB schema) |
+| Version | 1.13.0 (plugin) / 0.3.0 (DB schema) |
 | Author | [wpXplore](https://wpxplore.com) |
 | Website | https://wpxplore.com/tools/directorist-affiliate/ |
 | Requires | WordPress 6.3+, PHP 7.4+ |
 | Depends on | Directorist ≥ 8.7.3 (declared via `Requires Plugins: directorist`) |
-| Text domain | `directorist-affiliate` — fully translatable; POT template at `languages/directorist-affiliate.pot` |
+| Text domain | `directorist-affiliate` — fully translatable (Loco Translate, Poedit, any `.mo`); POT template at `languages/directorist-affiliate.pot`. **WPML/Polylang ready**: admin-entered wording is exposed via `wpml-config.xml` and registered for string translation |
 | Commission model | Fixed amounts for registration/listing events; **fixed or percentage of order total** for paid plan/featured orders; all filterable |
-| Revenue events | Pricing-plan purchases (requires Pricing Plans extension) and featured-listing purchases (requires Directorist monetization) — auto-disabled when the dependency is missing |
+| Revenue events | Pricing-plan purchases and featured-listing purchases. Both follow **your settings toggles only** — featured listings are core Directorist, not a Pricing Plans feature, so neither is gated on extension detection |
 | Payouts | Manual (recorded by admin; no gateway integration). Affiliates can **request** a payout from their dashboard; per-affiliate minimum enforced on both bulk payouts and requests |
 | Assets | One front-end stylesheet + one admin stylesheet + one vanilla JS file (AJAX forms, copy link, link builder, bulk select) |
+| Emails | Seven notifications, each with **editable subject and body** in a modal, placeholder tokens, and independent on/off toggles |
 | Forms | All forms submit via AJAX (`admin-ajax.php`) with full no-JavaScript POST fallbacks |
 | User guide | [DOCUMENTATION.md](DOCUMENTATION.md) |
 
@@ -377,11 +378,33 @@ Stored in one option, `directorist_affiliate_settings` (autoload off):
 
 Actions: `directorist_affiliate_created( $affiliate_id, $status )`, `directorist_affiliate_status_changed( $affiliate_id, $status )`, `directorist_affiliate_referral_created( $referral_id, $affiliate_id, $type )`, `directorist_affiliate_referral_reversed( $referral_id, $new_status, $order_status )`, `directorist_affiliate_payout_requested( $payout_id, $affiliate_id, $amount )`, `directorist_affiliate_payout_recorded( $payout_id, $affiliate_id, $amount, $referral_ids )`, `directorist_affiliate_payout_rejected( $payout_id, $affiliate_id )`.
 
-Filters: `directorist_affiliate_link_types( $types )` (content types in the link builder), `directorist_affiliate_payout_methods( $methods )` (how affiliates can be paid), `directorist_affiliate_dashboard_url( $url )` (where existing affiliates are sent), `directorist_affiliate_program_terms( $terms )`, `directorist_affiliate_should_track( $should_track, $code )` (veto tracking, e.g. before cookie consent), `directorist_affiliate_visit_dedupe_window( $seconds )`, `directorist_affiliate_registration_commission( $amount )`, `directorist_affiliate_listing_commission( $amount, $trigger )`, `directorist_affiliate_plan_commission( $amount, $order_total )`, `directorist_affiliate_featured_commission( $amount, $order_total )`.
+Filters: `directorist_affiliate_email_templates( $templates )` (default email wording and tokens), `directorist_affiliate_email_content( $email, $key, $tokens )` (rendered subject/body just before sending), `directorist_affiliate_link_types( $types )` (content types in the link builder), `directorist_affiliate_payout_methods( $methods )` (how affiliates can be paid), `directorist_affiliate_dashboard_url( $url )` (where existing affiliates are sent), `directorist_affiliate_program_terms( $terms )`, `directorist_affiliate_should_track( $should_track, $code )` (veto tracking, e.g. before cookie consent), `directorist_affiliate_visit_dedupe_window( $seconds )`, `directorist_affiliate_registration_commission( $amount )`, `directorist_affiliate_listing_commission( $amount, $trigger )`, `directorist_affiliate_plan_commission( $amount, $order_total )`, `directorist_affiliate_featured_commission( $amount, $order_total )`.
 
 Usage examples are in [DOCUMENTATION.md](DOCUMENTATION.md#developer-reference).
 
 ## Changelog
+
+### 1.13.0 — 2026-08-14
+
+Editable email wording, translation support end to end, and featured listings untied from Pricing Plans.
+
+**Featured listings are a core feature, not a Pricing Plans feature**
+- Featured-listing and plan commissions are no longer disabled when the Pricing Plans extension is not detected. Featured listings live in core Directorist under *Monetization → Featured Listings* with their own price, so gating them on an unrelated extension was simply wrong.
+- `Directorist_Affiliate_Commission::is_pricing_plans_active()` and `is_featured_monetization_active()` remain, but are now **advisory only** — they inform the settings screen and no longer suppress payment. A paid order cannot exist unless whatever sells it was active, so the order itself is the proof.
+
+**Editable email templates**
+- All seven notifications (application received, approved, rejected, new referral, payout requested, payout paid, payout declined) are now editable from *Settings → Notifications*, each in its own popup modal with subject, body, and the list of placeholder tokens it accepts.
+- Tokens: `{site_name}`, `{site_url}`, `{affiliate_name}`, `{affiliate_email}`, `{amount}`, `{referral_type}`, `{payout_method}`, `{dashboard_url}`, `{admin_url}`.
+- Leaving a field blank — or typing wording identical to the default — stores nothing, so that notification keeps following future default improvements and stays translatable through the POT. You are never silently frozen on an old default by opening the editor.
+- New filters: `directorist_affiliate_email_templates( $templates )` and `directorist_affiliate_email_content( $email, $key, $tokens )`.
+
+**Translation & WPML**
+- Verified end to end: every translatable literal in the plugin reaches `languages/directorist-affiliate.pot`, and no template contains raw untranslated text. Works with Loco Translate, Poedit, or a hand-built `.mo`.
+- Added `wpml-config.xml` so WPML String Translation picks up admin-entered wording (payout instructions and all seven email subjects/bodies) under *Admin Texts*.
+- Email overrides are additionally registered with `wpml_register_single_string` and resolved through `wpml_translate_single_string` at send time, under the context **Directorist - Affiliate**. Defaults deliberately bypass WPML and use the text domain instead, so an untouched template is translated once for every site rather than per string.
+
+**Also**
+- Cookie duration default confirmed and documented as **30 days**.
 
 ### 1.12.0 — 2026-08-14
 

@@ -34,9 +34,10 @@ Turn your visitors into promoters. This guide walks you through every screen of 
 7. [What your affiliates see](#what-your-affiliates-see)
 8. [Everyday workflows](#everyday-workflows)
 9. [Email notifications](#email-notifications)
-10. [Privacy & GDPR](#privacy--gdpr)
-11. [Developer reference](#developer-reference)
-12. [FAQ & troubleshooting](#faq--troubleshooting)
+10. [Translating the plugin](#translating-the-plugin)
+11. [Privacy & GDPR](#privacy--gdpr)
+12. [Developer reference](#developer-reference)
+13. [FAQ & troubleshooting](#faq--troubleshooting)
 
 ---
 
@@ -228,14 +229,39 @@ Good to know: free (0.00) orders never earn, one order can never be credited twi
 
 ### Notifications
 
-Three independent switches, all on by default:
+Five independent switches, all on by default, covering seven emails:
 
 - **New application (to admin)** — you get an email whenever someone applies.
-- **Application decision (to affiliate)** — the applicant is emailed when you approve or reject them.
+- **Application decision (to affiliate)** — the applicant is emailed when you approve or reject them (two templates, one switch).
 - **New referral (to affiliate)** — the affiliate is emailed each time one of their referrals converts. Turn this off if your affiliates are high-volume and would rather check the dashboard.
+- **Payout requested (to admin)** — you are told when an affiliate asks to be paid.
+- **Payout decision (to affiliate)** — the affiliate hears back when you mark a request paid or decline it (two templates, one switch).
+
+#### Editing the wording
+
+Every email has an **Edit** button that opens its own editor. Change the subject, the body, or both, then save the settings page as usual.
+
+Each editor lists the **placeholder tokens** that email accepts — type them in braces and they are replaced when the mail is sent:
+
+| Token | Becomes |
+| --- | --- |
+| `{site_name}` | Your site title |
+| `{site_url}` | Your home page URL |
+| `{affiliate_name}` | The affiliate's name |
+| `{affiliate_email}` | The affiliate's email address |
+| `{amount}` | The commission or payout amount, in your Directorist currency |
+| `{referral_type}` | What earned the commission, e.g. *Listing submission* |
+| `{payout_method}` | PayPal, Bank transfer or Cash |
+| `{dashboard_url}` | Link to the affiliate dashboard page |
+| `{admin_url}` | Link to the matching admin screen |
+
+A token an email does not list is left alone, so a stray `{amount}` in the application email is harmless rather than blank.
+
+**Leave a field empty to use the default.** The grey text you see in an empty field *is* the default that will be sent. Wording identical to the default is also stored as empty, so opening an editor and closing it again never freezes that email on today's wording — it keeps picking up future improvements, and it keeps being translated from the plugin's language files.
 
 ### Advanced
 
+- **Cookie duration** — how long a click keeps earning, **30 days** by default. The window is anchored to the visitor's *first* click, so returning through the link does not quietly extend it.
 - **Delete data on uninstall** — off by default. When on, deleting the plugin removes all tables, settings, and related user meta. Leave off if you might reinstall.
 - **Shortcodes** — a quick copy reference for the two page shortcodes.
 
@@ -356,11 +382,44 @@ A few things worth knowing:
 | New affiliate application | Site admin | Someone applies |
 | Application approved / rejected | The affiliate | You decide on their application |
 | New referral recorded | The affiliate | A conversion is credited to them |
+| Payout requested | Site admin | An affiliate requests a payout |
+| Payout paid / declined | The affiliate | You mark their request paid or reject it |
 | New account details | The new user | An account was auto-created during application |
 
-All emails are plain text via `wp_mail()`. The first three can be switched on or off individually in **Settings → Notifications**.
+All emails are plain text via `wp_mail()`. Every one except the account-details email can be switched off and **rewritten** in **Settings → Notifications** — see [Notifications](#notifications).
 
 > 💡 **Tip:** Pair this with an SMTP plugin (e.g. WP Mail SMTP) so notifications reliably reach inboxes.
+
+---
+
+## Translating the plugin
+
+Everything the plugin says is translatable. There are two kinds of text, and they are translated in two different places.
+
+### Text that ships with the plugin
+
+Buttons, labels, table headings, error messages and the **default** email wording all live in the code under the text domain `directorist-affiliate`, with a ready-made template at `languages/directorist-affiliate.pot`.
+
+**With Loco Translate** (easiest, no files to move):
+
+1. Install and activate *Loco Translate*.
+2. Go to **Loco Translate → Plugins → Directorist – Affiliate**.
+3. Click **New language**, pick your language, and keep the default location (*System* or *Custom*, not *Author*, so an update cannot overwrite it).
+4. Translate and hit **Save** — Loco compiles the `.mo` for you and the site switches over immediately.
+
+**With Poedit:** open `languages/directorist-affiliate.pot`, translate, and save as `directorist-affiliate-{locale}.po` (e.g. `directorist-affiliate-de_DE.po`) into `wp-content/languages/plugins/`.
+
+### Text you typed yourself
+
+Anything you type into the settings screen — your payout instructions, any email subject or body you rewrote — is stored in the database, so it never reaches the `.pot` file and Loco cannot see it. On a single-language site that is fine: you wrote it in the language you wanted.
+
+On a **multilingual site**, WPML and Polylang handle it:
+
+1. Install **WPML String Translation** (or Polylang's string translation).
+2. The plugin ships a `wpml-config.xml`, so WPML finds these automatically under **WPML → String Translation → Admin Texts → `directorist_affiliate_settings`**.
+3. Email overrides are also registered directly under the string-translation context **Directorist - Affiliate**, named `{template}_subject` and `{template}_body` — for example `affiliate_approved_subject`.
+
+> 💡 **Tip:** If you have *not* rewritten an email, do not translate it here — there will be nothing to find. Untouched emails are translated with the rest of the plugin, in your `.po` file, which is less work and survives being edited later.
 
 ---
 
@@ -406,6 +465,8 @@ Example — a "promote us" call to action for approved affiliates:
 | `directorist_affiliate_listing_commission` | Commission for a referred listing | `$amount, $trigger` |
 | `directorist_affiliate_plan_commission` | Commission for a referred plan purchase | `$amount, $order_total` |
 | `directorist_affiliate_featured_commission` | Commission for a referred featured purchase | `$amount, $order_total` |
+| `directorist_affiliate_email_templates` | Default email wording, toggles and tokens | `$templates` |
+| `directorist_affiliate_email_content` | A rendered subject/body, just before sending | `$email, $key, $tokens` |
 
 Example — double listing commissions during a promotion:
 
@@ -413,6 +474,18 @@ Example — double listing commissions during a promotion:
 add_filter( 'directorist_affiliate_listing_commission', function ( $amount, $trigger ) {
 	return $amount * 2;
 }, 10, 2 );
+```
+
+Example — append a signature to every affiliate-facing email:
+
+```php
+add_filter( 'directorist_affiliate_email_content', function ( $email, $key, $tokens ) {
+	if ( 0 === strpos( $key, 'affiliate_' ) ) {
+		$email['body'] .= "\n\n--\nThe " . $tokens['site_name'] . ' team';
+	}
+
+	return $email;
+}, 10, 3 );
 ```
 
 ### AJAX endpoints

@@ -60,14 +60,14 @@ final class Directorist_Affiliate_Commission {
 	public function program_terms(): array {
 		$terms = array();
 
-		if ( absint( $this->settings->get( 'enable_plan_commission', 1 ) ) && self::is_pricing_plans_active() ) {
+		if ( absint( $this->settings->get( 'enable_plan_commission', 1 ) ) ) {
 			$terms[] = array(
 				'label' => __( 'Plan purchases', 'directorist-affiliate' ),
 				'value' => $this->rate_label( 'plan_commission_type', 'plan_commission_value' ),
 			);
 		}
 
-		if ( absint( $this->settings->get( 'enable_featured_commission', 1 ) ) && self::is_featured_monetization_active() ) {
+		if ( absint( $this->settings->get( 'enable_featured_commission', 1 ) ) ) {
 			$terms[] = array(
 				'label' => __( 'Featured listings', 'directorist-affiliate' ),
 				'value' => $this->rate_label( 'featured_commission_type', 'featured_commission_value' ),
@@ -122,6 +122,10 @@ final class Directorist_Affiliate_Commission {
 	/**
 	 * Whether a pricing plans extension is active.
 	 *
+	 * Advisory only — used to hint on the settings screen. Commission
+	 * recording deliberately does NOT depend on it: a paid plan order can
+	 * only exist if the extension produced it.
+	 *
 	 * Supports Directorist Pricing Plans v4+ and the legacy fee manager.
 	 *
 	 * @return bool
@@ -132,6 +136,10 @@ final class Directorist_Affiliate_Commission {
 
 	/**
 	 * Whether Directorist featured-listing monetization is active.
+	 *
+	 * Advisory only. Featured listings are core Directorist (Monetization →
+	 * Featured Listings), independent of the Pricing Plans extension, and a
+	 * paid featured order proves the feature was purchasable.
 	 *
 	 * @return bool
 	 */
@@ -214,10 +222,6 @@ final class Directorist_Affiliate_Commission {
 			return null;
 		}
 
-		if ( ! self::is_pricing_plans_active() ) {
-			return null;
-		}
-
 		$amount = $this->compute(
 			(string) $this->settings->get( 'plan_commission_type', 'percentage' ),
 			(float) $this->settings->get( 'plan_commission_value', '0.00' ),
@@ -245,10 +249,6 @@ final class Directorist_Affiliate_Commission {
 	 */
 	public function featured_amount( float $order_total ): ?float {
 		if ( ! $this->settings->is_enabled() || ! absint( $this->settings->get( 'enable_featured_commission', 1 ) ) ) {
-			return null;
-		}
-
-		if ( ! self::is_featured_monetization_active() ) {
 			return null;
 		}
 

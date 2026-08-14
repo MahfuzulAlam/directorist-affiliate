@@ -1,0 +1,43 @@
+<wpml-config>
+	<!--
+		Makes admin-entered wording translatable in WPML. Anything typed into
+		settings lives in the database and never reaches the .pot file, so WPML
+		has to be told about it explicitly. Code strings are handled by the
+		text domain and languages/directorist-affiliate.pot instead.
+	-->
+	<admin-texts>
+		<key name="directorist_affiliate_settings">
+			<key name="payout_instructions" />
+			<key name="email_templates">
+				<key name="admin_application">
+					<key name="subject" />
+					<key name="body" />
+				</key>
+				<key name="affiliate_approved">
+					<key name="subject" />
+					<key name="body" />
+				</key>
+				<key name="affiliate_rejected">
+					<key name="subject" />
+					<key name="body" />
+				</key>
+				<key name="affiliate_referral">
+					<key name="subject" />
+					<key name="body" />
+				</key>
+				<key name="admin_payout_request">
+					<key name="subject" />
+					<key name="body" />
+				</key>
+				<key name="affiliate_payout_paid">
+					<key name="subject" />
+					<key name="body" />
+				</key>
+				<key name="affiliate_payout_rejected">
+					<key name="subject" />
+					<key name="body" />
+				</key>
+			</key>
+		</key>
+	</admin-texts>
+</wpml-config>

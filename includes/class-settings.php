@@ -53,6 +53,7 @@ final class Directorist_Affiliate_Settings {
 			'notify_affiliate_referral'  => 1,
 			'notify_admin_payout_request' => 1,
 			'notify_affiliate_payout'    => 1,
+			'email_templates'            => array(),
 			'anonymize_ip'               => 0,
 			'delete_data_on_uninstall'   => 0,
 		);
@@ -170,9 +171,27 @@ final class Directorist_Affiliate_Settings {
 			'notify_affiliate_referral'  => empty( $raw['notify_affiliate_referral'] ) ? 0 : 1,
 			'notify_admin_payout_request' => empty( $raw['notify_admin_payout_request'] ) ? 0 : 1,
 			'notify_affiliate_payout'    => empty( $raw['notify_affiliate_payout'] ) ? 0 : 1,
+			'email_templates'            => $this->sanitize_email_templates( $raw['email_templates'] ?? array() ),
 			'anonymize_ip'               => empty( $raw['anonymize_ip'] ) ? 0 : 1,
 			'delete_data_on_uninstall'   => empty( $raw['delete_data_on_uninstall'] ) ? 0 : 1,
 		);
+	}
+
+	/**
+	 * Sanitize submitted email template overrides.
+	 *
+	 * @param mixed $raw Raw value.
+	 *
+	 * @return array<string,array{subject:string,body:string}>
+	 */
+	private function sanitize_email_templates( $raw ): array {
+		if ( ! class_exists( 'Directorist_Affiliate_Email_Templates' ) ) {
+			return array();
+		}
+
+		$templates = new Directorist_Affiliate_Email_Templates( $this );
+
+		return $templates->sanitize( $raw );
 	}
 
 	/**

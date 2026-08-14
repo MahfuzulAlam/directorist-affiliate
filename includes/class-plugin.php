@@ -89,6 +89,13 @@ final class Directorist_Affiliate_Plugin {
 	public $payout_methods;
 
 	/**
+	 * Email template service.
+	 *
+	 * @var Directorist_Affiliate_Email_Templates
+	 */
+	public $email_templates;
+
+	/**
 	 * Registration service.
 	 *
 	 * @var Directorist_Affiliate_Registration
@@ -212,7 +219,8 @@ final class Directorist_Affiliate_Plugin {
 		$this->tracking     = new Directorist_Affiliate_Tracking( $this->settings, $this->affiliate );
 		$this->commission   = new Directorist_Affiliate_Commission( $this->settings );
 		$this->payout       = new Directorist_Affiliate_Payout( $this->referral, $this->affiliate );
-		$this->email        = new Directorist_Affiliate_Email( $this->settings );
+		$this->email_templates = new Directorist_Affiliate_Email_Templates( $this->settings );
+		$this->email        = new Directorist_Affiliate_Email( $this->settings, $this->email_templates );
 		$this->registration = new Directorist_Affiliate_Registration( $this->affiliate, $this->email, $this->settings );
 		$this->link_search  = new Directorist_Affiliate_Link_Search( $this->settings );
 		$this->payout_methods = new Directorist_Affiliate_Payout_Methods( $this->settings );
@@ -228,6 +236,9 @@ final class Directorist_Affiliate_Plugin {
 		if ( version_compare( ATBDP_VERSION, DIRECTORIST_AFFILIATE_MIN_DIRECTORIST, '<' ) ) {
 			return;
 		}
+
+		// Makes admin-entered email wording translatable in WPML/Polylang.
+		add_action( 'init', array( $this->email_templates, 'register_strings' ), 20 );
 
 		( new Directorist_Affiliate_Public( $this ) )->register();
 		$this->shortcodes->register();
