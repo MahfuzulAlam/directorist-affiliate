@@ -49,7 +49,7 @@ Turn your visitors into promoters. This guide walks you through every screen of 
 2. You **approve** them — they get a personal referral link like `https://yoursite.com/?ref=their-code`.
 3. Visitors who follow that link are **tracked with a cookie** (30 days by default, counted from their first click — returning later does not extend it).
 4. When a tracked visitor **registers**, **submits a listing**, or **pays for a pricing plan or featured listing**, the affiliate earns a commission — a fixed amount, or a percentage of the order total for paid purchases. Refunded or cancelled orders take their commission back automatically.
-5. You **approve the referral** and **record the payout**. Money moves through your own channel (PayPal, bank, etc.) — the plugin keeps the books and gives you a CSV for batch payments.
+5. You **approve the referral** and **record the payout**. Affiliates tell you how they want the money — **PayPal**, **Bank transfer** or **Cash** — and the plugin keeps the books, shows you the details to pay against, and gives you a CSV for batch payments. The money itself still moves through your own channel.
 
 > 💡 **Tip:** Commissions are flat amounts you control. Nothing is ever paid automatically — you always review first.
 
@@ -283,7 +283,12 @@ Add `[directorist_affiliate_dashboard]` to a page — and/or rely on the **Affil
 - **"Ready to be paid" as the headline figure**, followed by pending, paid-to-date and traffic. If you have set a **minimum payout**, a progress bar shows how close they are and exactly how much more they need — this is the question affiliates ask most often, so it is answered without them having to write to you.
 - **Pointing the link somewhere specific** — inside that same section, they pick what they're linking to (**Home page, Page, Post, Listing, Category, Location** or **Custom link**). Home page is selected by default, so the link is ready to share the moment the page loads. Choosing anything else reveals a search box: type part of a title, pick from the list, and the link updates. Custom link lets them paste any address on your site — links to other websites are refused, because a referral can only be tracked on your own domain. **The share buttons always match the link they just built.**
 - **Activity** — referrals and payouts in one card, switched with a tab rather than stacked, so the page stays short.
-- **Payout settings** — where they choose how to be paid (from the methods you allow) and enter the details: a PayPal email, their bank account, or a phone number for cash. Saving it once means they never retype it.
+- **Payout settings** — where they choose how to be paid, from the methods you allow:
+  - **PayPal** — asks for their PayPal email
+  - **Bank transfer** — asks for account holder name, bank name, and account number or IBAN (plus an optional routing/SWIFT/BIC for international payments)
+  - **Cash** — asks for a phone number so you can arrange the handover
+
+  Saving it once means they never retype it, and the fields change as they switch method.
 - **How you get paid** — their referral code, your minimum, your payout instructions, and a **Request payout** button. Clicking it opens a short form showing exactly what they'd be paid. If they have already saved payout details, those are shown with a **Change** link and nothing needs retyping; if not, the form asks how to pay them before it will submit — so **you never receive a request you cannot act on**. Whatever they enter becomes their saved default. If they have no approved balance, are below your minimum, or already have a request waiting, the button is disabled and the reason is shown.
 
 Sharing works on any URL: `?ref=CODE` can be appended to the homepage, a listing, a category — every entry page counts.

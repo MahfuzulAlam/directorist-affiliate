@@ -6,7 +6,7 @@ Affiliate tracking and fixed-commission referral system for [Directorist](https:
 
 | Item | Value |
 | --- | --- |
-| Version | 1.9.0 (plugin) / 0.3.0 (DB schema) |
+| Version | 1.9.1 (plugin) / 0.3.0 (DB schema) |
 | Author | [wpXplore](https://wpxplore.com) |
 | Website | https://wpxplore.com/tools/directorist-affiliate/ |
 | Requires | WordPress 6.3+, PHP 7.4+ |
@@ -164,7 +164,7 @@ Four custom tables (all `dbDelta`-managed, version tracked in option `directoris
 | `Directorist_Affiliate_View` | Static template renderer (`output()` prints, `render()` returns a string, `partial()` renders an admin partial with an isolated context) used by both admin screens and shortcodes. |
 | `Directorist_Affiliate_Autoloader` | Classmap `spl_autoload_register` loader; the map doubles as the plugin's class inventory. |
 | `Directorist_Affiliate_Registration` | Application processing shared by every entry point: `process_public()` (application gates, honeypot, per-IP rate limit of 5/hour for guests, validation, account creation, pending application) and `process_admin()` (status choice, user reuse). Callers do nonce/capability checks. |
-| `Directorist_Affiliate_Ajax` | `admin-ajax.php` endpoints for all four forms (`directorist_affiliate_register` incl. `nopriv`, `…_add_affiliate`, `…_save_settings`, `…_mark_paid`), returning JSON via `wp_send_json_*`. |
+| `Directorist_Affiliate_Ajax` | All `admin-ajax.php` endpoints, returning JSON via `wp_send_json_*`. Admin (via `guard_admin()`: capability + nonce) — `directorist_affiliate_add_affiliate`, `directorist_affiliate_save_settings`, `directorist_affiliate_mark_paid`. Affiliate (via `guard_affiliate()`: nonce + approved affiliate row) — `directorist_affiliate_search_content`, `directorist_affiliate_custom_link`, `directorist_affiliate_request_payout`, `directorist_affiliate_save_payout_method`. Public — `directorist_affiliate_register` only, the one action registered for `nopriv`. |
 
 ## Visit tracking details
 
@@ -339,6 +339,8 @@ Stored in one option, `directorist_affiliate_settings` (autoload off):
 | `notify_admin_application` | `1` | Email the admin when someone applies |
 | `notify_affiliate_status` | `1` | Email the applicant on approve/reject |
 | `notify_affiliate_referral` | `1` | Email the affiliate when a referral converts |
+| `notify_admin_payout_request` | `1` | Email the admin when an affiliate requests a payout |
+| `notify_affiliate_payout` | `1` | Email the affiliate when a payout request is paid or declined |
 | `anonymize_ip` | `0` | Truncate visit IPs via `wp_privacy_anonymize_ip()` at collection time |
 | `delete_data_on_uninstall` | `0` | Allow `uninstall.php` to drop tables/options/user meta on plugin delete |
 
@@ -370,13 +372,22 @@ Stored in one option, `directorist_affiliate_settings` (autoload off):
 
 ## Extensibility
 
-Actions: `directorist_affiliate_created( $affiliate_id, $status )`, `directorist_affiliate_status_changed( $affiliate_id, $status )`, `directorist_affiliate_referral_created( $referral_id, $affiliate_id, $type )`, `directorist_affiliate_referral_reversed( $referral_id, $new_status, $order_status )`, `directorist_affiliate_payout_recorded( $payout_id, $affiliate_id, $amount, $referral_ids )`.
+Actions: `directorist_affiliate_created( $affiliate_id, $status )`, `directorist_affiliate_status_changed( $affiliate_id, $status )`, `directorist_affiliate_referral_created( $referral_id, $affiliate_id, $type )`, `directorist_affiliate_referral_reversed( $referral_id, $new_status, $order_status )`, `directorist_affiliate_payout_requested( $payout_id, $affiliate_id, $amount )`, `directorist_affiliate_payout_recorded( $payout_id, $affiliate_id, $amount, $referral_ids )`, `directorist_affiliate_payout_rejected( $payout_id, $affiliate_id )`.
 
 Filters: `directorist_affiliate_link_types( $types )` (content types in the link builder; replaced the removed `directorist_affiliate_link_targets`), `directorist_affiliate_dashboard_url( $url )` (where existing affiliates are sent), `directorist_affiliate_program_terms( $terms )`, `directorist_affiliate_should_track( $should_track, $code )` (veto tracking, e.g. before cookie consent), `directorist_affiliate_visit_dedupe_window( $seconds )`, `directorist_affiliate_registration_commission( $amount )`, `directorist_affiliate_listing_commission( $amount, $trigger )`, `directorist_affiliate_plan_commission( $amount, $order_total )`, `directorist_affiliate_featured_commission( $amount, $order_total )`, `directorist_affiliate_link_targets( $targets, $code )` (destinations offered by the dashboard link builder).
 
 Usage examples are in [DOCUMENTATION.md](DOCUMENTATION.md#developer-reference).
 
 ## Changelog
+
+### 1.9.1 — 2026-08-14
+
+Documentation corrections, found by auditing the docs against the code rather than by reading them. No behaviour change.
+
+- **README settings table** was missing `notify_admin_payout_request` and `notify_affiliate_payout` — the 1.8.0 edit that should have added them silently matched nothing.
+- **Hooks reference** was missing `directorist_affiliate_payout_requested` and `directorist_affiliate_payout_rejected`.
+- **AJAX endpoint list** still described "all four forms" and named four actions; there are eight. Now grouped by the guard each one goes through, with every action name written out in full instead of an unsearchable `…_shorthand`.
+- **DOCUMENTATION** now names PayPal, Bank transfer and Cash explicitly where affiliates choose a method, and lists the fields each one asks for, instead of describing them only in passing.
 
 ### 1.9.0 — 2026-08-14
 
