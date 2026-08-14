@@ -152,6 +152,8 @@ final class Directorist_Affiliate_Affiliate {
 			'user_id'            => '%d',
 			'status'             => '%s',
 			'payout_email'       => '%s',
+			'payout_method'      => '%s',
+			'payout_details'     => '%s',
 			'website'            => '%s',
 			'promotional_method' => '%s',
 			'application_note'   => '%s',
@@ -171,7 +173,12 @@ final class Directorist_Affiliate_Affiliate {
 				continue;
 			}
 
-			if ( 'payout_email' === $key ) {
+			if ( 'payout_details' === $key ) {
+				// Already validated by Payout_Methods; stored as JSON.
+				$value = is_array( $value ) ? (string) wp_json_encode( $value ) : (string) $value;
+			} elseif ( 'payout_method' === $key ) {
+				$value = sanitize_key( $value );
+			} elseif ( 'payout_email' === $key ) {
 				$value = sanitize_email( $value );
 			} elseif ( 'website' === $key ) {
 				$value = esc_url_raw( $value );

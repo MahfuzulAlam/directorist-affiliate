@@ -46,6 +46,7 @@ final class Directorist_Affiliate_Ajax {
 		add_action( 'wp_ajax_directorist_affiliate_search_content', array( $this, 'search_content' ) );
 		add_action( 'wp_ajax_directorist_affiliate_custom_link', array( $this, 'custom_link' ) );
 		add_action( 'wp_ajax_directorist_affiliate_request_payout', array( $this, 'request_payout' ) );
+		add_action( 'wp_ajax_directorist_affiliate_save_payout_method', array( $this, 'save_payout_method' ) );
 	}
 
 	/**
@@ -55,17 +56,21 @@ final class Directorist_Affiliate_Ajax {
 	 */
 	public function request_payout(): void {
 		$affiliate = $this->guard_affiliate( 'directorist_affiliate_request_payout', 'directorist_affiliate_nonce' );
+		$note      = isset( $_POST['note'] ) ? sanitize_textarea_field( wp_unslash( $_POST['note'] ) ) : '';
 
-		$email = isset( $_POST['payout_email'] ) ? sanitize_email( wp_unslash( $_POST['payout_email'] ) ) : '';
-		$note  = isset( $_POST['note'] ) ? sanitize_textarea_field( wp_unslash( $_POST['note'] ) ) : '';
+		// Submitted details win; otherwise fall back to the saved default. One
+		// of the two must be complete, which is what "if not default they need
+		// to submit those information" comes down to.
+		$resolved = $this->resolve_payout_method( $affiliate, $_POST );
 
-		if ( ! is_email( $email ) ) {
-			wp_send_json_error( array( 'message' => __( 'Enter a valid email address for the payment.', 'directorist-affiliate' ) ), 400 );
+		if ( ! $resolved['valid'] ) {
+			wp_send_json_error( array( 'message' => $resolved['message'] ), 400 );
 		}
 
 		$result = $this->plugin->payout->request(
 			$affiliate,
-			$email,
+			$resolved['method'],
+			$resolved['details'],
 			$note,
 			(float) $this->plugin->settings->get( 'minimum_payout', '0.00' )
 		);
@@ -74,10 +79,8 @@ final class Directorist_Affiliate_Ajax {
 			wp_send_json_error( array( 'message' => $result['message'] ), 400 );
 		}
 
-		// Keep the affiliate's payout email in step with where they asked to be paid.
-		if ( $email !== $affiliate->payout_email ) {
-			$this->plugin->affiliate->update( (int) $affiliate->id, array( 'payout_email' => $email ) );
-		}
+		// Remember it, so the next request needs no re-entry.
+		$this->store_payout_method( $affiliate, $resolved['method'], $resolved['details'] );
 
 		$payout = $this->plugin->payout->get( $result['payout_id'] );
 
@@ -86,6 +89,111 @@ final class Directorist_Affiliate_Ajax {
 		}
 
 		wp_send_json_success( array( 'message' => $result['message'] ) );
+	}
+
+	/**
+	 * Save an affiliate's default payout method from the dashboard.
+	 *
+	 * @return void
+	 */
+	public function save_payout_method(): void {
+		$affiliate = $this->guard_affiliate( 'directorist_affiliate_payout_method', 'directorist_affiliate_nonce' );
+		$method    = isset( $_POST['payout_method'] ) ? sanitize_key( wp_unslash( $_POST['payout_method'] ) ) : '';
+		$raw       = isset( $_POST['payout_details'] ) && is_array( $_POST['payout_details'] ) ? $_POST['payout_details'] : array(); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- sanitized per field by Payout_Methods::validate().
+
+		$check = $this->plugin->payout_methods->validate( $method, $raw );
+
+		if ( ! $check['valid'] ) {
+			wp_send_json_error( array( 'message' => $check['message'] ), 400 );
+		}
+
+		$this->store_payout_method( $affiliate, $method, $check['details'] );
+
+		wp_send_json_success(
+			array(
+				'message' => __( 'Payout details saved.', 'directorist-affiliate' ),
+				'summary' => $this->plugin->payout_methods->summary( $method, $check['details'] ),
+			)
+		);
+	}
+
+	/**
+	 * Work out which payout method a request should use.
+	 *
+	 * @param object              $affiliate Affiliate row.
+	 * @param array<string,mixed> $request Raw request data.
+	 *
+	 * @return array{valid:bool,method:string,details:array<string,string>,message:string}
+	 */
+	private function resolve_payout_method( $affiliate, array $request ): array {
+		$methods  = $this->plugin->payout_methods;
+		$saved    = $methods->decode( $affiliate->payout_details ?? '' );
+		$stored   = (string) ( $affiliate->payout_method ?? '' );
+		$method   = isset( $request['payout_method'] ) ? sanitize_key( wp_unslash( $request['payout_method'] ) ) : '';
+		$supplied = isset( $request['payout_details'] ) && is_array( $request['payout_details'] ) ? $request['payout_details'] : array();
+
+		// Nothing submitted: the saved default must be usable on its own.
+		if ( ! $method ) {
+			if ( $methods->is_complete( $stored, $saved ) ) {
+				return array(
+					'valid'   => true,
+					'method'  => $stored,
+					'details' => $saved,
+					'message' => '',
+				);
+			}
+
+			return array(
+				'valid'   => false,
+				'method'  => '',
+				'details' => array(),
+				'message' => __( 'Choose how you would like to be paid and fill in the details.', 'directorist-affiliate' ),
+			);
+		}
+
+		// Re-using the saved method without re-typing its details.
+		if ( $method === $stored && ! $supplied && $methods->is_complete( $stored, $saved ) ) {
+			return array(
+				'valid'   => true,
+				'method'  => $stored,
+				'details' => $saved,
+				'message' => '',
+			);
+		}
+
+		$check = $methods->validate( $method, $supplied );
+
+		return array(
+			'valid'   => $check['valid'],
+			'method'  => $method,
+			'details' => $check['details'],
+			'message' => $check['message'],
+		);
+	}
+
+	/**
+	 * Persist an affiliate's payout method as their default.
+	 *
+	 * @param object               $affiliate Affiliate row.
+	 * @param string               $method Method key.
+	 * @param array<string,string> $details Validated details.
+	 *
+	 * @return void
+	 */
+	private function store_payout_method( $affiliate, string $method, array $details ): void {
+		$data = array(
+			'payout_method'  => $method,
+			'payout_details' => $details,
+		);
+
+		// Keep payout_email meaningful for methods that carry an address.
+		$contact = $this->plugin->payout_methods->contact_email( $method, $details );
+
+		if ( $contact ) {
+			$data['payout_email'] = $contact;
+		}
+
+		$this->plugin->affiliate->update( (int) $affiliate->id, $data );
 	}
 
 	/**

@@ -48,6 +48,18 @@ final class Directorist_Affiliate_View {
 	}
 
 	/**
+	 * Include a front-end partial from public/views/partials/.
+	 *
+	 * @param string              $partial Partial file name.
+	 * @param array<string,mixed> $context Variables exposed to the partial.
+	 *
+	 * @return void
+	 */
+	public static function public_partial( string $partial, array $context = array() ): void {
+		self::output( 'public/views/partials/' . $partial, $context );
+	}
+
+	/**
 	 * Render a view and return its output as a string.
 	 *
 	 * @param string              $view Plugin-relative view path, e.g. 'public/views/registration-form.php'.

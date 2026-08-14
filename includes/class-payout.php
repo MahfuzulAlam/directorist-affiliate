@@ -101,14 +101,15 @@ final class Directorist_Affiliate_Payout {
 	 * records which ones, but deliberately leaves them `approved` — no money
 	 * has moved, and an admin may still reject it.
 	 *
-	 * @param object $affiliate Affiliate row.
-	 * @param string $payout_email Where they want to be paid.
-	 * @param string $note Optional message to the admin.
-	 * @param float  $minimum Minimum payout, or 0 for none.
+	 * @param object               $affiliate Affiliate row.
+	 * @param string               $method Payout method key.
+	 * @param array<string,string> $details Validated method details.
+	 * @param string               $note Optional message to the admin.
+	 * @param float                $minimum Minimum payout, or 0 for none.
 	 *
 	 * @return array{success:bool,message:string,payout_id:int}
 	 */
-	public function request( $affiliate, string $payout_email, string $note, float $minimum = 0 ): array {
+	public function request( $affiliate, string $method, array $details, string $note, float $minimum = 0 ): array {
 		global $wpdb;
 
 		$affiliate_id = (int) $affiliate->id;
@@ -149,6 +150,19 @@ final class Directorist_Affiliate_Payout {
 			return $fail( __( 'You have no approved commissions to be paid yet.', 'directorist-affiliate' ) );
 		}
 
+		$contact_email = '';
+
+		foreach ( $details as $value ) {
+			if ( is_email( $value ) ) {
+				$contact_email = $value;
+				break;
+			}
+		}
+
+		if ( ! $contact_email ) {
+			$contact_email = (string) $affiliate->payout_email;
+		}
+
 		if ( $minimum > 0 && $amount < $minimum ) {
 			return $fail(
 				sprintf(
@@ -159,20 +173,23 @@ final class Directorist_Affiliate_Payout {
 			);
 		}
 
+		// Snapshot the method and details: the affiliate may change their bank
+		// account later, and this payout must still record how it was paid.
 		$inserted = $wpdb->insert(
 			$this->table(),
 			array(
 				'affiliate_id'   => $affiliate_id,
 				'amount'         => $amount,
 				'status'         => 'requested',
-				'payment_method' => 'manual',
-				'payout_email'   => sanitize_email( $payout_email ),
+				'payment_method' => sanitize_key( $method ),
+				'payout_email'   => sanitize_email( $contact_email ),
+				'payout_details' => (string) wp_json_encode( $details ),
 				'referral_ids'   => implode( ',', $referral_ids ),
 				'date_created'   => current_time( 'mysql' ),
 				'date_paid'      => null,
 				'notes'          => sanitize_textarea_field( $note ),
 			),
-			array( '%d', '%f', '%s', '%s', '%s', '%s', '%s', '%s', '%s' )
+			array( '%d', '%f', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s' )
 		);
 
 		if ( ! $inserted ) {

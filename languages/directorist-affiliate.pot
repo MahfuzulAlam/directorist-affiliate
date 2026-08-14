@@ -2,14 +2,14 @@
 # This file is distributed under the GPL v2 or later.
 msgid ""
 msgstr ""
-"Project-Id-Version: Directorist - Affiliate 1.8.0\n"
+"Project-Id-Version: Directorist - Affiliate 1.9.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/directorist-affiliate\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-08-14T13:53:33+00:00\n"
+"POT-Creation-Date: 2026-08-14T16:41:48+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: directorist-affiliate\n"
@@ -155,9 +155,8 @@ msgstr ""
 
 #: admin/views/affiliates.php:43
 #: admin/views/affiliates.php:84
-#: admin/views/payouts-history.php:65
 #: admin/views/payouts-unpaid.php:103
-#: public/views/affiliate-dashboard.php:341
+#: public/views/affiliate-dashboard.php:389
 #: public/views/registration-form.php:108
 msgid "Payout email"
 msgstr ""
@@ -189,7 +188,7 @@ msgid "Application note"
 msgstr ""
 
 #: admin/views/affiliates.php:70
-#: public/views/affiliate-dashboard.php:388
+#: public/views/affiliate-dashboard.php:454
 msgid "Cancel"
 msgstr ""
 
@@ -261,7 +260,7 @@ msgid "Approve"
 msgstr ""
 
 #: admin/views/affiliates.php:157
-#: admin/views/payouts-requests.php:112
+#: admin/views/payouts-requests.php:122
 #: admin/views/referrals.php:77
 #: admin/views/referrals.php:145
 msgid "Reject"
@@ -370,7 +369,7 @@ msgstr ""
 
 #: admin/views/dashboard.php:110
 #: admin/views/payouts-history.php:81
-#: admin/views/payouts-requests.php:83
+#: admin/views/payouts-requests.php:85
 #: admin/views/payouts-unpaid.php:115
 #: admin/views/referrals.php:111
 #: admin/views/visits.php:60
@@ -453,6 +452,10 @@ msgstr ""
 msgid "Amount"
 msgstr ""
 
+#: admin/views/payouts-history.php:65
+msgid "Paid by"
+msgstr ""
+
 #: admin/views/payouts-history.php:67
 #: public/views/affiliate-dashboard.php:260
 #: public/views/affiliate-dashboard.php:268
@@ -464,25 +467,25 @@ msgid "Notes"
 msgstr ""
 
 #: admin/views/payouts-history.php:84
-#: admin/views/payouts-requests.php:86
+#: admin/views/payouts-requests.php:88
 msgid "View referrals"
 msgstr ""
 
 #. translators: %s: number of commissions covered by the payout.
 #. translators: %s: number of commissions.
-#: admin/views/payouts-history.php:96
-#: admin/views/payouts-requests.php:97
+#: admin/views/payouts-history.php:101
+#: admin/views/payouts-requests.php:107
 #, php-format
 msgid "%s commission"
 msgid_plural "%s commissions"
 msgstr[0] ""
 msgstr[1] ""
 
-#: admin/views/payouts-history.php:115
+#: admin/views/payouts-history.php:120
 msgid "No payouts match the current filters."
 msgstr ""
 
-#: admin/views/payouts-history.php:116
+#: admin/views/payouts-history.php:121
 msgid "No payouts recorded yet."
 msgstr ""
 
@@ -505,7 +508,7 @@ msgstr ""
 #: admin/views/payouts-requests.php:44
 #: admin/views/payouts-requests.php:69
 #: includes/class-payout.php:71
-#: public/views/affiliate-dashboard.php:307
+#: public/views/affiliate-dashboard.php:355
 msgid "Requested"
 msgstr ""
 
@@ -518,29 +521,29 @@ msgstr[0] ""
 msgstr[1] ""
 
 #: admin/views/payouts-requests.php:67
-msgid "Pay to"
+msgid "Pay by"
 msgstr ""
 
 #: admin/views/payouts-requests.php:68
 msgid "Covers"
 msgstr ""
 
-#: admin/views/payouts-requests.php:109
+#: admin/views/payouts-requests.php:119
 #: admin/views/referrals.php:148
 msgid "Mark paid"
 msgstr ""
 
-#: admin/views/payouts-requests.php:122
+#: admin/views/payouts-requests.php:132
 msgid "No open payout requests. Requests from affiliates appear here for approval."
 msgstr ""
 
-#: admin/views/payouts-requests.php:133
+#: admin/views/payouts-requests.php:143
 msgid "Marking a request paid pays every commission it still covers; rejecting leaves them in the affiliate's balance."
 msgstr ""
 
 #. translators: %s: number of payouts.
 #: admin/views/payouts-unpaid.php:36
-#: includes/class-ajax.php:261
+#: includes/class-ajax.php:369
 #, php-format
 msgid "%s payout recorded."
 msgid_plural "%s payouts recorded."
@@ -690,17 +693,17 @@ msgid "Payout"
 msgstr ""
 
 #: admin/views/settings.php:28
-#: admin/views/settings.php:336
+#: admin/views/settings.php:366
 msgid "Notifications"
 msgstr ""
 
 #: admin/views/settings.php:32
-#: admin/views/settings.php:412
+#: admin/views/settings.php:442
 msgid "Advanced"
 msgstr ""
 
 #: admin/views/settings.php:41
-#: includes/class-ajax.php:226
+#: includes/class-ajax.php:334
 msgid "Settings saved."
 msgstr ""
 
@@ -724,12 +727,12 @@ msgstr ""
 #: admin/views/settings.php:252
 #: admin/views/settings.php:279
 #: admin/views/settings.php:302
-#: admin/views/settings.php:348
-#: admin/views/settings.php:362
-#: admin/views/settings.php:376
-#: admin/views/settings.php:390
-#: admin/views/settings.php:404
-#: admin/views/settings.php:424
+#: admin/views/settings.php:378
+#: admin/views/settings.php:392
+#: admin/views/settings.php:406
+#: admin/views/settings.php:420
+#: admin/views/settings.php:434
+#: admin/views/settings.php:454
 msgid "Enabled"
 msgstr ""
 
@@ -935,7 +938,7 @@ msgid "New referrals are created as Approved (payable immediately) instead of Pe
 msgstr ""
 
 #: admin/views/settings.php:315
-#: public/views/affiliate-dashboard.php:350
+#: public/views/affiliate-dashboard.php:398
 msgid "Minimum payout"
 msgstr ""
 
@@ -944,78 +947,98 @@ msgid "Bulk payouts skip affiliates whose selected total is below this amount. U
 msgstr ""
 
 #: admin/views/settings.php:325
-msgid "Payout instructions"
+msgid "Available payout methods"
 msgstr ""
 
 #: admin/views/settings.php:326
-msgid "Shown to affiliates on their dashboard — payment schedule, method, or who to contact."
+msgid "What affiliates can choose from when they ask to be paid. Each method asks them for the details it needs. Leaving all unticked keeps every method available."
 msgstr ""
 
-#: admin/views/settings.php:341
-msgid "New application (to admin)"
+#: admin/views/settings.php:331
+msgid "PayPal — asks for a PayPal email"
 msgstr ""
 
-#: admin/views/settings.php:342
-msgid "Email the site admin when someone applies to the program."
+#: admin/views/settings.php:332
+msgid "Bank transfer — asks for account details"
+msgstr ""
+
+#: admin/views/settings.php:333
+msgid "Cash — asks for a phone number"
 msgstr ""
 
 #: admin/views/settings.php:355
-msgid "Application decision (to affiliate)"
+msgid "Payout instructions"
 msgstr ""
 
 #: admin/views/settings.php:356
+msgid "Shown to affiliates on their dashboard — payment schedule, method, or who to contact."
+msgstr ""
+
+#: admin/views/settings.php:371
+msgid "New application (to admin)"
+msgstr ""
+
+#: admin/views/settings.php:372
+msgid "Email the site admin when someone applies to the program."
+msgstr ""
+
+#: admin/views/settings.php:385
+msgid "Application decision (to affiliate)"
+msgstr ""
+
+#: admin/views/settings.php:386
 msgid "Email the applicant when you approve or reject their application."
 msgstr ""
 
-#: admin/views/settings.php:369
+#: admin/views/settings.php:399
 msgid "New referral (to affiliate)"
 msgstr ""
 
-#: admin/views/settings.php:370
+#: admin/views/settings.php:400
 msgid "Email the affiliate each time one of their referrals converts."
 msgstr ""
 
-#: admin/views/settings.php:383
+#: admin/views/settings.php:413
 msgid "Payout requested (to you)"
 msgstr ""
 
-#: admin/views/settings.php:384
+#: admin/views/settings.php:414
 msgid "Email you when an affiliate asks to be paid, so requests do not sit unnoticed."
 msgstr ""
 
-#: admin/views/settings.php:397
+#: admin/views/settings.php:427
 msgid "Payout decision (to affiliate)"
 msgstr ""
 
-#: admin/views/settings.php:398
+#: admin/views/settings.php:428
 msgid "Email the affiliate when you pay or decline their payout request."
 msgstr ""
 
-#: admin/views/settings.php:417
+#: admin/views/settings.php:447
 msgid "Delete data on uninstall"
 msgstr ""
 
-#: admin/views/settings.php:418
+#: admin/views/settings.php:448
 msgid "Permanently remove all affiliate tables, settings, and related user meta when the plugin is deleted."
 msgstr ""
 
-#: admin/views/settings.php:432
+#: admin/views/settings.php:462
 msgid "Shortcodes"
 msgstr ""
 
-#: admin/views/settings.php:433
+#: admin/views/settings.php:463
 msgid "Place these on any page to expose the affiliate program."
 msgstr ""
 
-#: admin/views/settings.php:438
+#: admin/views/settings.php:468
 msgid "Application form for new affiliates."
 msgstr ""
 
-#: admin/views/settings.php:442
+#: admin/views/settings.php:472
 msgid "Affiliate dashboard: referral link, stats, and history."
 msgstr ""
 
-#: admin/views/settings.php:449
+#: admin/views/settings.php:479
 msgid "Save settings"
 msgstr ""
 
@@ -1098,46 +1121,50 @@ msgstr ""
 msgid "Suspended"
 msgstr ""
 
-#: includes/class-ajax.php:63
-msgid "Enter a valid email address for the payment."
+#: includes/class-ajax.php:114
+msgid "Payout details saved."
 msgstr ""
 
-#: includes/class-ajax.php:103
+#: includes/class-ajax.php:150
+msgid "Choose how you would like to be paid and fill in the details."
+msgstr ""
+
+#: includes/class-ajax.php:211
 msgid "Choose what you want to link to."
 msgstr ""
 
-#: includes/class-ajax.php:114
+#: includes/class-ajax.php:222
 #: includes/class-shortcodes.php:122
 msgid "Nothing matched. Try a different word from the title."
 msgstr ""
 
-#: includes/class-ajax.php:156
-#: includes/class-ajax.php:183
-#: includes/class-ajax.php:304
+#: includes/class-ajax.php:264
+#: includes/class-ajax.php:291
+#: includes/class-ajax.php:412
 msgid "Security check failed. Please reload the page and try again."
 msgstr ""
 
-#: includes/class-ajax.php:167
+#: includes/class-ajax.php:275
 msgid "This is only available to approved affiliates."
 msgstr ""
 
-#: includes/class-ajax.php:244
+#: includes/class-ajax.php:352
 msgid "Select at least one referral to mark as paid."
 msgstr ""
 
-#: includes/class-ajax.php:255
+#: includes/class-ajax.php:363
 msgid "No payouts recorded. Only approved referrals can be paid."
 msgstr ""
 
 #. translators: %s: number of affiliates.
-#: includes/class-ajax.php:268
+#: includes/class-ajax.php:376
 #, php-format
 msgid "%s affiliate was skipped for being below the minimum payout."
 msgid_plural "%s affiliates were skipped for being below the minimum payout."
 msgstr[0] ""
 msgstr[1] ""
 
-#: includes/class-ajax.php:297
+#: includes/class-ajax.php:405
 msgid "You are not allowed to do that."
 msgstr ""
 
@@ -1389,63 +1416,157 @@ msgstr ""
 msgid "Created from paid %1$s order #%2$d."
 msgstr ""
 
+#: includes/class-payout-methods.php:43
+msgid "PayPal"
+msgstr ""
+
+#: includes/class-payout-methods.php:44
+msgid "Paid to your PayPal account."
+msgstr ""
+
+#: includes/class-payout-methods.php:47
+msgid "PayPal email"
+msgstr ""
+
+#: includes/class-payout-methods.php:50
+msgid "The email address your PayPal account is registered to."
+msgstr ""
+
+#: includes/class-payout-methods.php:55
+msgid "Bank transfer"
+msgstr ""
+
+#: includes/class-payout-methods.php:56
+msgid "Paid straight into your bank account."
+msgstr ""
+
+#: includes/class-payout-methods.php:59
+msgid "Account holder name"
+msgstr ""
+
+#: includes/class-payout-methods.php:62
+msgid "Exactly as it appears on the account."
+msgstr ""
+
+#: includes/class-payout-methods.php:65
+msgid "Bank name"
+msgstr ""
+
+#: includes/class-payout-methods.php:71
+msgid "Account number or IBAN"
+msgstr ""
+
+#: includes/class-payout-methods.php:77
+msgid "Routing, SWIFT or BIC"
+msgstr ""
+
+#: includes/class-payout-methods.php:80
+msgid "Optional, but usually needed for international transfers."
+msgstr ""
+
+#: includes/class-payout-methods.php:85
+msgid "Cash"
+msgstr ""
+
+#: includes/class-payout-methods.php:86
+msgid "Collected in person or arranged by phone."
+msgstr ""
+
+#: includes/class-payout-methods.php:89
+msgid "Phone number"
+msgstr ""
+
+#: includes/class-payout-methods.php:92
+msgid "So we can reach you to arrange the handover."
+msgstr ""
+
+#: includes/class-payout-methods.php:143
+msgid "Not set"
+msgstr ""
+
+#: includes/class-payout-methods.php:172
+msgid "Choose how you would like to be paid."
+msgstr ""
+
+#. translators: %s: name of the missing field.
+#: includes/class-payout-methods.php:189
+#, php-format
+msgid "Please fill in \"%s\"."
+msgstr ""
+
+#. translators: %s: name of the field holding an invalid email.
+#: includes/class-payout-methods.php:201
+#, php-format
+msgid "\"%s\" does not look like a valid email address."
+msgstr ""
+
+#: includes/class-payout-methods.php:251
+msgid "No payout method set"
+msgstr ""
+
+#. translators: 1: payout method name, 2: the account details.
+#: includes/class-payout-methods.php:268
+#, php-format
+msgid "%1$s — %2$s"
+msgstr ""
+
 #: includes/class-payout.php:72
 #: includes/class-referral.php:62
 msgid "Paid"
 msgstr ""
 
-#: includes/class-payout.php:125
+#: includes/class-payout.php:126
 msgid "Only approved affiliates can request a payout."
 msgstr ""
 
-#: includes/class-payout.php:129
+#: includes/class-payout.php:130
 msgid "You already have a payout request waiting to be processed."
 msgstr ""
 
-#: includes/class-payout.php:149
+#: includes/class-payout.php:150
 msgid "You have no approved commissions to be paid yet."
 msgstr ""
 
 #. translators: %s: minimum payout amount.
-#: includes/class-payout.php:156
+#: includes/class-payout.php:170
 #, php-format
 msgid "You need at least %s in approved commissions before requesting a payout."
 msgstr ""
 
-#: includes/class-payout.php:179
+#: includes/class-payout.php:196
 msgid "Could not record your request. Please try again."
 msgstr ""
 
-#: includes/class-payout.php:195
+#: includes/class-payout.php:212
 msgid "Your payout request has been sent. We will email you once it is processed."
 msgstr ""
 
-#: includes/class-payout.php:218
+#: includes/class-payout.php:235
 msgid "That payout request is no longer open."
 msgstr ""
 
-#: includes/class-payout.php:240
+#: includes/class-payout.php:257
 msgid "None of the commissions in this request are payable any more. Reject it instead."
 msgstr ""
 
-#: includes/class-payout.php:261
+#: includes/class-payout.php:278
 msgid "Could not update the payout. Please try again."
 msgstr ""
 
-#: includes/class-payout.php:282
+#: includes/class-payout.php:299
 msgid "Payout marked as paid."
 msgstr ""
 
-#: includes/class-payout.php:477
+#: includes/class-payout.php:494
 msgid "Manual payout marked from admin."
 msgstr ""
 
-#: includes/class-plugin.php:168
+#: includes/class-plugin.php:175
 msgid "Directorist - Affiliate requires Directorist to be installed and active."
 msgstr ""
 
 #. translators: %s: minimum Directorist version.
-#: includes/class-plugin.php:187
+#: includes/class-plugin.php:194
 #, php-format
 msgid "Directorist - Affiliate requires Directorist %s or newer."
 msgstr ""
@@ -1590,7 +1711,7 @@ msgstr ""
 msgid "You have not applied for the affiliate program yet."
 msgstr ""
 
-#: includes/class-shortcodes.php:405
+#: includes/class-shortcodes.php:416
 msgid "Security check failed. Please try again."
 msgstr ""
 
@@ -1756,69 +1877,103 @@ msgstr ""
 msgid "Once approved commissions are paid out, each payment is listed here."
 msgstr ""
 
-#: public/views/affiliate-dashboard.php:291
-msgid "How you get paid"
+#: public/views/affiliate-dashboard.php:293
+msgid "Payout settings"
 msgstr ""
 
 #: public/views/affiliate-dashboard.php:295
-#: public/views/affiliate-dashboard.php:299
+msgid "Ready"
+msgstr ""
+
+#: public/views/affiliate-dashboard.php:297
+msgid "Not set up"
+msgstr ""
+
+#. translators: %s: the affiliate's saved payout method and details.
+#: public/views/affiliate-dashboard.php:307
+#, php-format
+msgid "Payments go to: %s"
+msgstr ""
+
+#: public/views/affiliate-dashboard.php:313
+msgid "Tell us how to pay you. You can save it here once, or fill it in when you request a payout."
+msgstr ""
+
+#: public/views/affiliate-dashboard.php:331
+msgid "Save payout details"
+msgstr ""
+
+#: public/views/affiliate-dashboard.php:332
+msgid "Only the site owner can see these details."
+msgstr ""
+
+#: public/views/affiliate-dashboard.php:339
+msgid "How you get paid"
+msgstr ""
+
+#: public/views/affiliate-dashboard.php:343
+#: public/views/affiliate-dashboard.php:347
 msgid "Request payout"
 msgstr ""
 
 #. translators: 1: requested amount, 2: date requested.
-#: public/views/affiliate-dashboard.php:313
+#: public/views/affiliate-dashboard.php:361
 #, php-format
 msgid "You asked for %1$s on %2$s. We will email you once it has been processed."
 msgstr ""
 
-#: public/views/affiliate-dashboard.php:324
+#: public/views/affiliate-dashboard.php:372
 msgid "You can request a payout once you have approved commissions waiting."
 msgstr ""
 
 #. translators: %s: minimum payout amount.
-#: public/views/affiliate-dashboard.php:330
+#: public/views/affiliate-dashboard.php:378
 #, php-format
 msgid "You can request a payout once your approved balance reaches %s."
 msgstr ""
 
-#: public/views/affiliate-dashboard.php:345
+#: public/views/affiliate-dashboard.php:393
 msgid "Your code"
 msgstr ""
 
-#: public/views/affiliate-dashboard.php:363
+#: public/views/affiliate-dashboard.php:411
 msgid "Request a payout"
 msgstr ""
 
-#: public/views/affiliate-dashboard.php:364
+#: public/views/affiliate-dashboard.php:412
 msgid "Close"
 msgstr ""
 
-#: public/views/affiliate-dashboard.php:371
+#: public/views/affiliate-dashboard.php:419
 msgid "Amount to be paid"
 msgstr ""
 
-#: public/views/affiliate-dashboard.php:373
+#: public/views/affiliate-dashboard.php:421
 msgid "Every approved commission in your balance right now."
 msgstr ""
 
-#: public/views/affiliate-dashboard.php:377
-msgid "Pay me at"
+#: public/views/affiliate-dashboard.php:427
+msgid "Paying to"
 msgstr ""
 
-#: public/views/affiliate-dashboard.php:379
-msgid "Changing this updates the payout email on your account."
+#: public/views/affiliate-dashboard.php:430
+msgid "Change"
 msgstr ""
 
-#: public/views/affiliate-dashboard.php:383
+#: public/views/affiliate-dashboard.php:449
 msgid "Note (optional)"
 msgstr ""
 
-#: public/views/affiliate-dashboard.php:384
+#: public/views/affiliate-dashboard.php:450
 msgid "Anything the team should know about this payment…"
 msgstr ""
 
-#: public/views/affiliate-dashboard.php:389
+#: public/views/affiliate-dashboard.php:455
 msgid "Send request"
+msgstr ""
+
+#: public/views/partials/payout-method-fields.php:25
+msgid "How would you like to be paid?"
 msgstr ""
 
 #: public/views/registration-form.php:17

@@ -64,7 +64,7 @@ $directorist_affiliate_notice = isset( $_GET['directorist_affiliate_notice'] ) ?
 			<tr>
 				<th><?php esc_html_e( 'Affiliate', 'directorist-affiliate' ); ?></th>
 				<th class="is-num"><?php esc_html_e( 'Amount', 'directorist-affiliate' ); ?></th>
-				<th><?php esc_html_e( 'Pay to', 'directorist-affiliate' ); ?></th>
+				<th><?php esc_html_e( 'Pay by', 'directorist-affiliate' ); ?></th>
 				<th><?php esc_html_e( 'Covers', 'directorist-affiliate' ); ?></th>
 				<th><?php esc_html_e( 'Requested', 'directorist-affiliate' ); ?></th>
 				<th><?php esc_html_e( 'Actions', 'directorist-affiliate' ); ?></th>
@@ -76,6 +76,8 @@ $directorist_affiliate_notice = isset( $_GET['directorist_affiliate_notice'] ) ?
 					<?php
 					$affiliate = $affiliates_map[ (int) $request->affiliate_id ] ?? null;
 					$covers    = $plugin->payout->referral_ids( $request );
+					$method    = (string) $request->payment_method;
+					$details   = $plugin->payout_methods->decode( $request->payout_details ?? '' );
 					$base_url  = Directorist_Affiliate_Admin::page_url( 'payouts', array( 'section' => 'requests' ) );
 					?>
 					<tr>
@@ -88,7 +90,15 @@ $directorist_affiliate_notice = isset( $_GET['directorist_affiliate_notice'] ) ?
 							<?php endif; ?>
 						</td>
 						<td class="is-num"><strong><?php echo esc_html( Directorist_Affiliate_Commission::format_money( (float) $request->amount ) ); ?></strong></td>
-						<td><?php echo esc_html( $request->payout_email ? $request->payout_email : '—' ); ?></td>
+						<td>
+							<strong><?php echo esc_html( $plugin->payout_methods->label( $method ) ); ?></strong>
+							<?php foreach ( $details as $detail_value ) : ?>
+								<span class="directorist-affiliate-cell-sub"><?php echo esc_html( $detail_value ); ?></span>
+							<?php endforeach; ?>
+							<?php if ( ! $details && $request->payout_email ) : ?>
+								<span class="directorist-affiliate-cell-sub"><?php echo esc_html( $request->payout_email ); ?></span>
+							<?php endif; ?>
+						</td>
 						<td>
 							<?php
 							echo esc_html(

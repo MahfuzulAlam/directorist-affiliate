@@ -291,6 +291,17 @@ final class Directorist_Affiliate_Shortcodes {
 				'payout_instructions' => $this->plugin->settings->get( 'payout_instructions', '' ),
 				'minimum_payout'      => (float) $this->plugin->settings->get( 'minimum_payout', '0.00' ),
 				'open_request'        => $this->plugin->payout->open_request( (int) $affiliate->id ),
+				'payout_methods'      => $this->plugin->payout_methods->enabled(),
+				'payout_method'       => (string) ( $affiliate->payout_method ?? '' ),
+				'payout_details'      => $this->plugin->payout_methods->decode( $affiliate->payout_details ?? '' ),
+				'payout_ready'        => $this->plugin->payout_methods->is_complete(
+					(string) ( $affiliate->payout_method ?? '' ),
+					$this->plugin->payout_methods->decode( $affiliate->payout_details ?? '' )
+				),
+				'payout_summary'      => $this->plugin->payout_methods->summary(
+					(string) ( $affiliate->payout_method ?? '' ),
+					$this->plugin->payout_methods->decode( $affiliate->payout_details ?? '' )
+				),
 				'cookie_duration'     => absint( $this->plugin->settings->get( 'cookie_duration', 30 ) ),
 				'site_name'           => get_bloginfo( 'name' ),
 			)

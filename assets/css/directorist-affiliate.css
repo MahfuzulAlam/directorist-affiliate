@@ -765,6 +765,46 @@
 
 .da-request-amount .da-stat-value { color: var(--da-accent); font-size: 1.75rem; }
 
+/* Payout method picker */
+
+.da-payout-form { display: flex; flex-direction: column; gap: 16px; }
+.da-methods { display: flex; flex-direction: column; gap: 16px; }
+.da-method-fields[hidden] { display: none; }
+
+.da-request-method {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 10px 16px;
+	align-items: center;
+	justify-content: space-between;
+	padding: 14px 16px;
+	border: 1px solid var(--da-line);
+	border-radius: var(--da-radius-sm);
+	background: var(--da-sunken);
+}
+
+.da-request-method[hidden] { display: none; }
+.da-request-method-value { display: block; margin-top: 2px; font-size: .9375rem; font-weight: 600; }
+[data-da-method-wrap][hidden] { display: none; }
+
+.directorist-affiliate-wrap .da-methods select {
+	width: 100%;
+	max-width: 340px;
+	padding: 11px 14px;
+	border: 1px solid var(--da-line-strong);
+	border-radius: var(--da-radius-sm);
+	background: var(--da-surface);
+	color: var(--da-ink);
+	font: inherit;
+	font-size: .9375rem;
+}
+
+.directorist-affiliate-wrap .da-methods select:focus {
+	outline: none;
+	border-color: var(--da-accent);
+	box-shadow: var(--da-ring);
+}
+
 /* Modal — native <dialog>, so focus trapping and Escape come from the browser. */
 
 .directorist-affiliate-wrap .da-modal,

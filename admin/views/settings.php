@@ -322,6 +322,36 @@ $featured_available = Directorist_Affiliate_Commission::is_featured_monetization
 
 				<div class="directorist-affiliate-field">
 					<div class="directorist-affiliate-field-label">
+						<label><?php esc_html_e( 'Available payout methods', 'directorist-affiliate' ); ?></label>
+						<p class="description"><?php esc_html_e( 'What affiliates can choose from when they ask to be paid. Each method asks them for the details it needs. Leaving all unticked keeps every method available.', 'directorist-affiliate' ); ?></p>
+					</div>
+					<div class="directorist-affiliate-field-control">
+						<?php
+						$directorist_affiliate_all_methods = array(
+							'paypal' => __( 'PayPal — asks for a PayPal email', 'directorist-affiliate' ),
+							'bank'   => __( 'Bank transfer — asks for account details', 'directorist-affiliate' ),
+							'cash'   => __( 'Cash — asks for a phone number', 'directorist-affiliate' ),
+						);
+						$directorist_affiliate_chosen = (array) $settings['payout_methods'];
+						?>
+						<div class="directorist-affiliate-checkboxes">
+							<?php foreach ( $directorist_affiliate_all_methods as $directorist_affiliate_key => $directorist_affiliate_label ) : ?>
+								<label class="directorist-affiliate-checkbox">
+									<input
+										type="checkbox"
+										name="payout_methods[]"
+										value="<?php echo esc_attr( $directorist_affiliate_key ); ?>"
+										<?php checked( in_array( $directorist_affiliate_key, $directorist_affiliate_chosen, true ) ); ?>
+									/>
+									<span><?php echo esc_html( $directorist_affiliate_label ); ?></span>
+								</label>
+							<?php endforeach; ?>
+						</div>
+					</div>
+				</div>
+
+				<div class="directorist-affiliate-field">
+					<div class="directorist-affiliate-field-label">
 						<label for="directorist-affiliate-payout-instructions"><?php esc_html_e( 'Payout instructions', 'directorist-affiliate' ); ?></label>
 						<p class="description"><?php esc_html_e( 'Shown to affiliates on their dashboard — payment schedule, method, or who to contact.', 'directorist-affiliate' ); ?></p>
 					</div>

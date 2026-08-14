@@ -1337,3 +1337,22 @@ a.directorist-affiliate-subtab-link.is-active {
 /* Payout request states reuse the referral badge palette. */
 .directorist-affiliate-badge.is-requested { background: var(--da-warning-bg); color: var(--da-warning); }
 .directorist-affiliate-badge.is-rejected { background: var(--da-danger-bg); color: var(--da-danger); }
+
+/* Multi-select settings field (payout methods). */
+.directorist-affiliate-checkboxes {
+	display: flex;
+	flex-direction: column;
+	gap: 9px;
+}
+
+.directorist-affiliate-checkbox {
+	display: flex;
+	gap: 9px;
+	align-items: center;
+	font-size: 13px;
+	color: var(--da-text);
+}
+
+.directorist-affiliate-checkbox input {
+	margin: 0;
+}

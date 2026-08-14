@@ -286,6 +286,54 @@ $da_shortfall = max( 0, $minimum_payout - (float) $approved_commission );
 		&& (float) $approved_commission > 0
 		&& ( $minimum_payout <= 0 || (float) $approved_commission >= $minimum_payout );
 	?>
+
+	<?php if ( $da_approved && ! empty( $payout_methods ) ) : ?>
+		<section class="da-card da-payout-settings" aria-labelledby="da-payout-settings-title">
+			<div class="da-payout-head">
+				<h2 id="da-payout-settings-title"><?php esc_html_e( 'Payout settings', 'directorist-affiliate' ); ?></h2>
+				<?php if ( $payout_ready ) : ?>
+					<span class="da-badge is-approved"><?php esc_html_e( 'Ready', 'directorist-affiliate' ); ?></span>
+				<?php else : ?>
+					<span class="da-badge is-pending"><?php esc_html_e( 'Not set up', 'directorist-affiliate' ); ?></span>
+				<?php endif; ?>
+			</div>
+
+			<p class="da-muted">
+				<?php if ( $payout_ready ) : ?>
+					<?php
+					echo esc_html(
+						sprintf(
+							/* translators: %s: the affiliate's saved payout method and details. */
+							__( 'Payments go to: %s', 'directorist-affiliate' ),
+							$payout_summary
+						)
+					);
+					?>
+				<?php else : ?>
+					<?php esc_html_e( 'Tell us how to pay you. You can save it here once, or fill it in when you request a payout.', 'directorist-affiliate' ); ?>
+				<?php endif; ?>
+			</p>
+
+			<form method="post" class="da-payout-form" data-da-ajax="directorist_affiliate_save_payout_method" data-da-success="reload">
+				<?php wp_nonce_field( 'directorist_affiliate_payout_method', 'directorist_affiliate_nonce' ); ?>
+				<?php
+				Directorist_Affiliate_View::public_partial(
+					'payout-method-fields.php',
+					array(
+						'payout_methods' => $payout_methods,
+						'payout_method'  => $payout_method,
+						'payout_details' => $payout_details,
+						'id_prefix'      => 'da-payout-settings',
+					)
+				);
+				?>
+				<div class="da-form-foot">
+					<button type="submit" class="da-btn"><?php esc_html_e( 'Save payout details', 'directorist-affiliate' ); ?></button>
+					<p class="da-muted"><?php esc_html_e( 'Only the site owner can see these details.', 'directorist-affiliate' ); ?></p>
+				</div>
+			</form>
+		</section>
+	<?php endif; ?>
 	<section class="da-card da-payout-info">
 		<div class="da-payout-head">
 			<h2><?php esc_html_e( 'How you get paid', 'directorist-affiliate' ); ?></h2>
@@ -373,10 +421,28 @@ $da_shortfall = max( 0, $minimum_payout - (float) $approved_commission );
 					<span class="da-stat-meta"><?php esc_html_e( 'Every approved commission in your balance right now.', 'directorist-affiliate' ); ?></span>
 				</div>
 
-				<div class="da-field">
-					<label for="da-request-email"><?php esc_html_e( 'Pay me at', 'directorist-affiliate' ); ?><span class="da-req" aria-hidden="true">*</span></label>
-					<input id="da-request-email" type="email" name="payout_email" required value="<?php echo esc_attr( $affiliate->payout_email ); ?>" />
-					<small class="da-hint"><?php esc_html_e( 'Changing this updates the payout email on your account.', 'directorist-affiliate' ); ?></small>
+				<?php if ( $payout_ready ) : ?>
+					<div class="da-request-method" data-da-saved-method>
+						<div>
+							<span class="da-stat-label"><?php esc_html_e( 'Paying to', 'directorist-affiliate' ); ?></span>
+							<span class="da-request-method-value"><?php echo esc_html( $payout_summary ); ?></span>
+						</div>
+						<button type="button" class="da-btn da-btn--ghost" data-da-change-method><?php esc_html_e( 'Change', 'directorist-affiliate' ); ?></button>
+					</div>
+				<?php endif; ?>
+
+				<div data-da-method-wrap <?php echo $payout_ready ? 'hidden' : ''; ?>>
+					<?php
+					Directorist_Affiliate_View::public_partial(
+						'payout-method-fields.php',
+						array(
+							'payout_methods' => $payout_methods,
+							'payout_method'  => $payout_method,
+							'payout_details' => $payout_details,
+							'id_prefix'      => 'da-request',
+						)
+					);
+					?>
 				</div>
 
 				<div class="da-field">

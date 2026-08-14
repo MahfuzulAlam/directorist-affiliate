@@ -269,6 +269,93 @@
 	} );
 
 	/* -----------------------------------------------------------------------
+	 * Payout method pickers
+	 *
+	 * Only the chosen method's fields are shown, and the rest are *disabled*
+	 * rather than merely hidden — a hidden input still posts, which would
+	 * send half-filled details for a method the affiliate did not pick.
+	 * --------------------------------------------------------------------- */
+
+	function syncMethodFields( scope ) {
+		var select = scope.querySelector( '[data-da-method-select]' );
+
+		if ( ! select ) {
+			return;
+		}
+
+		// Inside the request modal the whole block can be collapsed behind a
+		// saved default; collapsed means "use what is on file", so nothing in
+		// here should be submitted at all.
+		var wrap    = scope.closest( '[data-da-method-wrap]' );
+		var dormant = !! ( wrap && wrap.hidden );
+
+		Array.prototype.forEach.call( scope.querySelectorAll( '[data-da-method-fields]' ), function ( group ) {
+			var active = group.getAttribute( 'data-da-method-fields' ) === select.value;
+
+			group.hidden = ! active;
+
+			Array.prototype.forEach.call( group.querySelectorAll( 'input' ), function ( input ) {
+				input.disabled = dormant || ! active;
+			} );
+		} );
+
+		select.disabled = dormant;
+
+		var hint   = scope.querySelector( '[data-da-method-hint]' );
+		var option = select.options[ select.selectedIndex ];
+
+		if ( hint && option ) {
+			hint.textContent = option.getAttribute( 'data-hint' ) || '';
+		}
+	}
+
+	Array.prototype.forEach.call( document.querySelectorAll( '[data-da-methods]' ), function ( scope ) {
+		syncMethodFields( scope );
+
+		var select = scope.querySelector( '[data-da-method-select]' );
+
+		if ( select ) {
+			select.addEventListener( 'change', function () {
+				syncMethodFields( scope );
+			} );
+		}
+	} );
+
+	// "Change" swaps the saved-method summary for the full picker.
+	document.addEventListener( 'click', function ( event ) {
+		var trigger = event.target.closest( '[data-da-change-method]' );
+
+		if ( ! trigger ) {
+			return;
+		}
+
+		var form    = trigger.closest( 'form' );
+		var wrap    = form ? form.querySelector( '[data-da-method-wrap]' ) : null;
+		var summary = form ? form.querySelector( '[data-da-saved-method]' ) : null;
+
+		if ( ! wrap ) {
+			return;
+		}
+
+		wrap.hidden = false;
+
+		if ( summary ) {
+			summary.hidden = true;
+		}
+
+		var scope = wrap.querySelector( '[data-da-methods]' );
+
+		if ( scope ) {
+			syncMethodFields( scope );
+			var select = scope.querySelector( '[data-da-method-select]' );
+
+			if ( select ) {
+				select.focus();
+			}
+		}
+	} );
+
+	/* -----------------------------------------------------------------------
 	 * Select-all checkboxes in admin tables
 	 * --------------------------------------------------------------------- */
 

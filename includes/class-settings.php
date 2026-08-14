@@ -43,6 +43,7 @@ final class Directorist_Affiliate_Settings {
 			'featured_commission_value'  => '0.00',
 			'auto_approve_commissions'   => 0,
 			'minimum_payout'             => '0.00',
+			'payout_methods'             => array( 'paypal', 'bank', 'cash' ),
 			'payout_instructions'        => '',
 			'notify_admin_application'   => 1,
 			'notify_affiliate_status'    => 1,
@@ -150,6 +151,7 @@ final class Directorist_Affiliate_Settings {
 			),
 			'auto_approve_commissions'   => empty( $raw['auto_approve_commissions'] ) ? 0 : 1,
 			'minimum_payout'             => $this->sanitize_amount( $raw['minimum_payout'] ?? $defaults['minimum_payout'] ),
+			'payout_methods'             => $this->sanitize_payout_methods( $raw['payout_methods'] ?? $defaults['payout_methods'] ),
 			'payout_instructions'        => isset( $raw['payout_instructions'] ) ? sanitize_textarea_field( wp_unslash( $raw['payout_instructions'] ) ) : '',
 			'notify_admin_application'   => empty( $raw['notify_admin_application'] ) ? 0 : 1,
 			'notify_affiliate_status'    => empty( $raw['notify_affiliate_status'] ) ? 0 : 1,
@@ -159,6 +161,21 @@ final class Directorist_Affiliate_Settings {
 			'anonymize_ip'               => empty( $raw['anonymize_ip'] ) ? 0 : 1,
 			'delete_data_on_uninstall'   => empty( $raw['delete_data_on_uninstall'] ) ? 0 : 1,
 		);
+	}
+
+	/**
+	 * Sanitize the list of offered payout methods.
+	 *
+	 * @param mixed $methods Raw value.
+	 *
+	 * @return string[]
+	 */
+	private function sanitize_payout_methods( $methods ): array {
+		$known = array( 'paypal', 'bank', 'cash' );
+		$clean = array_values( array_intersect( $known, array_map( 'sanitize_key', (array) $methods ) ) );
+
+		// Never leave zero methods enabled: that would silently block payouts.
+		return $clean ? $clean : $known;
 	}
 
 	/**

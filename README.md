@@ -6,7 +6,7 @@ Affiliate tracking and fixed-commission referral system for [Directorist](https:
 
 | Item | Value |
 | --- | --- |
-| Version | 1.8.0 (plugin) / 0.2.0 (DB schema) |
+| Version | 1.9.0 (plugin) / 0.3.0 (DB schema) |
 | Author | [wpXplore](https://wpxplore.com) |
 | Website | https://wpxplore.com/tools/directorist-affiliate/ |
 | Requires | WordPress 6.3+, PHP 7.4+ |
@@ -110,6 +110,7 @@ Four custom tables (all `dbDelta`-managed, version tracked in option `directoris
 | `status` | `pending` \| `approved` \| `rejected` \| `suspended` (indexed) |
 | `referral_code` | **Unique**. Generated from user ID (or an 8-char random string), suffixed `-1`, `-2`… on collision |
 | `payout_email`, `website`, `promotional_method`, `application_note` | Application data |
+| `payout_method`, `payout_details` | Chosen payout method and its details as JSON (added in DB 0.3.0) |
 | `date_created`, `date_updated` | Timestamps |
 
 ### `{prefix}directorist_affiliate_visits`
@@ -253,6 +254,22 @@ The **Share via** buttons (WhatsApp, X, Facebook, email) are rebuilt in JavaScri
 
 The builder's JavaScript lives in its own file (`assets/js/link-builder.js`) enqueued **only by the dashboard shortcode, and only for approved affiliates** — it never loads elsewhere on the site. The combobox implements the ARIA pattern (arrow keys, Enter, Escape), debounces at 300ms, and aborts superseded requests so a slow earlier search cannot overwrite a newer one.
 
+### Payout methods
+
+Affiliates are paid one of three ways, defined once in `Directorist_Affiliate_Payout_Methods::all()` and generated from there everywhere else — the dashboard form, the request modal, and the admin summary:
+
+| Method | Asks for |
+| --- | --- |
+| **PayPal** | PayPal email |
+| **Bank transfer** | Account holder name, bank name, account number/IBAN, plus optional routing/SWIFT/BIC |
+| **Cash** | Phone number |
+
+The admin chooses which are offered (Settings → Payout → *Available payout methods*, stored in `payout_methods`). Unticking everything falls back to all three rather than silently disabling payouts. Adding a method means adding one entry to `all()`, or hooking `directorist_affiliate_payout_methods`.
+
+Affiliates set a default in the dashboard's **Payout settings** section, saved through `directorist_affiliate_save_payout_method`. Details are validated per field type (`email` must parse, `tel` keeps only digits and phone punctuation, text is `sanitize_text_field`), required fields are enforced, and unknown keys are dropped. Stored as JSON on `affiliates.payout_details`, with `payout_method` alongside; for methods carrying an email, `payout_email` is kept in sync so existing screens and exports still work.
+
+**Each payout snapshots the method and details it used** (`payouts.payment_method` + `payouts.payout_details`), so changing a bank account later never rewrites what an earlier payment recorded.
+
 ### Payout requests
 
 Affiliates claim their approved commissions from the dashboard rather than waiting to be noticed. **Request payout** opens a `<dialog>` modal showing the amount (server-rendered — never an editable field) and their payout email, and posts to `directorist_affiliate_request_payout` through the same `guard_affiliate()` gate as the link builder.
@@ -261,9 +278,11 @@ The lifecycle is `requested → paid | rejected`, all on the existing `status` c
 
 | Step | What happens |
 | --- | --- |
-| **Request** | Writes a `requested` payout row covering every currently-approved commission, recording their IDs. The referrals stay `approved` — no money has moved and the request may still be declined. One open request per affiliate. |
+| **Request** | Writes a `requested` payout row covering every currently-approved commission, recording their IDs and a snapshot of the payout method. The referrals stay `approved` — no money has moved and the request may still be declined. One open request per affiliate. |
 | **Mark paid** | **Recalculates** the amount from the referrals that are *still* approved (a commission can be refunded between request and payment), flips those to `paid`, stores the corrected amount and covered IDs, and stamps `date_paid`. Refuses if nothing is payable any more. |
 | **Reject** | Marks the row `rejected` with a reason; the commissions stay in the affiliate's balance so they can request again. |
+
+**Payout details are required to request.** If a usable default is on file the modal shows it with a *Change* button and nothing needs retyping; if not, the method picker and its fields are shown and must be completed. Whatever is submitted becomes the new default. Server-side, `resolve_payout_method()` accepts submitted details, or falls back to the saved default only when it is complete for a still-enabled method.
 
 Requesting is blocked — with the reason shown, not just a disabled button — when the affiliate is unapproved, has no approved balance, is below `minimum_payout`, or already has an open request. The amount and covered referrals are always derived server-side from the affiliate's own rows.
 
@@ -358,6 +377,19 @@ Filters: `directorist_affiliate_link_types( $types )` (content types in the link
 Usage examples are in [DOCUMENTATION.md](DOCUMENTATION.md#developer-reference).
 
 ## Changelog
+
+### 1.9.0 — 2026-08-14
+
+**Payout methods.** Affiliates now say *how* they want to be paid, not just where.
+
+- Three methods — **PayPal** (PayPal email), **Bank transfer** (account holder, bank, account number/IBAN, optional routing/SWIFT) and **Cash** (phone number). Each is defined once, and the dashboard form, request modal and admin views are all generated from that definition.
+- **Admin picks which are available** in Settings → Payout. Unticking everything falls back to all three rather than silently blocking payouts.
+- New **Payout settings** section on the affiliate dashboard to save a default; switching method swaps the fields, and non-selected fields are *disabled*, not merely hidden, so a half-filled method can never be submitted.
+- **Requesting a payout requires details.** With a saved default the modal shows it and a *Change* button; without one it asks up front. Anything submitted becomes the new default.
+- Validation is per field type: emails must parse, phone numbers keep only digits and phone punctuation, text is sanitized, required fields are enforced and unknown keys dropped. A method the admin later disables stops counting as a usable default.
+- **Payouts snapshot the method and details used**, so changing a bank account later never rewrites an earlier payment's record. Admin Requests and History show how to pay, not just an email.
+
+**Database:** schema 0.2.0 → **0.3.0**, adding `payout_method` and `payout_details` to affiliates and `payout_details` to payouts. Applied by `dbDelta` on upgrade; existing rows are untouched.
 
 ### 1.8.0 — 2026-08-14
 

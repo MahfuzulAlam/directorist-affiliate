@@ -159,7 +159,9 @@ The click log per affiliate: the landing page they arrived on, the site they cam
 
 This screen has three sub-tabs.
 
-**Requests** — where affiliates' payout claims land. You see who is asking, how much, which email to pay, how many commissions it covers, and any note they left. **Mark paid** settles it: the covered commissions become Paid and the affiliate is emailed. **Reject** declines it and leaves those commissions in their balance, so they can ask again later. If any requests are open, this is the tab you land on, and the tab label shows how many.
+**Requests** — where affiliates' payout claims land. You see who is asking, how much, **how to pay them** (the method and its details — PayPal email, bank account, or phone for cash), how many commissions it covers, and any note they left. **Mark paid** settles it: the covered commissions become Paid and the affiliate is emailed. **Reject** declines it and leaves those commissions in their balance, so they can ask again later. If any requests are open, this is the tab you land on, and the tab label shows how many.
+
+> 💡 The method and details are recorded **on the payout itself**, so if an affiliate later changes their bank account, older payments still show where the money actually went.
 
 > 💡 If a commission gets refunded between the request and your payment, it is dropped automatically — you pay only what is still legitimately owed, and the recorded amount is corrected to match. If nothing is left payable, reject the request instead.
 
@@ -281,7 +283,8 @@ Add `[directorist_affiliate_dashboard]` to a page — and/or rely on the **Affil
 - **"Ready to be paid" as the headline figure**, followed by pending, paid-to-date and traffic. If you have set a **minimum payout**, a progress bar shows how close they are and exactly how much more they need — this is the question affiliates ask most often, so it is answered without them having to write to you.
 - **Pointing the link somewhere specific** — inside that same section, they pick what they're linking to (**Home page, Page, Post, Listing, Category, Location** or **Custom link**). Home page is selected by default, so the link is ready to share the moment the page loads. Choosing anything else reveals a search box: type part of a title, pick from the list, and the link updates. Custom link lets them paste any address on your site — links to other websites are refused, because a referral can only be tracked on your own domain. **The share buttons always match the link they just built.**
 - **Activity** — referrals and payouts in one card, switched with a tab rather than stacked, so the page stays short.
-- **How you get paid** — their payout email, referral code, your minimum, your payout instructions, and a **Request payout** button. Clicking it opens a short form showing exactly what they'd be paid; submitting it sends you a request. If they have no approved balance, are below your minimum, or already have a request waiting, the button is disabled and the reason is shown.
+- **Payout settings** — where they choose how to be paid (from the methods you allow) and enter the details: a PayPal email, their bank account, or a phone number for cash. Saving it once means they never retype it.
+- **How you get paid** — their referral code, your minimum, your payout instructions, and a **Request payout** button. Clicking it opens a short form showing exactly what they'd be paid. If they have already saved payout details, those are shown with a **Change** link and nothing needs retyping; if not, the form asks how to pay them before it will submit — so **you never receive a request you cannot act on**. Whatever they enter becomes their saved default. If they have no approved balance, are below your minimum, or already have a request waiting, the button is disabled and the reason is shown.
 
 Sharing works on any URL: `?ref=CODE` can be appended to the homepage, a listing, a category — every entry page counts.
 

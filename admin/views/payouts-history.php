@@ -62,7 +62,7 @@ Directorist_Affiliate_View::partial(
 				<th><?php esc_html_e( 'Affiliate', 'directorist-affiliate' ); ?></th>
 				<th class="is-num"><?php esc_html_e( 'Amount', 'directorist-affiliate' ); ?></th>
 				<th><?php esc_html_e( 'Status', 'directorist-affiliate' ); ?></th>
-				<th><?php esc_html_e( 'Payout email', 'directorist-affiliate' ); ?></th>
+				<th><?php esc_html_e( 'Paid by', 'directorist-affiliate' ); ?></th>
 				<th><?php esc_html_e( 'Commissions', 'directorist-affiliate' ); ?></th>
 				<th><?php esc_html_e( 'Date paid', 'directorist-affiliate' ); ?></th>
 				<th><?php esc_html_e( 'Notes', 'directorist-affiliate' ); ?></th>
@@ -87,7 +87,12 @@ Directorist_Affiliate_View::partial(
 						</td>
 						<td class="is-num"><strong><?php echo esc_html( Directorist_Affiliate_Commission::format_money( (float) $payout->amount ) ); ?></strong></td>
 						<td><span class="directorist-affiliate-badge is-<?php echo esc_attr( sanitize_html_class( $payout->status ) ); ?>"><?php echo esc_html( $plugin->payout->status_label( (string) $payout->status ) ); ?></span></td>
-						<td><?php echo esc_html( $payout->payout_email ? $payout->payout_email : '—' ); ?></td>
+						<td>
+							<?php echo esc_html( $plugin->payout_methods->label( (string) $payout->payment_method ) ); ?>
+							<?php if ( $payout->payout_email ) : ?>
+								<span class="directorist-affiliate-cell-sub"><?php echo esc_html( $payout->payout_email ); ?></span>
+							<?php endif; ?>
+						</td>
 						<td>
 							<?php
 							echo esc_html(
