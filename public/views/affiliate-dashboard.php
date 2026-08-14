@@ -20,6 +20,22 @@ $da_share_msg = sprintf(
 // Progress toward the payout threshold, when the site sets one.
 $da_progress = $minimum_payout > 0 ? min( 100, ( (float) $approved_commission / $minimum_payout ) * 100 ) : 0;
 $da_shortfall = max( 0, $minimum_payout - (float) $approved_commission );
+
+// Whether a payout can be requested right now.
+$da_can_request = $da_approved
+	&& empty( $open_request )
+	&& (float) $approved_commission > 0
+	&& ( $minimum_payout <= 0 || (float) $approved_commission >= $minimum_payout );
+
+// Tabs are built here so one that has nothing to show is never rendered.
+$da_tabs = array();
+
+if ( $da_approved ) {
+	$da_tabs['link'] = __( 'Your link', 'directorist-affiliate' );
+}
+
+$da_tabs['referrals'] = __( 'Referrals', 'directorist-affiliate' );
+$da_tabs['payouts']   = __( 'Payouts', 'directorist-affiliate' );
 ?>
 <div class="directorist-affiliate-wrap directorist-affiliate-dashboard">
 
@@ -51,91 +67,6 @@ $da_shortfall = max( 0, $minimum_payout - (float) $approved_commission );
 				</p>
 			</div>
 		</div>
-	<?php endif; ?>
-
-	<?php if ( $da_approved ) : ?>
-		<section class="da-share" aria-labelledby="da-share-title" data-da-builder>
-			<div class="da-share-head">
-				<h2 id="da-share-title"><?php esc_html_e( 'Your referral link', 'directorist-affiliate' ); ?></h2>
-				<p>
-					<?php
-					echo esc_html(
-						sprintf(
-							/* translators: %d: number of days the referral cookie lasts. */
-							_n(
-								'Anyone who arrives through this link stays credited to you for %d day.',
-								'Anyone who arrives through this link stays credited to you for %d days.',
-								(int) $cookie_duration,
-								'directorist-affiliate'
-							),
-							(int) $cookie_duration
-						)
-					);
-					?>
-				</p>
-			</div>
-
-			<div class="da-builder-row">
-				<div class="da-field">
-					<label for="da-builder-type">
-						<?php esc_html_e( 'Where should it point?', 'directorist-affiliate' ); ?>
-						<span class="da-tip" tabindex="0" role="note" aria-label="<?php esc_attr_e( 'Choose the kind of content first. A search box appears next to it so you can find the exact item by name, and your link updates as you pick.', 'directorist-affiliate' ); ?>">
-							<span aria-hidden="true">?</span>
-						</span>
-					</label>
-					<select id="da-builder-type" data-da-builder-type>
-						<?php foreach ( $link_types as $da_type_key => $da_type ) : ?>
-							<option value="<?php echo esc_attr( $da_type_key ); ?>" data-hint="<?php echo esc_attr( $da_type['hint'] ); ?>" data-kind="<?php echo esc_attr( $da_type['kind'] ); ?>">
-								<?php echo esc_html( $da_type['label'] ); ?>
-							</option>
-						<?php endforeach; ?>
-					</select>
-					<small class="da-hint" data-da-builder-hint><?php echo esc_html( $link_types ? reset( $link_types )['hint'] : '' ); ?></small>
-				</div>
-
-				<div class="da-field da-combo" data-da-builder-search hidden>
-					<label for="da-builder-search"><?php esc_html_e( 'Find it by name', 'directorist-affiliate' ); ?></label>
-					<input
-						id="da-builder-search"
-						type="text"
-						autocomplete="off"
-						role="combobox"
-						aria-expanded="false"
-						aria-autocomplete="list"
-						aria-controls="da-builder-results"
-						placeholder="<?php esc_attr_e( 'Start typing a title…', 'directorist-affiliate' ); ?>"
-					/>
-					<ul class="da-combo-list" id="da-builder-results" role="listbox" hidden></ul>
-					<small class="da-hint" data-da-builder-status role="status" aria-live="polite"></small>
-				</div>
-
-				<div class="da-field" data-da-builder-custom hidden>
-					<label for="da-builder-url"><?php esc_html_e( 'Paste the address', 'directorist-affiliate' ); ?></label>
-					<input id="da-builder-url" type="url" autocomplete="off" placeholder="<?php echo esc_attr( home_url( '/some-page/' ) ); ?>" />
-					<small class="da-hint" data-da-builder-custom-status role="status" aria-live="polite"><?php esc_html_e( 'Only addresses on this website can be tracked.', 'directorist-affiliate' ); ?></small>
-				</div>
-			</div>
-
-			<div class="da-copyfield" data-da-builder-output>
-				<label class="da-sr" for="directorist-affiliate-referral-url"><?php esc_html_e( 'Your referral link', 'directorist-affiliate' ); ?></label>
-				<input id="directorist-affiliate-referral-url" type="text" readonly value="<?php echo esc_url( $referral_url ); ?>" onfocus="this.select();" />
-				<button type="button" class="da-btn da-btn--copy directorist-affiliate-copy" data-target="directorist-affiliate-referral-url" data-copied-label="<?php esc_attr_e( 'Copied', 'directorist-affiliate' ); ?>">
-					<?php esc_html_e( 'Copy', 'directorist-affiliate' ); ?>
-				</button>
-			</div>
-
-			<div class="da-share-actions">
-				<span class="da-share-label"><?php esc_html_e( 'Share via', 'directorist-affiliate' ); ?></span>
-				<a class="da-chip" data-da-share-net="whatsapp" href="<?php echo esc_url( 'https://wa.me/?text=' . rawurlencode( $da_share_msg . ' ' . $referral_url ) ); ?>" target="_blank" rel="noopener noreferrer nofollow">WhatsApp</a>
-				<a class="da-chip" data-da-share-net="x" href="<?php echo esc_url( 'https://x.com/intent/tweet?text=' . rawurlencode( $da_share_msg ) . '&url=' . rawurlencode( $referral_url ) ); ?>" target="_blank" rel="noopener noreferrer nofollow">X</a>
-				<a class="da-chip" data-da-share-net="facebook" href="<?php echo esc_url( 'https://www.facebook.com/sharer/sharer.php?u=' . rawurlencode( $referral_url ) ); ?>" target="_blank" rel="noopener noreferrer nofollow">Facebook</a>
-				<a class="da-chip" data-da-share-net="email" href="<?php echo esc_url( 'mailto:?subject=' . rawurlencode( $da_share_msg ) . '&body=' . rawurlencode( $referral_url ) ); ?>"><?php esc_html_e( 'Email', 'directorist-affiliate' ); ?></a>
-			</div>
-
-			<noscript>
-				<p class="da-muted"><?php esc_html_e( 'Building links to other pages needs JavaScript. The link above works as it is.', 'directorist-affiliate' ); ?></p>
-			</noscript>
-		</section>
 	<?php endif; ?>
 
 	<div class="da-stats">
@@ -206,204 +137,293 @@ $da_shortfall = max( 0, $minimum_payout - (float) $approved_commission );
 		</div>
 	</div>
 
-	<section class="da-card da-activity" data-da-panels aria-labelledby="da-activity-title">
-		<div class="da-activity-head">
-			<h2 id="da-activity-title"><?php esc_html_e( 'Activity', 'directorist-affiliate' ); ?></h2>
-			<div class="da-seg" role="tablist" aria-label="<?php esc_attr_e( 'Activity type', 'directorist-affiliate' ); ?>">
-				<button type="button" class="da-seg-btn" role="tab" data-panel-target="referrals"><?php esc_html_e( 'Referrals', 'directorist-affiliate' ); ?></button>
-				<button type="button" class="da-seg-btn" role="tab" data-panel-target="payouts"><?php esc_html_e( 'Payouts', 'directorist-affiliate' ); ?></button>
-			</div>
+	<div class="da-tabs" data-da-panels>
+		<div class="da-tabnav" role="tablist" aria-label="<?php esc_attr_e( 'Affiliate dashboard sections', 'directorist-affiliate' ); ?>">
+			<?php foreach ( $da_tabs as $da_tab_key => $da_tab_label ) : ?>
+				<button type="button" class="da-tabnav-btn" role="tab" data-panel-target="<?php echo esc_attr( $da_tab_key ); ?>">
+					<?php echo esc_html( $da_tab_label ); ?>
+				</button>
+			<?php endforeach; ?>
 		</div>
 
+		<?php if ( $da_approved ) : ?>
+			<div class="da-panel" data-panel="link">
+				<section class="da-share" aria-labelledby="da-share-title" data-da-builder>
+					<div class="da-share-head">
+						<h2 id="da-share-title"><?php esc_html_e( 'Your referral link', 'directorist-affiliate' ); ?></h2>
+						<p>
+							<?php
+							echo esc_html(
+								sprintf(
+									/* translators: %d: number of days the referral cookie lasts. */
+									_n(
+										'Anyone who arrives through this link stays credited to you for %d day.',
+										'Anyone who arrives through this link stays credited to you for %d days.',
+										(int) $cookie_duration,
+										'directorist-affiliate'
+									),
+									(int) $cookie_duration
+								)
+							);
+							?>
+						</p>
+					</div>
+
+					<div class="da-builder-row">
+						<div class="da-field">
+							<label for="da-builder-type">
+								<?php esc_html_e( 'Where should it point?', 'directorist-affiliate' ); ?>
+								<span class="da-tip" tabindex="0" role="note" aria-label="<?php esc_attr_e( 'Choose the kind of content first. A search box appears next to it so you can find the exact item by name, and your link updates as you pick.', 'directorist-affiliate' ); ?>">
+									<span aria-hidden="true">?</span>
+								</span>
+							</label>
+							<select id="da-builder-type" data-da-builder-type>
+								<?php foreach ( $link_types as $da_type_key => $da_type ) : ?>
+									<option value="<?php echo esc_attr( $da_type_key ); ?>" data-hint="<?php echo esc_attr( $da_type['hint'] ); ?>" data-kind="<?php echo esc_attr( $da_type['kind'] ); ?>">
+										<?php echo esc_html( $da_type['label'] ); ?>
+									</option>
+								<?php endforeach; ?>
+							</select>
+							<small class="da-hint" data-da-builder-hint><?php echo esc_html( $link_types ? reset( $link_types )['hint'] : '' ); ?></small>
+						</div>
+
+						<div class="da-field da-combo" data-da-builder-search hidden>
+							<label for="da-builder-search"><?php esc_html_e( 'Find it by name', 'directorist-affiliate' ); ?></label>
+							<input
+								id="da-builder-search"
+								type="text"
+								autocomplete="off"
+								role="combobox"
+								aria-expanded="false"
+								aria-autocomplete="list"
+								aria-controls="da-builder-results"
+								placeholder="<?php esc_attr_e( 'Start typing a title…', 'directorist-affiliate' ); ?>"
+							/>
+							<ul class="da-combo-list" id="da-builder-results" role="listbox" hidden></ul>
+							<small class="da-hint" data-da-builder-status role="status" aria-live="polite"></small>
+						</div>
+
+						<div class="da-field" data-da-builder-custom hidden>
+							<label for="da-builder-url"><?php esc_html_e( 'Paste the address', 'directorist-affiliate' ); ?></label>
+							<input id="da-builder-url" type="url" autocomplete="off" placeholder="<?php echo esc_attr( home_url( '/some-page/' ) ); ?>" />
+							<small class="da-hint" data-da-builder-custom-status role="status" aria-live="polite"><?php esc_html_e( 'Only addresses on this website can be tracked.', 'directorist-affiliate' ); ?></small>
+						</div>
+					</div>
+
+					<div class="da-copyfield" data-da-builder-output>
+						<label class="da-sr" for="directorist-affiliate-referral-url"><?php esc_html_e( 'Your referral link', 'directorist-affiliate' ); ?></label>
+						<input id="directorist-affiliate-referral-url" type="text" readonly value="<?php echo esc_url( $referral_url ); ?>" onfocus="this.select();" />
+						<button type="button" class="da-btn da-btn--copy directorist-affiliate-copy" data-target="directorist-affiliate-referral-url" data-copied-label="<?php esc_attr_e( 'Copied', 'directorist-affiliate' ); ?>">
+							<?php esc_html_e( 'Copy', 'directorist-affiliate' ); ?>
+						</button>
+					</div>
+
+					<div class="da-share-actions">
+						<span class="da-share-label"><?php esc_html_e( 'Share via', 'directorist-affiliate' ); ?></span>
+						<a class="da-chip" data-da-share-net="whatsapp" href="<?php echo esc_url( 'https://wa.me/?text=' . rawurlencode( $da_share_msg . ' ' . $referral_url ) ); ?>" target="_blank" rel="noopener noreferrer nofollow">WhatsApp</a>
+						<a class="da-chip" data-da-share-net="x" href="<?php echo esc_url( 'https://x.com/intent/tweet?text=' . rawurlencode( $da_share_msg ) . '&url=' . rawurlencode( $referral_url ) ); ?>" target="_blank" rel="noopener noreferrer nofollow">X</a>
+						<a class="da-chip" data-da-share-net="facebook" href="<?php echo esc_url( 'https://www.facebook.com/sharer/sharer.php?u=' . rawurlencode( $referral_url ) ); ?>" target="_blank" rel="noopener noreferrer nofollow">Facebook</a>
+						<a class="da-chip" data-da-share-net="email" href="<?php echo esc_url( 'mailto:?subject=' . rawurlencode( $da_share_msg ) . '&body=' . rawurlencode( $referral_url ) ); ?>"><?php esc_html_e( 'Email', 'directorist-affiliate' ); ?></a>
+					</div>
+
+					<noscript>
+						<p class="da-muted"><?php esc_html_e( 'Building links to other pages needs JavaScript. The link above works as it is.', 'directorist-affiliate' ); ?></p>
+					</noscript>
+				</section>
+			</div>
+		<?php endif; ?>
+
 		<div class="da-panel" data-panel="referrals">
-			<h3 class="da-panel-title"><?php esc_html_e( 'Referrals', 'directorist-affiliate' ); ?></h3>
-			<?php if ( $referrals ) : ?>
-				<div class="da-tablewrap">
-					<table class="da-table">
-						<thead>
-							<tr>
-								<th><?php esc_html_e( 'Event', 'directorist-affiliate' ); ?></th>
-								<th class="da-num"><?php esc_html_e( 'Commission', 'directorist-affiliate' ); ?></th>
-								<th><?php esc_html_e( 'Status', 'directorist-affiliate' ); ?></th>
-								<th><?php esc_html_e( 'Date', 'directorist-affiliate' ); ?></th>
-							</tr>
-						</thead>
-						<tbody>
-							<?php foreach ( $referrals as $referral ) : ?>
-								<tr>
-									<td data-label="<?php esc_attr_e( 'Event', 'directorist-affiliate' ); ?>"><?php echo esc_html( $plugin->referral->type_label( (string) $referral->referral_type ) ); ?></td>
-									<td class="da-num" data-label="<?php esc_attr_e( 'Commission', 'directorist-affiliate' ); ?>"><strong><?php echo esc_html( Directorist_Affiliate_Commission::format_money( (float) $referral->commission_amount ) ); ?></strong></td>
-									<td data-label="<?php esc_attr_e( 'Status', 'directorist-affiliate' ); ?>"><span class="da-badge is-<?php echo esc_attr( sanitize_html_class( $referral->status ) ); ?>"><?php echo esc_html( $plugin->referral->status_label( (string) $referral->status ) ); ?></span></td>
-									<td data-label="<?php esc_attr_e( 'Date', 'directorist-affiliate' ); ?>"><?php echo esc_html( mysql2date( get_option( 'date_format' ), $referral->date_created ) ); ?></td>
-								</tr>
-							<?php endforeach; ?>
-						</tbody>
-					</table>
-				</div>
-			<?php else : ?>
-				<div class="da-empty">
-					<p class="da-empty-title"><?php esc_html_e( 'No referrals yet', 'directorist-affiliate' ); ?></p>
-					<p><?php echo $da_approved ? esc_html__( 'Share your link above. Anything your visitors do here shows up on this list.', 'directorist-affiliate' ) : esc_html__( 'Referrals appear here once your account is approved.', 'directorist-affiliate' ); ?></p>
-				</div>
-			<?php endif; ?>
+			<h2 class="da-panel-title"><?php esc_html_e( 'Referrals', 'directorist-affiliate' ); ?></h2>
+			<div class="da-card da-table-card">
+
+					<?php if ( $referrals ) : ?>
+						<div class="da-tablewrap">
+							<table class="da-table">
+								<thead>
+									<tr>
+										<th><?php esc_html_e( 'Event', 'directorist-affiliate' ); ?></th>
+										<th class="da-num"><?php esc_html_e( 'Commission', 'directorist-affiliate' ); ?></th>
+										<th><?php esc_html_e( 'Status', 'directorist-affiliate' ); ?></th>
+										<th><?php esc_html_e( 'Date', 'directorist-affiliate' ); ?></th>
+									</tr>
+								</thead>
+								<tbody>
+									<?php foreach ( $referrals as $referral ) : ?>
+										<tr>
+											<td data-label="<?php esc_attr_e( 'Event', 'directorist-affiliate' ); ?>"><?php echo esc_html( $plugin->referral->type_label( (string) $referral->referral_type ) ); ?></td>
+											<td class="da-num" data-label="<?php esc_attr_e( 'Commission', 'directorist-affiliate' ); ?>"><strong><?php echo esc_html( Directorist_Affiliate_Commission::format_money( (float) $referral->commission_amount ) ); ?></strong></td>
+											<td data-label="<?php esc_attr_e( 'Status', 'directorist-affiliate' ); ?>"><span class="da-badge is-<?php echo esc_attr( sanitize_html_class( $referral->status ) ); ?>"><?php echo esc_html( $plugin->referral->status_label( (string) $referral->status ) ); ?></span></td>
+											<td data-label="<?php esc_attr_e( 'Date', 'directorist-affiliate' ); ?>"><?php echo esc_html( mysql2date( get_option( 'date_format' ), $referral->date_created ) ); ?></td>
+										</tr>
+									<?php endforeach; ?>
+								</tbody>
+							</table>
+						</div>
+					<?php else : ?>
+						<div class="da-empty">
+							<p class="da-empty-title"><?php esc_html_e( 'No referrals yet', 'directorist-affiliate' ); ?></p>
+							<p><?php echo $da_approved ? esc_html__( 'Share your link above. Anything your visitors do here shows up on this list.', 'directorist-affiliate' ) : esc_html__( 'Referrals appear here once your account is approved.', 'directorist-affiliate' ); ?></p>
+						</div>
+					<?php endif; ?>
+			</div>
 		</div>
 
 		<div class="da-panel" data-panel="payouts">
-			<h3 class="da-panel-title"><?php esc_html_e( 'Payouts', 'directorist-affiliate' ); ?></h3>
-			<?php if ( ! empty( $payouts ) ) : ?>
-				<div class="da-tablewrap">
-					<table class="da-table">
-						<thead>
-							<tr>
-								<th class="da-num"><?php esc_html_e( 'Amount', 'directorist-affiliate' ); ?></th>
-								<th><?php esc_html_e( 'Method', 'directorist-affiliate' ); ?></th>
-								<th><?php esc_html_e( 'Date paid', 'directorist-affiliate' ); ?></th>
-							</tr>
-						</thead>
-						<tbody>
-							<?php foreach ( $payouts as $payout ) : ?>
-								<tr>
-									<td class="da-num" data-label="<?php esc_attr_e( 'Amount', 'directorist-affiliate' ); ?>"><strong><?php echo esc_html( Directorist_Affiliate_Commission::format_money( (float) $payout->amount ) ); ?></strong></td>
-									<td data-label="<?php esc_attr_e( 'Method', 'directorist-affiliate' ); ?>"><?php echo esc_html( ucfirst( (string) $payout->payment_method ) ); ?></td>
-									<td data-label="<?php esc_attr_e( 'Date paid', 'directorist-affiliate' ); ?>"><?php echo esc_html( $payout->date_paid ? mysql2date( get_option( 'date_format' ), $payout->date_paid ) : '—' ); ?></td>
-								</tr>
-							<?php endforeach; ?>
-						</tbody>
-					</table>
-				</div>
-			<?php else : ?>
-				<div class="da-empty">
-					<p class="da-empty-title"><?php esc_html_e( 'No payouts yet', 'directorist-affiliate' ); ?></p>
-					<p><?php esc_html_e( 'Once approved commissions are paid out, each payment is listed here.', 'directorist-affiliate' ); ?></p>
-				</div>
+			<h2 class="da-panel-title"><?php esc_html_e( 'Payouts', 'directorist-affiliate' ); ?></h2>
+
+		<?php if ( $da_approved && ! empty( $payout_methods ) ) : ?>
+				<section class="da-card da-payout-settings" aria-labelledby="da-payout-settings-title">
+					<div class="da-payout-head">
+						<h2 id="da-payout-settings-title"><?php esc_html_e( 'Payout settings', 'directorist-affiliate' ); ?></h2>
+						<?php if ( $payout_ready ) : ?>
+							<span class="da-badge is-approved"><?php esc_html_e( 'Ready', 'directorist-affiliate' ); ?></span>
+						<?php else : ?>
+							<span class="da-badge is-pending"><?php esc_html_e( 'Not set up', 'directorist-affiliate' ); ?></span>
+						<?php endif; ?>
+					</div>
+
+					<p class="da-muted">
+						<?php if ( $payout_ready ) : ?>
+							<?php
+							echo esc_html(
+								sprintf(
+									/* translators: %s: the affiliate's saved payout method and details. */
+									__( 'Payments go to: %s', 'directorist-affiliate' ),
+									$payout_summary
+								)
+							);
+							?>
+						<?php else : ?>
+							<?php esc_html_e( 'Tell us how to pay you. You can save it here once, or fill it in when you request a payout.', 'directorist-affiliate' ); ?>
+						<?php endif; ?>
+					</p>
+
+					<form method="post" class="da-payout-form" data-da-ajax="directorist_affiliate_save_payout_method" data-da-success="reload">
+						<?php wp_nonce_field( 'directorist_affiliate_payout_method', 'directorist_affiliate_nonce' ); ?>
+						<?php
+						Directorist_Affiliate_View::public_partial(
+							'payout-method-fields.php',
+							array(
+								'payout_methods' => $payout_methods,
+								'payout_method'  => $payout_method,
+								'payout_details' => $payout_details,
+								'id_prefix'      => 'da-payout-settings',
+							)
+						);
+						?>
+						<div class="da-form-foot">
+							<button type="submit" class="da-btn"><?php esc_html_e( 'Save payout details', 'directorist-affiliate' ); ?></button>
+							<p class="da-muted"><?php esc_html_e( 'Only the site owner can see these details.', 'directorist-affiliate' ); ?></p>
+						</div>
+					</form>
+				</section>
 			<?php endif; ?>
+
+		<section class="da-card da-payout-info">
+				<div class="da-payout-head">
+					<h2><?php esc_html_e( 'How you get paid', 'directorist-affiliate' ); ?></h2>
+					<?php if ( $da_approved ) : ?>
+						<?php if ( $da_can_request ) : ?>
+							<button type="button" class="da-btn" data-da-modal-open="directorist-affiliate-payout-modal">
+								<?php esc_html_e( 'Request payout', 'directorist-affiliate' ); ?>
+							</button>
+						<?php else : ?>
+							<button type="button" class="da-btn" disabled aria-describedby="da-payout-blocked">
+								<?php esc_html_e( 'Request payout', 'directorist-affiliate' ); ?>
+							</button>
+						<?php endif; ?>
+					<?php endif; ?>
+				</div>
+
+				<?php if ( ! empty( $open_request ) ) : ?>
+					<div class="da-request-state" id="da-payout-blocked">
+						<span class="da-badge is-requested"><?php esc_html_e( 'Requested', 'directorist-affiliate' ); ?></span>
+						<p>
+							<?php
+							echo esc_html(
+								sprintf(
+									/* translators: 1: requested amount, 2: date requested. */
+									__( 'You asked for %1$s on %2$s. We will email you once it has been processed.', 'directorist-affiliate' ),
+									Directorist_Affiliate_Commission::format_money( (float) $open_request->amount ),
+									mysql2date( get_option( 'date_format' ), $open_request->date_created )
+								)
+							);
+							?>
+						</p>
+					</div>
+				<?php elseif ( $da_approved && ! $da_can_request ) : ?>
+					<p class="da-muted" id="da-payout-blocked">
+						<?php if ( (float) $approved_commission <= 0 ) : ?>
+							<?php esc_html_e( 'You can request a payout once you have approved commissions waiting.', 'directorist-affiliate' ); ?>
+						<?php else : ?>
+							<?php
+							echo esc_html(
+								sprintf(
+									/* translators: %s: minimum payout amount. */
+									__( 'You can request a payout once your approved balance reaches %s.', 'directorist-affiliate' ),
+									Directorist_Affiliate_Commission::format_money( $minimum_payout )
+								)
+							);
+							?>
+						<?php endif; ?>
+					</p>
+				<?php endif; ?>
+
+				<dl class="da-deflist">
+					<div>
+						<dt><?php esc_html_e( 'Payout email', 'directorist-affiliate' ); ?></dt>
+						<dd><?php echo esc_html( $affiliate->payout_email ); ?></dd>
+					</div>
+					<div>
+						<dt><?php esc_html_e( 'Your code', 'directorist-affiliate' ); ?></dt>
+						<dd><code><?php echo esc_html( $affiliate->referral_code ); ?></code></dd>
+					</div>
+					<?php if ( $minimum_payout > 0 ) : ?>
+						<div>
+							<dt><?php esc_html_e( 'Minimum payout', 'directorist-affiliate' ); ?></dt>
+							<dd><?php echo esc_html( Directorist_Affiliate_Commission::format_money( $minimum_payout ) ); ?></dd>
+						</div>
+					<?php endif; ?>
+				</dl>
+				<?php if ( ! empty( $payout_instructions ) ) : ?>
+					<p class="da-muted"><?php echo nl2br( esc_html( $payout_instructions ) ); ?></p>
+				<?php endif; ?>
+			</section>
+
+			<section class="da-card da-table-card" aria-labelledby="da-payout-history-title">
+				<h3 id="da-payout-history-title"><?php esc_html_e( 'Payout history', 'directorist-affiliate' ); ?></h3>
+
+						<?php if ( ! empty( $payouts ) ) : ?>
+							<div class="da-tablewrap">
+								<table class="da-table">
+									<thead>
+										<tr>
+											<th class="da-num"><?php esc_html_e( 'Amount', 'directorist-affiliate' ); ?></th>
+											<th><?php esc_html_e( 'Method', 'directorist-affiliate' ); ?></th>
+											<th><?php esc_html_e( 'Date paid', 'directorist-affiliate' ); ?></th>
+										</tr>
+									</thead>
+									<tbody>
+										<?php foreach ( $payouts as $payout ) : ?>
+											<tr>
+												<td class="da-num" data-label="<?php esc_attr_e( 'Amount', 'directorist-affiliate' ); ?>"><strong><?php echo esc_html( Directorist_Affiliate_Commission::format_money( (float) $payout->amount ) ); ?></strong></td>
+												<td data-label="<?php esc_attr_e( 'Method', 'directorist-affiliate' ); ?>"><?php echo esc_html( ucfirst( (string) $payout->payment_method ) ); ?></td>
+												<td data-label="<?php esc_attr_e( 'Date paid', 'directorist-affiliate' ); ?>"><?php echo esc_html( $payout->date_paid ? mysql2date( get_option( 'date_format' ), $payout->date_paid ) : '—' ); ?></td>
+											</tr>
+										<?php endforeach; ?>
+									</tbody>
+								</table>
+							</div>
+						<?php else : ?>
+							<div class="da-empty">
+								<p class="da-empty-title"><?php esc_html_e( 'No payouts yet', 'directorist-affiliate' ); ?></p>
+								<p><?php esc_html_e( 'Once approved commissions are paid out, each payment is listed here.', 'directorist-affiliate' ); ?></p>
+							</div>
+						<?php endif; ?>
+			</section>
 		</div>
-	</section>
-
-	<?php
-	$da_can_request = $da_approved
-		&& empty( $open_request )
-		&& (float) $approved_commission > 0
-		&& ( $minimum_payout <= 0 || (float) $approved_commission >= $minimum_payout );
-	?>
-
-	<?php if ( $da_approved && ! empty( $payout_methods ) ) : ?>
-		<section class="da-card da-payout-settings" aria-labelledby="da-payout-settings-title">
-			<div class="da-payout-head">
-				<h2 id="da-payout-settings-title"><?php esc_html_e( 'Payout settings', 'directorist-affiliate' ); ?></h2>
-				<?php if ( $payout_ready ) : ?>
-					<span class="da-badge is-approved"><?php esc_html_e( 'Ready', 'directorist-affiliate' ); ?></span>
-				<?php else : ?>
-					<span class="da-badge is-pending"><?php esc_html_e( 'Not set up', 'directorist-affiliate' ); ?></span>
-				<?php endif; ?>
-			</div>
-
-			<p class="da-muted">
-				<?php if ( $payout_ready ) : ?>
-					<?php
-					echo esc_html(
-						sprintf(
-							/* translators: %s: the affiliate's saved payout method and details. */
-							__( 'Payments go to: %s', 'directorist-affiliate' ),
-							$payout_summary
-						)
-					);
-					?>
-				<?php else : ?>
-					<?php esc_html_e( 'Tell us how to pay you. You can save it here once, or fill it in when you request a payout.', 'directorist-affiliate' ); ?>
-				<?php endif; ?>
-			</p>
-
-			<form method="post" class="da-payout-form" data-da-ajax="directorist_affiliate_save_payout_method" data-da-success="reload">
-				<?php wp_nonce_field( 'directorist_affiliate_payout_method', 'directorist_affiliate_nonce' ); ?>
-				<?php
-				Directorist_Affiliate_View::public_partial(
-					'payout-method-fields.php',
-					array(
-						'payout_methods' => $payout_methods,
-						'payout_method'  => $payout_method,
-						'payout_details' => $payout_details,
-						'id_prefix'      => 'da-payout-settings',
-					)
-				);
-				?>
-				<div class="da-form-foot">
-					<button type="submit" class="da-btn"><?php esc_html_e( 'Save payout details', 'directorist-affiliate' ); ?></button>
-					<p class="da-muted"><?php esc_html_e( 'Only the site owner can see these details.', 'directorist-affiliate' ); ?></p>
-				</div>
-			</form>
-		</section>
-	<?php endif; ?>
-	<section class="da-card da-payout-info">
-		<div class="da-payout-head">
-			<h2><?php esc_html_e( 'How you get paid', 'directorist-affiliate' ); ?></h2>
-			<?php if ( $da_approved ) : ?>
-				<?php if ( $da_can_request ) : ?>
-					<button type="button" class="da-btn" data-da-modal-open="directorist-affiliate-payout-modal">
-						<?php esc_html_e( 'Request payout', 'directorist-affiliate' ); ?>
-					</button>
-				<?php else : ?>
-					<button type="button" class="da-btn" disabled aria-describedby="da-payout-blocked">
-						<?php esc_html_e( 'Request payout', 'directorist-affiliate' ); ?>
-					</button>
-				<?php endif; ?>
-			<?php endif; ?>
-		</div>
-
-		<?php if ( ! empty( $open_request ) ) : ?>
-			<div class="da-request-state" id="da-payout-blocked">
-				<span class="da-badge is-requested"><?php esc_html_e( 'Requested', 'directorist-affiliate' ); ?></span>
-				<p>
-					<?php
-					echo esc_html(
-						sprintf(
-							/* translators: 1: requested amount, 2: date requested. */
-							__( 'You asked for %1$s on %2$s. We will email you once it has been processed.', 'directorist-affiliate' ),
-							Directorist_Affiliate_Commission::format_money( (float) $open_request->amount ),
-							mysql2date( get_option( 'date_format' ), $open_request->date_created )
-						)
-					);
-					?>
-				</p>
-			</div>
-		<?php elseif ( $da_approved && ! $da_can_request ) : ?>
-			<p class="da-muted" id="da-payout-blocked">
-				<?php if ( (float) $approved_commission <= 0 ) : ?>
-					<?php esc_html_e( 'You can request a payout once you have approved commissions waiting.', 'directorist-affiliate' ); ?>
-				<?php else : ?>
-					<?php
-					echo esc_html(
-						sprintf(
-							/* translators: %s: minimum payout amount. */
-							__( 'You can request a payout once your approved balance reaches %s.', 'directorist-affiliate' ),
-							Directorist_Affiliate_Commission::format_money( $minimum_payout )
-						)
-					);
-					?>
-				<?php endif; ?>
-			</p>
-		<?php endif; ?>
-
-		<dl class="da-deflist">
-			<div>
-				<dt><?php esc_html_e( 'Payout email', 'directorist-affiliate' ); ?></dt>
-				<dd><?php echo esc_html( $affiliate->payout_email ); ?></dd>
-			</div>
-			<div>
-				<dt><?php esc_html_e( 'Your code', 'directorist-affiliate' ); ?></dt>
-				<dd><code><?php echo esc_html( $affiliate->referral_code ); ?></code></dd>
-			</div>
-			<?php if ( $minimum_payout > 0 ) : ?>
-				<div>
-					<dt><?php esc_html_e( 'Minimum payout', 'directorist-affiliate' ); ?></dt>
-					<dd><?php echo esc_html( Directorist_Affiliate_Commission::format_money( $minimum_payout ) ); ?></dd>
-				</div>
-			<?php endif; ?>
-		</dl>
-		<?php if ( ! empty( $payout_instructions ) ) : ?>
-			<p class="da-muted"><?php echo nl2br( esc_html( $payout_instructions ) ); ?></p>
-		<?php endif; ?>
-	</section>
+	</div>
 
 	<?php if ( $da_can_request ) : ?>
 		<dialog id="directorist-affiliate-payout-modal" class="da-modal" aria-labelledby="da-payout-modal-title">

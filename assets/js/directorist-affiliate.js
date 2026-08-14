@@ -233,7 +233,7 @@
 
 		group.classList.add( 'is-tabbed' );
 
-		function show( name ) {
+		function show( name, remember ) {
 			buttons.forEach( function ( button ) {
 				var active = button.getAttribute( 'data-panel-target' ) === name;
 
@@ -244,11 +244,18 @@
 			panels.forEach( function ( panel ) {
 				panel.classList.toggle( 'is-active', panel.getAttribute( 'data-panel' ) === name );
 			} );
+
+			// Recorded in the URL so the tab survives the page reload that
+			// follows saving payout details or requesting a payout — landing
+			// back on the first tab would lose the visitor's place.
+			if ( remember && window.history && window.history.replaceState ) {
+				window.history.replaceState( null, '', '#da-' + name );
+			}
 		}
 
 		buttons.forEach( function ( button, index ) {
 			button.addEventListener( 'click', function () {
-				show( button.getAttribute( 'data-panel-target' ) );
+				show( button.getAttribute( 'data-panel-target' ), true );
 			} );
 
 			// Left/right arrows move between tabs, per the tablist pattern.
@@ -261,11 +268,17 @@
 
 				var next = buttons[ ( index + ( 'ArrowRight' === event.key ? 1 : buttons.length - 1 ) ) % buttons.length ];
 				next.focus();
-				show( next.getAttribute( 'data-panel-target' ) );
+				show( next.getAttribute( 'data-panel-target' ), true );
 			} );
 		} );
 
-		show( panels[ 0 ].getAttribute( 'data-panel' ) );
+		// Open the tab named in the URL when it exists, else the first one.
+		var requested = ( window.location.hash || '' ).replace( '#da-', '' );
+		var known     = panels.some( function ( panel ) {
+			return panel.getAttribute( 'data-panel' ) === requested;
+		} );
+
+		show( known ? requested : panels[ 0 ].getAttribute( 'data-panel' ), false );
 	} );
 
 	/* -----------------------------------------------------------------------

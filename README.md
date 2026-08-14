@@ -6,7 +6,7 @@ Affiliate tracking and fixed-commission referral system for [Directorist](https:
 
 | Item | Value |
 | --- | --- |
-| Version | 1.9.1 (plugin) / 0.3.0 (DB schema) |
+| Version | 1.10.0 (plugin) / 0.3.0 (DB schema) |
 | Author | [wpXplore](https://wpxplore.com) |
 | Website | https://wpxplore.com/tools/directorist-affiliate/ |
 | Requires | WordPress 6.3+, PHP 7.4+ |
@@ -379,6 +379,14 @@ Filters: `directorist_affiliate_link_types( $types )` (content types in the link
 Usage examples are in [DOCUMENTATION.md](DOCUMENTATION.md#developer-reference).
 
 ## Changelog
+
+### 1.10.0 — 2026-08-14
+
+- **The affiliate dashboard is now tabbed**: *Your link*, *Referrals* and *Payouts*. The earnings tiles stay pinned above the tabs, since that is what an affiliate opens the page for. Everything money-out — payout settings, how you get paid, the request button and payout history — is together under Payouts.
+- The old Activity card's inner segmented control is gone; Referrals and Payouts are top-level tabs instead, so there is no nesting.
+- **The open tab is recorded in the URL** (`#da-payouts`). This matters beyond bookmarking: saving payout details or requesting a payout reloads the page, and without it the affiliate would be dumped back on the first tab.
+- Tabs follow the ARIA tablist pattern (arrow keys move between them) and degrade to stacked sections with their own headings when JavaScript is off. The *Your link* tab is not rendered at all for affiliates who have no link yet.
+- **Fix:** a disabled button showed a `progress` cursor. It is now `auto` — the label already says "Submitting…" while a form is in flight.
 
 ### 1.9.1 — 2026-08-14
 

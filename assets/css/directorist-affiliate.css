@@ -508,42 +508,54 @@
 
 /* --------------------------------------------------------------- activity */
 
-.da-activity-head {
+/* Tabs appear only once JS can drive them; without JS every panel renders
+   stacked under its own heading, so nothing becomes unreachable. */
+.da-tabnav { display: none; }
+
+[data-da-panels].is-tabbed .da-tabnav {
 	display: flex;
 	flex-wrap: wrap;
-	gap: 12px;
-	align-items: center;
-	justify-content: space-between;
+	gap: 2px;
+	margin-bottom: 20px;
+	border-bottom: 1px solid var(--da-line);
 }
 
-/* The segmented control only appears once JS can drive it; without JS both
-   panels render stacked under their own headings. */
-.da-seg { display: none; gap: 4px; padding: 4px; border-radius: 999px; background: var(--da-sunken); }
-.da-activity.is-tabbed .da-seg { display: inline-flex; }
-.da-activity.is-tabbed .da-panel { display: none; }
-.da-activity.is-tabbed .da-panel.is-active { display: block; }
-.da-activity.is-tabbed .da-panel-title { display: none; }
-.da-panel + .da-panel { margin-top: 22px; }
+[data-da-panels].is-tabbed .da-panel { display: none; }
+[data-da-panels].is-tabbed .da-panel.is-active { display: flex; flex-direction: column; gap: 20px; }
+[data-da-panels].is-tabbed .da-panel-title { display: none; }
+.da-panel + .da-panel { margin-top: 28px; }
 
-.directorist-affiliate-wrap .da-seg-btn {
-	height: 30px;
-	padding: 0 16px;
+.directorist-affiliate-wrap .da-tabnav-btn {
+	position: relative;
+	margin-bottom: -1px;
+	padding: 11px 16px;
 	border: 0;
-	border-radius: 999px;
-	background: transparent;
+	border-bottom: 2px solid transparent;
+	border-radius: 0;
+	background: none;
 	color: var(--da-ink-soft);
 	font: inherit;
-	font-size: .8125rem;
+	font-size: .9375rem;
 	font-weight: 600;
+	white-space: nowrap;
 	cursor: pointer;
-	transition: background var(--da-ease), color var(--da-ease);
+	transition: color var(--da-ease), border-color var(--da-ease);
 }
 
-.directorist-affiliate-wrap .da-seg-btn[aria-selected="true"] {
-	background: var(--da-surface);
-	color: var(--da-ink);
-	box-shadow: var(--da-shadow-xs);
+.directorist-affiliate-wrap .da-tabnav-btn:hover { color: var(--da-ink); }
+
+.directorist-affiliate-wrap .da-tabnav-btn[aria-selected="true"] {
+	border-bottom-color: var(--da-accent);
+	color: var(--da-accent);
 }
+
+.directorist-affiliate-wrap .da-tabnav-btn:focus-visible {
+	outline: 2px solid var(--da-accent);
+	outline-offset: -2px;
+}
+
+.da-table-card { padding: 22px; }
+.da-table-card > h3 { margin-bottom: 4px; }
 
 .da-panel-title { margin-bottom: 10px; }
 
@@ -904,7 +916,7 @@ dialog.da-modal > .directorist-affiliate-js-notice { margin: 16px 22px -6px; }
 }
 
 .directorist-affiliate-wrap .da-btn:focus-visible { outline: 2px solid var(--da-accent); outline-offset: 2px; }
-.directorist-affiliate-wrap .da-btn[disabled] { opacity: .6; cursor: progress; transform: none; box-shadow: none; }
+.directorist-affiliate-wrap .da-btn[disabled] { opacity: .6; cursor: auto; transform: none; box-shadow: none; }
 
 .directorist-affiliate-wrap .da-btn--ghost {
 	background: var(--da-surface);

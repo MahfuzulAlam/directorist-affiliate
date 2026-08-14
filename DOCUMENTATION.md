@@ -277,12 +277,14 @@ Add `[directorist_affiliate_dashboard]` to a page — and/or rely on the **Affil
 
 **While pending:** a banner explaining that the application is under review and that they will be emailed either way. No referral link is shown yet.
 
+The dashboard is split into three tabs — **Your link**, **Referrals** and **Payouts** — with their earnings shown above the tabs at all times.
+
 **Once approved:**
 
 - **Their referral link, front and centre.** One section does the whole job: the link with a **Copy** button, controls to point it anywhere on the site, and one-tap sharing to WhatsApp, X, Facebook or email. A plain sentence tells them how long a click stays credited.
 - **"Ready to be paid" as the headline figure**, followed by pending, paid-to-date and traffic. If you have set a **minimum payout**, a progress bar shows how close they are and exactly how much more they need — this is the question affiliates ask most often, so it is answered without them having to write to you.
 - **Pointing the link somewhere specific** — inside that same section, they pick what they're linking to (**Home page, Page, Post, Listing, Category, Location** or **Custom link**). Home page is selected by default, so the link is ready to share the moment the page loads. Choosing anything else reveals a search box: type part of a title, pick from the list, and the link updates. Custom link lets them paste any address on your site — links to other websites are refused, because a referral can only be tracked on your own domain. **The share buttons always match the link they just built.**
-- **Activity** — referrals and payouts in one card, switched with a tab rather than stacked, so the page stays short.
+- **Referrals** — their referral history, on its own tab.
 - **Payout settings** — where they choose how to be paid, from the methods you allow:
   - **PayPal** — asks for their PayPal email
   - **Bank transfer** — asks for account holder name, bank name, and account number or IBAN (plus an optional routing/SWIFT/BIC for international payments)
