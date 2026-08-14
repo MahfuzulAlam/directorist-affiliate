@@ -10,7 +10,7 @@ defined( 'ABSPATH' ) || exit;
 $da_status    = (string) $affiliate->status;
 $da_approved  = 'approved' === $da_status;
 $da_lifetime  = (float) $pending_commission + (float) $approved_commission + (float) $paid_commission;
-$da_rate      = $visits > 0 ? ( (int) $total_referrals / (int) $visits ) * 100 : 0;
+$da_rate      = $visits > 0 ? ( (int) $converted_visits / (int) $visits ) * 100 : 0;
 $da_share_msg = sprintf(
 	/* translators: %s: site name. */
 	__( 'I recommend %s — take a look:', 'directorist-affiliate' ),
@@ -28,7 +28,9 @@ $da_can_request = $da_approved
 	&& ( $minimum_payout <= 0 || (float) $approved_commission >= $minimum_payout );
 
 // Tabs are built here so one that has nothing to show is never rendered.
-$da_tabs = array();
+$da_tabs = array(
+	'summary' => __( 'Summary', 'directorist-affiliate' ),
+);
 
 if ( $da_approved ) {
 	$da_tabs['link'] = __( 'Your link', 'directorist-affiliate' );
@@ -36,6 +38,13 @@ if ( $da_approved ) {
 
 $da_tabs['referrals'] = __( 'Referrals', 'directorist-affiliate' );
 $da_tabs['payouts']   = __( 'Payouts', 'directorist-affiliate' );
+
+// Settings last, and only when there is something to configure.
+$da_has_settings = $da_approved && ! empty( $payout_methods );
+
+if ( $da_has_settings ) {
+	$da_tabs['settings'] = __( 'Settings', 'directorist-affiliate' );
+}
 ?>
 <div class="directorist-affiliate-wrap directorist-affiliate-dashboard">
 
@@ -69,73 +78,6 @@ $da_tabs['payouts']   = __( 'Payouts', 'directorist-affiliate' );
 		</div>
 	<?php endif; ?>
 
-	<div class="da-stats">
-		<div class="da-stat da-stat--lead">
-			<span class="da-stat-label"><?php esc_html_e( 'Ready to be paid', 'directorist-affiliate' ); ?></span>
-			<span class="da-stat-value"><?php echo esc_html( Directorist_Affiliate_Commission::format_money( (float) $approved_commission ) ); ?></span>
-			<?php if ( $minimum_payout > 0 ) : ?>
-				<div class="da-progress" role="img" aria-label="<?php echo esc_attr( sprintf( /* translators: %s: percentage toward the payout minimum. */ __( '%s%% of the payout minimum', 'directorist-affiliate' ), number_format_i18n( $da_progress, 0 ) ) ); ?>">
-					<span style="width:<?php echo esc_attr( (string) round( $da_progress, 2 ) ); ?>%"></span>
-				</div>
-				<span class="da-stat-meta">
-					<?php if ( $da_shortfall > 0 ) : ?>
-						<?php
-						echo esc_html(
-							sprintf(
-								/* translators: %s: remaining amount before a payout can be made. */
-								__( '%s to go before your next payout', 'directorist-affiliate' ),
-								Directorist_Affiliate_Commission::format_money( $da_shortfall )
-							)
-						);
-						?>
-					<?php else : ?>
-						<?php esc_html_e( 'You have reached the payout minimum', 'directorist-affiliate' ); ?>
-					<?php endif; ?>
-				</span>
-			<?php else : ?>
-				<span class="da-stat-meta"><?php esc_html_e( 'Approved and awaiting payment', 'directorist-affiliate' ); ?></span>
-			<?php endif; ?>
-		</div>
-
-		<div class="da-stat">
-			<span class="da-stat-label"><?php esc_html_e( 'Pending review', 'directorist-affiliate' ); ?></span>
-			<span class="da-stat-value"><?php echo esc_html( Directorist_Affiliate_Commission::format_money( (float) $pending_commission ) ); ?></span>
-			<span class="da-stat-meta"><?php esc_html_e( 'Not approved yet', 'directorist-affiliate' ); ?></span>
-		</div>
-
-		<div class="da-stat">
-			<span class="da-stat-label"><?php esc_html_e( 'Paid to date', 'directorist-affiliate' ); ?></span>
-			<span class="da-stat-value"><?php echo esc_html( Directorist_Affiliate_Commission::format_money( (float) $paid_commission ) ); ?></span>
-			<span class="da-stat-meta">
-				<?php
-				echo esc_html(
-					sprintf(
-						/* translators: %s: lifetime earnings. */
-						__( '%s earned in total', 'directorist-affiliate' ),
-						Directorist_Affiliate_Commission::format_money( $da_lifetime )
-					)
-				);
-				?>
-			</span>
-		</div>
-
-		<div class="da-stat">
-			<span class="da-stat-label"><?php esc_html_e( 'Traffic', 'directorist-affiliate' ); ?></span>
-			<span class="da-stat-value"><?php echo esc_html( number_format_i18n( (int) $visits ) ); ?></span>
-			<span class="da-stat-meta">
-				<?php
-				echo esc_html(
-					sprintf(
-						/* translators: 1: number of referrals, 2: conversion rate. */
-						__( '%1$s referrals · %2$s%% converted', 'directorist-affiliate' ),
-						number_format_i18n( (int) $total_referrals ),
-						number_format_i18n( $da_rate, 1 )
-					)
-				);
-				?>
-			</span>
-		</div>
-	</div>
 
 	<div class="da-tabs" data-da-panels>
 		<div class="da-tabnav" role="tablist" aria-label="<?php esc_attr_e( 'Affiliate dashboard sections', 'directorist-affiliate' ); ?>">
@@ -144,6 +86,77 @@ $da_tabs['payouts']   = __( 'Payouts', 'directorist-affiliate' );
 					<?php echo esc_html( $da_tab_label ); ?>
 				</button>
 			<?php endforeach; ?>
+		</div>
+
+		<div class="da-panel" data-panel="summary">
+			<h2 class="da-panel-title"><?php esc_html_e( 'Summary', 'directorist-affiliate' ); ?></h2>
+		<div class="da-stats">
+			<div class="da-stat da-stat--lead">
+				<span class="da-stat-label"><?php esc_html_e( 'Ready to be paid', 'directorist-affiliate' ); ?></span>
+				<span class="da-stat-value"><?php echo esc_html( Directorist_Affiliate_Commission::format_money( (float) $approved_commission ) ); ?></span>
+				<?php if ( $minimum_payout > 0 ) : ?>
+					<div class="da-progress" role="img" aria-label="<?php echo esc_attr( sprintf( /* translators: %s: percentage toward the payout minimum. */ __( '%s%% of the payout minimum', 'directorist-affiliate' ), number_format_i18n( $da_progress, 0 ) ) ); ?>">
+						<span style="width:<?php echo esc_attr( (string) round( $da_progress, 2 ) ); ?>%"></span>
+					</div>
+					<span class="da-stat-meta">
+						<?php if ( $da_shortfall > 0 ) : ?>
+							<?php
+							echo esc_html(
+								sprintf(
+									/* translators: %s: remaining amount before a payout can be made. */
+									__( '%s to go before your next payout', 'directorist-affiliate' ),
+									Directorist_Affiliate_Commission::format_money( $da_shortfall )
+								)
+							);
+							?>
+						<?php else : ?>
+							<?php esc_html_e( 'You have reached the payout minimum', 'directorist-affiliate' ); ?>
+						<?php endif; ?>
+					</span>
+				<?php else : ?>
+					<span class="da-stat-meta"><?php esc_html_e( 'Approved and awaiting payment', 'directorist-affiliate' ); ?></span>
+				<?php endif; ?>
+			</div>
+
+			<div class="da-stat">
+				<span class="da-stat-label"><?php esc_html_e( 'Pending review', 'directorist-affiliate' ); ?></span>
+				<span class="da-stat-value"><?php echo esc_html( Directorist_Affiliate_Commission::format_money( (float) $pending_commission ) ); ?></span>
+				<span class="da-stat-meta"><?php esc_html_e( 'Not approved yet', 'directorist-affiliate' ); ?></span>
+			</div>
+
+			<div class="da-stat">
+				<span class="da-stat-label"><?php esc_html_e( 'Paid to date', 'directorist-affiliate' ); ?></span>
+				<span class="da-stat-value"><?php echo esc_html( Directorist_Affiliate_Commission::format_money( (float) $paid_commission ) ); ?></span>
+				<span class="da-stat-meta">
+					<?php
+					echo esc_html(
+						sprintf(
+							/* translators: %s: lifetime earnings. */
+							__( '%s earned in total', 'directorist-affiliate' ),
+							Directorist_Affiliate_Commission::format_money( $da_lifetime )
+						)
+					);
+					?>
+				</span>
+			</div>
+
+			<div class="da-stat">
+				<span class="da-stat-label"><?php esc_html_e( 'Traffic', 'directorist-affiliate' ); ?></span>
+				<span class="da-stat-value"><?php echo esc_html( number_format_i18n( (int) $visits ) ); ?></span>
+				<span class="da-stat-meta">
+					<?php
+					echo esc_html(
+						sprintf(
+							/* translators: 1: number of referrals, 2: conversion rate. */
+							__( '%1$s referrals · %2$s%% converted', 'directorist-affiliate' ),
+							number_format_i18n( (int) $total_referrals ),
+							number_format_i18n( $da_rate, 1 )
+						)
+					);
+					?>
+				</span>
+			</div>
+		</div>
 		</div>
 
 		<?php if ( $da_approved ) : ?>
@@ -272,53 +285,6 @@ $da_tabs['payouts']   = __( 'Payouts', 'directorist-affiliate' );
 		<div class="da-panel" data-panel="payouts">
 			<h2 class="da-panel-title"><?php esc_html_e( 'Payouts', 'directorist-affiliate' ); ?></h2>
 
-		<?php if ( $da_approved && ! empty( $payout_methods ) ) : ?>
-				<section class="da-card da-payout-settings" aria-labelledby="da-payout-settings-title">
-					<div class="da-payout-head">
-						<h2 id="da-payout-settings-title"><?php esc_html_e( 'Payout settings', 'directorist-affiliate' ); ?></h2>
-						<?php if ( $payout_ready ) : ?>
-							<span class="da-badge is-approved"><?php esc_html_e( 'Ready', 'directorist-affiliate' ); ?></span>
-						<?php else : ?>
-							<span class="da-badge is-pending"><?php esc_html_e( 'Not set up', 'directorist-affiliate' ); ?></span>
-						<?php endif; ?>
-					</div>
-
-					<p class="da-muted">
-						<?php if ( $payout_ready ) : ?>
-							<?php
-							echo esc_html(
-								sprintf(
-									/* translators: %s: the affiliate's saved payout method and details. */
-									__( 'Payments go to: %s', 'directorist-affiliate' ),
-									$payout_summary
-								)
-							);
-							?>
-						<?php else : ?>
-							<?php esc_html_e( 'Tell us how to pay you. You can save it here once, or fill it in when you request a payout.', 'directorist-affiliate' ); ?>
-						<?php endif; ?>
-					</p>
-
-					<form method="post" class="da-payout-form" data-da-ajax="directorist_affiliate_save_payout_method" data-da-success="reload">
-						<?php wp_nonce_field( 'directorist_affiliate_payout_method', 'directorist_affiliate_nonce' ); ?>
-						<?php
-						Directorist_Affiliate_View::public_partial(
-							'payout-method-fields.php',
-							array(
-								'payout_methods' => $payout_methods,
-								'payout_method'  => $payout_method,
-								'payout_details' => $payout_details,
-								'id_prefix'      => 'da-payout-settings',
-							)
-						);
-						?>
-						<div class="da-form-foot">
-							<button type="submit" class="da-btn"><?php esc_html_e( 'Save payout details', 'directorist-affiliate' ); ?></button>
-							<p class="da-muted"><?php esc_html_e( 'Only the site owner can see these details.', 'directorist-affiliate' ); ?></p>
-						</div>
-					</form>
-				</section>
-			<?php endif; ?>
 
 		<section class="da-card da-payout-info">
 				<div class="da-payout-head">
@@ -423,6 +389,56 @@ $da_tabs['payouts']   = __( 'Payouts', 'directorist-affiliate' );
 						<?php endif; ?>
 			</section>
 		</div>
+		<?php if ( $da_has_settings ) : ?>
+			<div class="da-panel" data-panel="settings">
+				<h2 class="da-panel-title"><?php esc_html_e( 'Settings', 'directorist-affiliate' ); ?></h2>
+					<section class="da-card da-payout-settings" aria-labelledby="da-payout-settings-title">
+						<div class="da-payout-head">
+							<h2 id="da-payout-settings-title"><?php esc_html_e( 'Payout settings', 'directorist-affiliate' ); ?></h2>
+							<?php if ( $payout_ready ) : ?>
+								<span class="da-badge is-approved"><?php esc_html_e( 'Ready', 'directorist-affiliate' ); ?></span>
+							<?php else : ?>
+								<span class="da-badge is-pending"><?php esc_html_e( 'Not set up', 'directorist-affiliate' ); ?></span>
+							<?php endif; ?>
+						</div>
+
+						<p class="da-muted">
+							<?php if ( $payout_ready ) : ?>
+								<?php
+								echo esc_html(
+									sprintf(
+										/* translators: %s: the affiliate's saved payout method and details. */
+										__( 'Payments go to: %s', 'directorist-affiliate' ),
+										$payout_summary
+									)
+								);
+								?>
+							<?php else : ?>
+								<?php esc_html_e( 'Tell us how to pay you. You can save it here once, or fill it in when you request a payout.', 'directorist-affiliate' ); ?>
+							<?php endif; ?>
+						</p>
+
+						<form method="post" class="da-payout-form" data-da-ajax="directorist_affiliate_save_payout_method" data-da-success="reload">
+							<?php wp_nonce_field( 'directorist_affiliate_payout_method', 'directorist_affiliate_nonce' ); ?>
+							<?php
+							Directorist_Affiliate_View::public_partial(
+								'payout-method-fields.php',
+								array(
+									'payout_methods' => $payout_methods,
+									'payout_method'  => $payout_method,
+									'payout_details' => $payout_details,
+									'id_prefix'      => 'da-payout-settings',
+								)
+							);
+							?>
+							<div class="da-form-foot">
+								<button type="submit" class="da-btn"><?php esc_html_e( 'Save payout details', 'directorist-affiliate' ); ?></button>
+								<p class="da-muted"><?php esc_html_e( 'Only the site owner can see these details.', 'directorist-affiliate' ); ?></p>
+							</div>
+						</form>
+					</section>
+			</div>
+		<?php endif; ?>
 	</div>
 
 	<?php if ( $da_can_request ) : ?>

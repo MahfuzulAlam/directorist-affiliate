@@ -6,7 +6,7 @@ Affiliate tracking and fixed-commission referral system for [Directorist](https:
 
 | Item | Value |
 | --- | --- |
-| Version | 1.10.0 (plugin) / 0.3.0 (DB schema) |
+| Version | 1.11.0 (plugin) / 0.3.0 (DB schema) |
 | Author | [wpXplore](https://wpxplore.com) |
 | Website | https://wpxplore.com/tools/directorist-affiliate/ |
 | Requires | WordPress 6.3+, PHP 7.4+ |
@@ -379,6 +379,12 @@ Filters: `directorist_affiliate_link_types( $types )` (content types in the link
 Usage examples are in [DOCUMENTATION.md](DOCUMENTATION.md#developer-reference).
 
 ## Changelog
+
+### 1.11.0 — 2026-08-14
+
+- **Summary is now the default tab**, holding the earnings tiles that previously sat above the tab strip.
+- **Payout settings moved to its own Settings tab**, last in the strip. Payouts keeps how-you-get-paid, the request button and payout history. Settings only appears when there is something to configure — an unapproved affiliate sees neither it nor *Your link*.
+- **Fix: the conversion rate could exceed 100%** — it read "400.0% converted" from 1 visit and 4 referrals. It divided *referrals* by visits, but one visit can produce several referrals (register, then buy a plan, then feature a listing). It now divides *converted visits* by visits, matching how the admin dashboard has always calculated it, so it is a true percentage.
 
 ### 1.10.0 — 2026-08-14
 

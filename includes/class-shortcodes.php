@@ -283,6 +283,12 @@ final class Directorist_Affiliate_Shortcodes {
 				'link_types'          => $this->plugin->link_search->types(),
 				'payouts'             => $this->plugin->payout->list_by_affiliate( (int) $affiliate->id, 20 ),
 				'visits'              => $this->plugin->tracking->count( array( 'affiliate_id' => (int) $affiliate->id ) ),
+				'converted_visits'    => $this->plugin->tracking->count(
+					array(
+						'affiliate_id' => (int) $affiliate->id,
+						'converted'    => 1,
+					)
+				),
 				'total_referrals'     => $this->plugin->referral->count( array( 'affiliate_id' => (int) $affiliate->id ) ),
 				'pending_commission'  => $this->plugin->referral->sum_commission( 'pending', (int) $affiliate->id ),
 				'approved_commission' => $this->plugin->referral->sum_commission( 'approved', (int) $affiliate->id ),

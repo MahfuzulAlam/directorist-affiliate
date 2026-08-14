@@ -2,14 +2,14 @@
 # This file is distributed under the GPL v2 or later.
 msgid ""
 msgstr ""
-"Project-Id-Version: Directorist - Affiliate 1.10.0\n"
+"Project-Id-Version: Directorist - Affiliate 1.11.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/directorist-affiliate\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-08-14T17:01:19+00:00\n"
+"POT-Creation-Date: 2026-08-14T17:11:50+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: directorist-affiliate\n"
@@ -59,8 +59,8 @@ msgstr ""
 #: admin/class-admin.php:110
 #: admin/views/affiliates.php:142
 #: admin/views/dashboard.php:58
-#: public/views/affiliate-dashboard.php:37
-#: public/views/affiliate-dashboard.php:237
+#: public/views/affiliate-dashboard.php:39
+#: public/views/affiliate-dashboard.php:250
 msgid "Referrals"
 msgstr ""
 
@@ -69,12 +69,14 @@ msgid "Visits"
 msgstr ""
 
 #: admin/class-admin.php:120
-#: public/views/affiliate-dashboard.php:38
-#: public/views/affiliate-dashboard.php:273
+#: public/views/affiliate-dashboard.php:40
+#: public/views/affiliate-dashboard.php:286
 msgid "Payouts"
 msgstr ""
 
 #: admin/class-admin.php:125
+#: public/views/affiliate-dashboard.php:46
+#: public/views/affiliate-dashboard.php:394
 msgid "Settings"
 msgstr ""
 
@@ -127,7 +129,7 @@ msgid "Unpaid approved commissions"
 msgstr ""
 
 #: admin/class-admin.php:690
-#: public/views/affiliate-dashboard.php:395
+#: public/views/affiliate-dashboard.php:361
 msgid "Payout history"
 msgstr ""
 
@@ -149,7 +151,7 @@ msgstr ""
 
 #: admin/views/affiliates.php:39
 #: admin/views/affiliates.php:81
-#: public/views/affiliate-dashboard.php:226
+#: public/views/affiliate-dashboard.php:239
 #: public/views/registration-form.php:78
 msgid "Email"
 msgstr ""
@@ -157,7 +159,7 @@ msgstr ""
 #: admin/views/affiliates.php:43
 #: admin/views/affiliates.php:84
 #: admin/views/payouts-unpaid.php:103
-#: public/views/affiliate-dashboard.php:375
+#: public/views/affiliate-dashboard.php:341
 #: public/views/registration-form.php:108
 msgid "Payout email"
 msgstr ""
@@ -168,8 +170,8 @@ msgstr ""
 #: admin/views/dashboard.php:101
 #: admin/views/payouts-history.php:64
 #: admin/views/referrals.php:95
-#: public/views/affiliate-dashboard.php:247
-#: public/views/affiliate-dashboard.php:256
+#: public/views/affiliate-dashboard.php:260
+#: public/views/affiliate-dashboard.php:269
 msgid "Status"
 msgstr ""
 
@@ -189,7 +191,7 @@ msgid "Application note"
 msgstr ""
 
 #: admin/views/affiliates.php:70
-#: public/views/affiliate-dashboard.php:474
+#: public/views/affiliate-dashboard.php:490
 msgid "Cancel"
 msgstr ""
 
@@ -354,8 +356,8 @@ msgstr ""
 
 #: admin/views/dashboard.php:100
 #: admin/views/referrals.php:94
-#: public/views/affiliate-dashboard.php:246
-#: public/views/affiliate-dashboard.php:255
+#: public/views/affiliate-dashboard.php:259
+#: public/views/affiliate-dashboard.php:268
 msgid "Commission"
 msgstr ""
 
@@ -363,8 +365,8 @@ msgstr ""
 #: admin/views/payouts-unpaid.php:106
 #: admin/views/referrals.php:96
 #: admin/views/visits.php:45
-#: public/views/affiliate-dashboard.php:248
-#: public/views/affiliate-dashboard.php:257
+#: public/views/affiliate-dashboard.php:261
+#: public/views/affiliate-dashboard.php:270
 msgid "Date"
 msgstr ""
 
@@ -448,8 +450,8 @@ msgstr ""
 #: admin/views/payouts-history.php:63
 #: admin/views/payouts-requests.php:66
 #: admin/views/payouts-unpaid.php:105
-#: public/views/affiliate-dashboard.php:402
-#: public/views/affiliate-dashboard.php:410
+#: public/views/affiliate-dashboard.php:368
+#: public/views/affiliate-dashboard.php:376
 msgid "Amount"
 msgstr ""
 
@@ -458,8 +460,8 @@ msgid "Paid by"
 msgstr ""
 
 #: admin/views/payouts-history.php:67
-#: public/views/affiliate-dashboard.php:404
-#: public/views/affiliate-dashboard.php:412
+#: public/views/affiliate-dashboard.php:370
+#: public/views/affiliate-dashboard.php:378
 msgid "Date paid"
 msgstr ""
 
@@ -509,7 +511,7 @@ msgstr ""
 #: admin/views/payouts-requests.php:44
 #: admin/views/payouts-requests.php:69
 #: includes/class-payout.php:71
-#: public/views/affiliate-dashboard.php:341
+#: public/views/affiliate-dashboard.php:307
 msgid "Requested"
 msgstr ""
 
@@ -650,8 +652,8 @@ msgid "Select all referrals"
 msgstr ""
 
 #: admin/views/referrals.php:91
-#: public/views/affiliate-dashboard.php:245
-#: public/views/affiliate-dashboard.php:254
+#: public/views/affiliate-dashboard.php:258
+#: public/views/affiliate-dashboard.php:267
 msgid "Event"
 msgstr ""
 
@@ -939,7 +941,7 @@ msgid "New referrals are created as Approved (payable immediately) instead of Pe
 msgstr ""
 
 #: admin/views/settings.php:315
-#: public/views/affiliate-dashboard.php:384
+#: public/views/affiliate-dashboard.php:350
 msgid "Minimum payout"
 msgstr ""
 
@@ -1712,264 +1714,269 @@ msgstr ""
 msgid "You have not applied for the affiliate program yet."
 msgstr ""
 
-#: includes/class-shortcodes.php:416
+#: includes/class-shortcodes.php:422
 msgid "Security check failed. Please try again."
 msgstr ""
 
-#: public/views/affiliate-dashboard.php:34
+#: public/views/affiliate-dashboard.php:32
+#: public/views/affiliate-dashboard.php:92
+msgid "Summary"
+msgstr ""
+
+#: public/views/affiliate-dashboard.php:36
 msgid "Your link"
 msgstr ""
 
-#: public/views/affiliate-dashboard.php:49
+#: public/views/affiliate-dashboard.php:58
 msgid "Your application is being reviewed"
 msgstr ""
 
-#: public/views/affiliate-dashboard.php:51
+#: public/views/affiliate-dashboard.php:60
 msgid "Your account is on hold"
 msgstr ""
 
-#: public/views/affiliate-dashboard.php:53
+#: public/views/affiliate-dashboard.php:62
 msgid "Your application was not approved"
 msgstr ""
 
-#: public/views/affiliate-dashboard.php:60
+#: public/views/affiliate-dashboard.php:69
 msgid "Your referral link appears here as soon as you are approved. We will email you either way."
 msgstr ""
 
-#: public/views/affiliate-dashboard.php:62
+#: public/views/affiliate-dashboard.php:71
 msgid "New referrals are not being tracked right now. Anything you already earned is still shown below."
 msgstr ""
 
-#: public/views/affiliate-dashboard.php:64
+#: public/views/affiliate-dashboard.php:73
 msgid "New referrals are not being tracked. Get in touch if you think this was a mistake."
 msgstr ""
 
-#: public/views/affiliate-dashboard.php:74
+#: public/views/affiliate-dashboard.php:83
+msgid "Affiliate dashboard sections"
+msgstr ""
+
+#: public/views/affiliate-dashboard.php:95
 msgid "Ready to be paid"
 msgstr ""
 
 #. translators: %s: percentage toward the payout minimum.
-#: public/views/affiliate-dashboard.php:77
+#: public/views/affiliate-dashboard.php:98
 #, php-format
 msgid "%s%% of the payout minimum"
 msgstr ""
 
 #. translators: %s: remaining amount before a payout can be made.
-#: public/views/affiliate-dashboard.php:86
+#: public/views/affiliate-dashboard.php:107
 #, php-format
 msgid "%s to go before your next payout"
 msgstr ""
 
-#: public/views/affiliate-dashboard.php:92
+#: public/views/affiliate-dashboard.php:113
 msgid "You have reached the payout minimum"
 msgstr ""
 
-#: public/views/affiliate-dashboard.php:96
+#: public/views/affiliate-dashboard.php:117
 msgid "Approved and awaiting payment"
 msgstr ""
 
-#: public/views/affiliate-dashboard.php:101
+#: public/views/affiliate-dashboard.php:122
 msgid "Pending review"
 msgstr ""
 
-#: public/views/affiliate-dashboard.php:103
+#: public/views/affiliate-dashboard.php:124
 msgid "Not approved yet"
 msgstr ""
 
-#: public/views/affiliate-dashboard.php:107
+#: public/views/affiliate-dashboard.php:128
 msgid "Paid to date"
 msgstr ""
 
 #. translators: %s: lifetime earnings.
-#: public/views/affiliate-dashboard.php:114
+#: public/views/affiliate-dashboard.php:135
 #, php-format
 msgid "%s earned in total"
 msgstr ""
 
-#: public/views/affiliate-dashboard.php:123
+#: public/views/affiliate-dashboard.php:144
 msgid "Traffic"
 msgstr ""
 
 #. translators: 1: number of referrals, 2: conversion rate.
-#: public/views/affiliate-dashboard.php:130
+#: public/views/affiliate-dashboard.php:151
 #, php-format
 msgid "%1$s referrals · %2$s%% converted"
 msgstr ""
 
-#: public/views/affiliate-dashboard.php:141
-msgid "Affiliate dashboard sections"
-msgstr ""
-
-#: public/views/affiliate-dashboard.php:153
-#: public/views/affiliate-dashboard.php:214
+#: public/views/affiliate-dashboard.php:166
+#: public/views/affiliate-dashboard.php:227
 msgid "Your referral link"
 msgstr ""
 
 #. translators: %d: number of days the referral cookie lasts.
-#: public/views/affiliate-dashboard.php:159
+#: public/views/affiliate-dashboard.php:172
 #, php-format
 msgid "Anyone who arrives through this link stays credited to you for %d day."
 msgid_plural "Anyone who arrives through this link stays credited to you for %d days."
 msgstr[0] ""
 msgstr[1] ""
 
-#: public/views/affiliate-dashboard.php:175
+#: public/views/affiliate-dashboard.php:188
 msgid "Where should it point?"
 msgstr ""
 
-#: public/views/affiliate-dashboard.php:176
+#: public/views/affiliate-dashboard.php:189
 msgid "Choose the kind of content first. A search box appears next to it so you can find the exact item by name, and your link updates as you pick."
 msgstr ""
 
-#: public/views/affiliate-dashboard.php:191
+#: public/views/affiliate-dashboard.php:204
 msgid "Find it by name"
 msgstr ""
 
-#: public/views/affiliate-dashboard.php:200
+#: public/views/affiliate-dashboard.php:213
 msgid "Start typing a title…"
 msgstr ""
 
-#: public/views/affiliate-dashboard.php:207
+#: public/views/affiliate-dashboard.php:220
 msgid "Paste the address"
 msgstr ""
 
-#: public/views/affiliate-dashboard.php:209
+#: public/views/affiliate-dashboard.php:222
 msgid "Only addresses on this website can be tracked."
 msgstr ""
 
-#: public/views/affiliate-dashboard.php:216
+#: public/views/affiliate-dashboard.php:229
 msgid "Copied"
 msgstr ""
 
-#: public/views/affiliate-dashboard.php:217
+#: public/views/affiliate-dashboard.php:230
 msgid "Copy"
 msgstr ""
 
-#: public/views/affiliate-dashboard.php:222
+#: public/views/affiliate-dashboard.php:235
 msgid "Share via"
 msgstr ""
 
-#: public/views/affiliate-dashboard.php:230
+#: public/views/affiliate-dashboard.php:243
 msgid "Building links to other pages needs JavaScript. The link above works as it is."
 msgstr ""
 
-#: public/views/affiliate-dashboard.php:265
+#: public/views/affiliate-dashboard.php:278
 msgid "No referrals yet"
 msgstr ""
 
-#: public/views/affiliate-dashboard.php:266
+#: public/views/affiliate-dashboard.php:279
 msgid "Share your link above. Anything your visitors do here shows up on this list."
 msgstr ""
 
-#: public/views/affiliate-dashboard.php:266
+#: public/views/affiliate-dashboard.php:279
 msgid "Referrals appear here once your account is approved."
 msgstr ""
 
-#: public/views/affiliate-dashboard.php:278
-msgid "Payout settings"
-msgstr ""
-
-#: public/views/affiliate-dashboard.php:280
-msgid "Ready"
-msgstr ""
-
-#: public/views/affiliate-dashboard.php:282
-msgid "Not set up"
-msgstr ""
-
-#. translators: %s: the affiliate's saved payout method and details.
-#: public/views/affiliate-dashboard.php:292
-#, php-format
-msgid "Payments go to: %s"
-msgstr ""
-
-#: public/views/affiliate-dashboard.php:298
-msgid "Tell us how to pay you. You can save it here once, or fill it in when you request a payout."
-msgstr ""
-
-#: public/views/affiliate-dashboard.php:316
-msgid "Save payout details"
-msgstr ""
-
-#: public/views/affiliate-dashboard.php:317
-msgid "Only the site owner can see these details."
-msgstr ""
-
-#: public/views/affiliate-dashboard.php:325
+#: public/views/affiliate-dashboard.php:291
 msgid "How you get paid"
 msgstr ""
 
-#: public/views/affiliate-dashboard.php:329
-#: public/views/affiliate-dashboard.php:333
+#: public/views/affiliate-dashboard.php:295
+#: public/views/affiliate-dashboard.php:299
 msgid "Request payout"
 msgstr ""
 
 #. translators: 1: requested amount, 2: date requested.
-#: public/views/affiliate-dashboard.php:347
+#: public/views/affiliate-dashboard.php:313
 #, php-format
 msgid "You asked for %1$s on %2$s. We will email you once it has been processed."
 msgstr ""
 
-#: public/views/affiliate-dashboard.php:358
+#: public/views/affiliate-dashboard.php:324
 msgid "You can request a payout once you have approved commissions waiting."
 msgstr ""
 
 #. translators: %s: minimum payout amount.
-#: public/views/affiliate-dashboard.php:364
+#: public/views/affiliate-dashboard.php:330
 #, php-format
 msgid "You can request a payout once your approved balance reaches %s."
 msgstr ""
 
-#: public/views/affiliate-dashboard.php:379
+#: public/views/affiliate-dashboard.php:345
 msgid "Your code"
 msgstr ""
 
-#: public/views/affiliate-dashboard.php:403
-#: public/views/affiliate-dashboard.php:411
+#: public/views/affiliate-dashboard.php:369
+#: public/views/affiliate-dashboard.php:377
 msgid "Method"
 msgstr ""
 
-#: public/views/affiliate-dashboard.php:420
+#: public/views/affiliate-dashboard.php:386
 msgid "No payouts yet"
 msgstr ""
 
-#: public/views/affiliate-dashboard.php:421
+#: public/views/affiliate-dashboard.php:387
 msgid "Once approved commissions are paid out, each payment is listed here."
 msgstr ""
 
-#: public/views/affiliate-dashboard.php:431
-msgid "Request a payout"
+#: public/views/affiliate-dashboard.php:397
+msgid "Payout settings"
 msgstr ""
 
-#: public/views/affiliate-dashboard.php:432
-msgid "Close"
+#: public/views/affiliate-dashboard.php:399
+msgid "Ready"
 msgstr ""
 
-#: public/views/affiliate-dashboard.php:439
-msgid "Amount to be paid"
+#: public/views/affiliate-dashboard.php:401
+msgid "Not set up"
 msgstr ""
 
-#: public/views/affiliate-dashboard.php:441
-msgid "Every approved commission in your balance right now."
+#. translators: %s: the affiliate's saved payout method and details.
+#: public/views/affiliate-dashboard.php:411
+#, php-format
+msgid "Payments go to: %s"
+msgstr ""
+
+#: public/views/affiliate-dashboard.php:417
+msgid "Tell us how to pay you. You can save it here once, or fill it in when you request a payout."
+msgstr ""
+
+#: public/views/affiliate-dashboard.php:435
+msgid "Save payout details"
+msgstr ""
+
+#: public/views/affiliate-dashboard.php:436
+msgid "Only the site owner can see these details."
 msgstr ""
 
 #: public/views/affiliate-dashboard.php:447
+msgid "Request a payout"
+msgstr ""
+
+#: public/views/affiliate-dashboard.php:448
+msgid "Close"
+msgstr ""
+
+#: public/views/affiliate-dashboard.php:455
+msgid "Amount to be paid"
+msgstr ""
+
+#: public/views/affiliate-dashboard.php:457
+msgid "Every approved commission in your balance right now."
+msgstr ""
+
+#: public/views/affiliate-dashboard.php:463
 msgid "Paying to"
 msgstr ""
 
-#: public/views/affiliate-dashboard.php:450
+#: public/views/affiliate-dashboard.php:466
 msgid "Change"
 msgstr ""
 
-#: public/views/affiliate-dashboard.php:469
+#: public/views/affiliate-dashboard.php:485
 msgid "Note (optional)"
 msgstr ""
 
-#: public/views/affiliate-dashboard.php:470
+#: public/views/affiliate-dashboard.php:486
 msgid "Anything the team should know about this payment…"
 msgstr ""
 
-#: public/views/affiliate-dashboard.php:475
+#: public/views/affiliate-dashboard.php:491
 msgid "Send request"
 msgstr ""
 
