@@ -302,28 +302,7 @@ final class Directorist_Affiliate_Admin {
 	 * @return array<string,mixed>
 	 */
 	private function request_filters( array $keys = array() ): array {
-		// phpcs:disable WordPress.Security.NonceVerification.Recommended -- read-only list filters.
-		$range = Directorist_Affiliate_Date_Range::from_request( $_GET );
-
-		$filters = array(
-			'affiliate_id' => isset( $_GET['affiliate'] ) ? absint( $_GET['affiliate'] ) : 0,
-			'range'        => $range['preset'],
-			'from'         => $range['from'],
-			'to'           => $range['to'],
-		);
-
-		foreach ( $keys as $key ) {
-			$filters[ $key ] = isset( $_GET[ $key ] ) ? sanitize_text_field( wp_unslash( $_GET[ $key ] ) ) : '';
-		}
-		// phpcs:enable WordPress.Security.NonceVerification.Recommended
-
-		list( $filters['date_from'], $filters['date_to'] ) = Directorist_Affiliate_Date_Range::resolve(
-			$filters['range'],
-			$filters['from'],
-			$filters['to']
-		);
-
-		return $filters;
+		return Directorist_Affiliate_Admin_Export::filters( $keys );
 	}
 
 	/**
@@ -435,12 +414,7 @@ final class Directorist_Affiliate_Admin {
 		$filters = $this->request_filters( array( 'status', 's' ) );
 		$paged   = $this->current_paged();
 
-		$query = array(
-			'status'    => $filters['status'],
-			'search'    => $filters['s'],
-			'date_from' => $filters['date_from'],
-			'date_to'   => $filters['date_to'],
-		);
+		$query = Directorist_Affiliate_Admin_Export::query_args( 'affiliates', $filters );
 
 		$this->render(
 			'affiliates.php',
@@ -485,13 +459,7 @@ final class Directorist_Affiliate_Admin {
 		$filters = $this->request_filters( array( 'status', 'type' ) );
 		$paged   = $this->current_paged();
 
-		$query = array(
-			'affiliate_id'  => $filters['affiliate_id'],
-			'status'        => $filters['status'],
-			'referral_type' => $filters['type'],
-			'date_from'     => $filters['date_from'],
-			'date_to'       => $filters['date_to'],
-		);
+		$query = Directorist_Affiliate_Admin_Export::query_args( 'referrals', $filters );
 
 		$total     = $this->plugin->referral->count( $query );
 		$referrals = $this->plugin->referral->list(
@@ -538,12 +506,7 @@ final class Directorist_Affiliate_Admin {
 		$filters = $this->request_filters( array( 'converted' ) );
 		$paged   = $this->current_paged();
 
-		$query = array(
-			'affiliate_id' => $filters['affiliate_id'],
-			'converted'    => in_array( $filters['converted'], array( '0', '1' ), true ) ? $filters['converted'] : '',
-			'date_from'    => $filters['date_from'],
-			'date_to'      => $filters['date_to'],
-		);
+		$query = Directorist_Affiliate_Admin_Export::query_args( 'visits', $filters );
 
 		$visits = $this->plugin->tracking->list(
 			array_merge(

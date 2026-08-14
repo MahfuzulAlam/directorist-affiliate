@@ -6,7 +6,7 @@ Affiliate tracking and fixed-commission referral system for [Directorist](https:
 
 | Item | Value |
 | --- | --- |
-| Version | 1.13.0 (plugin) / 0.3.0 (DB schema) |
+| Version | 1.14.0 (plugin) / 0.3.0 (DB schema) |
 | Author | [wpXplore](https://wpxplore.com) |
 | Website | https://wpxplore.com/tools/directorist-affiliate/ |
 | Requires | WordPress 6.3+, PHP 7.4+ |
@@ -17,6 +17,7 @@ Affiliate tracking and fixed-commission referral system for [Directorist](https:
 | Payouts | Manual (recorded by admin; no gateway integration). Affiliates can **request** a payout from their dashboard; per-affiliate minimum enforced on both bulk payouts and requests |
 | Assets | One front-end stylesheet + one admin stylesheet + one vanilla JS file (AJAX forms, copy link, link builder, bulk select) |
 | Emails | Seven notifications, each with **editable subject and body** in a modal, placeholder tokens, and independent on/off toggles |
+| Exports | Affiliates, Referrals, Visits and Payouts each export to CSV — the **currently filtered rows**, with every stored column plus resolved names, titles and lifetime totals |
 | Forms | All forms submit via AJAX (`admin-ajax.php`) with full no-JavaScript POST fallbacks |
 | User guide | [DOCUMENTATION.md](DOCUMENTATION.md) |
 
@@ -383,6 +384,35 @@ Filters: `directorist_affiliate_email_templates( $templates )` (default email wo
 Usage examples are in [DOCUMENTATION.md](DOCUMENTATION.md#developer-reference).
 
 ## Changelog
+
+### 1.14.0 — 2026-08-15
+
+CSV exports on every list screen, a verified Pricing Plans v4 conversion path, and admin UI fixes.
+
+**Export CSV**
+- Affiliates, Referrals, Visits and Payout history each gained an **Export CSV** button in their filter bar. The download is the **currently filtered** rows — filter to one affiliate and last month, and that is the file you get.
+- Screens and exports now share one filter parser and one query builder (`Directorist_Affiliate_Admin_Export::filters()` / `query_args()`), so an export cannot return different rows than the table it was launched from. `Admin::request_filters()` delegates to the first and every tab's query comes from the second.
+- Each file carries more columns than its table: affiliates gain their referral URL, WordPress login/email, payout details and lifetime visit/referral/earning totals; referrals gain order source and total, referred user email, listing title and approval timestamps; visits gain landing URL, referrer, IP and user agent; payouts gain the method paid to and the covered referral ids.
+- Rows stream in batches of 500 with **no row cap**. The old payouts export stopped at a hardcoded 1,000 rows and looked complete when it was not.
+- Files are UTF-8 with a BOM so Excel reads accented names, and every cell is guarded against spreadsheet formula injection — the old export escaped only the payout email.
+- Added `Tracking::stats_by_affiliate()`, a grouped query mirroring the referral one, so per-affiliate export totals are two queries rather than two per row.
+
+**Pricing Plans v4 conversion — audited**
+- Verified end to end against Directorist – Pricing Plans 4.0.1. Plan purchases are core Directorist orders carrying `ref_type = 'pricing_plan'`, so `directorist_after_order_create` / `directorist_after_order_update` are the correct hooks; the gateway path reaches them through `OrderRepository::update_status()`, which delegates to `update()`. Both legacy signatures (`atbdp_order_completed`, `atbdp_order_status_changed`) were re-checked against core and match.
+- Order totals mirror core exactly, via `directorist_compute_order_total_amount()` with the argument order core declares, so tax and coupons are applied the same way the customer was charged.
+- New 30-assertion test harness covering the v4 flow: percentage and fixed commissions, tax and coupon maths, trial/zero-value orders paying nothing, pending orders waiting, self-referral blocking, per-order deduplication on repeat saves, refund and cancellation reversal, and the zero-payable checkout path.
+
+**Admin UI**
+- Notification email editors moved below their switch and restyled as links on a light background rather than buttons.
+- The email editor modal footer is now a proper footer bar: it carries its own padding instead of borrowing it from a parent, so Done no longer sits flush against the dialog edge, and the modal has a height ceiling with a scrolling body so the footer cannot be pushed off screen.
+- Paired email editors use short labels (*Application approved*, *Payout paid*) instead of repeating "(to affiliate)".
+- Directory-type checkboxes flow horizontally and wrap; lists with sentence-length labels stay stacked.
+- The listing commission trigger is its own field, *Credit the listing commission*, rather than trailing the amount.
+- Export CSV button icons are flex-centred instead of baseline-guessed.
+
+**Dependency gating**
+- With Pricing Plans inactive, the plan commission row is disabled and reads false; the same for featured listings when Directorist featured monetization is off. Each gates on **its own** dependency — featured is never gated on Pricing Plans.
+- Disabled controls are shadowed by hidden inputs carrying the stored values, so saving the settings page while an extension is deactivated no longer wipes your commission rates.
 
 ### 1.13.0 — 2026-08-14
 

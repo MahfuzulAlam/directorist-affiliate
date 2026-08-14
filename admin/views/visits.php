@@ -11,6 +11,7 @@ Directorist_Affiliate_View::partial(
 	'filter-bar.php',
 	array(
 		'tab'            => 'visits',
+		'export'            => 'visits',
 		'filters'        => $filters,
 		'affiliate_list' => $affiliate_list,
 		'fields'         => array(

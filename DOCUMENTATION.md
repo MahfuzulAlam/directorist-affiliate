@@ -33,7 +33,8 @@ Turn your visitors into promoters. This guide walks you through every screen of 
 6. [Creating the front-end pages](#creating-the-front-end-pages)
 7. [What your affiliates see](#what-your-affiliates-see)
 8. [Everyday workflows](#everyday-workflows)
-9. [Email notifications](#email-notifications)
+9. [Exporting to CSV](#exporting-to-csv)
+10. [Email notifications](#email-notifications)
 10. [Translating the plugin](#translating-the-plugin)
 11. [Privacy & GDPR](#privacy--gdpr)
 12. [Developer reference](#developer-reference)
@@ -330,6 +331,29 @@ Sharing works on any URL: `?ref=CODE` can be appended to the homepage, a listing
 > 💡 **Note:** searches match the **title only** and show at most 10 results, so tell affiliates to search by a word they know is in the name. Only published content appears — drafts and private pages are never offered.
 
 > 💡 **Tip for developers:** the block picks up your theme's font automatically and renders light by default. To match your brand colour, set `--da-accent` on `.directorist-affiliate-wrap` in your theme's CSS. If your theme is dark, add the class `da-dark` to the page body (or the wrapper) and the block switches to a dark palette — it deliberately ignores the visitor's OS dark-mode setting, since that would otherwise put a dark panel on a light page.
+
+---
+
+## Exporting to CSV
+
+Affiliates, Referrals, Visits and Payout history each have an **Export CSV** button in their filter bar.
+
+The download contains **exactly the rows the filters are currently showing** — filter to one affiliate and last month, and that is what you get. Clear the filters first if you want everything. The button carries the same query the table used, so the two can never disagree.
+
+Exports are not limited to what fits on screen: every matching row is included, fetched in batches, so a directory with tens of thousands of visits exports in full rather than stopping at the first page.
+
+Each file also carries **more columns than the table has room for**:
+
+| Export | Columns you only get here |
+| --- | --- |
+| Affiliates | Referral URL, WordPress login and email, payout method details, application note, lifetime visits, converted visits, referral count, and pending/approved/paid totals |
+| Referrals | Affiliate name and email, human-readable type, order source and order total, referred user's email, listing title, and the approve/paid timestamps |
+| Visits | Full landing URL, referrer URL, IP address, user agent, referred user and listing ids |
+| Payouts | Affiliate name, payment method and the details it was paid to, the covered referral ids and their count, and notes |
+
+The *Unpaid approved commissions* sub-tab exports the approved referrals behind the outstanding balance, which is what that screen lists. *Payout history* exports the payout records themselves.
+
+> 💡 **Note:** Files are UTF-8 with a byte-order mark so Excel reads accented names correctly, and any cell beginning with `=`, `+`, `-` or `@` is prefixed with an apostrophe so spreadsheets treat it as text rather than a formula.
 
 ---
 

@@ -11,6 +11,7 @@
 	--da-accent: #2563eb;
 	--da-accent-hover: #1d4ed8;
 	--da-accent-soft: rgba(37, 99, 235, 0.08);
+	--da-accent-softer: rgba(37, 99, 235, 0.14);
 	--da-text: #111827;
 	--da-text-muted: #6b7280;
 	--da-border: #e5e7eb;
@@ -507,10 +508,25 @@ a.directorist-affiliate-stat-meta:hover {
 
 .directorist-affiliate-admin .button .dashicons {
 	margin-inline-end: 4px;
-	vertical-align: text-bottom;
+	vertical-align: middle;
 	font-size: 16px;
 	width: 16px;
 	height: 16px;
+	line-height: 1;
+}
+
+/* Icon + label in a core .button. Core's line-height is tuned for text alone,
+   so a baseline-aligned glyph sits low next to it — let flex do the centring
+   instead of guessing an offset. */
+.directorist-affiliate-admin .directorist-affiliate-icon-btn {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	gap: 5px;
+}
+
+.directorist-affiliate-admin .directorist-affiliate-icon-btn .dashicons {
+	margin: 0;
 }
 
 /* ---------------------------------------------------------------------------
@@ -827,8 +843,25 @@ a.directorist-affiliate-cell-sub:hover {
 	backdrop-filter: blur(2px);
 }
 
+/* Column layout so a long template scrolls its body instead of pushing the
+   footer past the bottom of the viewport. Scoped to [open] — an unscoped
+   display would override the UA rule that hides a closed dialog. */
 .directorist-affiliate-modal[open] {
+	display: flex;
+	flex-direction: column;
+	max-height: min(86vh, 780px);
 	animation: da-modal-in 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.directorist-affiliate-modal-head,
+.directorist-affiliate-modal-actions {
+	flex: none;
+}
+
+.directorist-affiliate-modal-body,
+.directorist-affiliate-modal > .directorist-affiliate-admin-form {
+	min-height: 0;
+	overflow-y: auto;
 }
 
 @keyframes da-modal-in {
@@ -883,13 +916,25 @@ a.directorist-affiliate-cell-sub:hover {
 	outline-offset: 2px;
 }
 
+/* A footer bar flush to the dialog edges. It carries its own padding rather
+   than borrowing it from a parent, because it is used both as a direct child
+   of the dialog and inside a padded form. */
 .directorist-affiliate-modal-actions {
 	display: flex;
+	align-items: center;
 	justify-content: flex-end;
-	gap: 8px;
-	margin-top: 18px;
-	padding-top: 16px;
+	gap: 10px;
+	padding: 14px 22px;
 	border-top: 1px solid var(--da-border);
+	border-end-start-radius: calc(var(--da-radius) - 1px);
+	border-end-end-radius: calc(var(--da-radius) - 1px);
+	background: var(--da-neutral-bg);
+}
+
+/* Inside a padded form, pull the bar back out to the dialog edges so it reads
+   as a footer rather than a boxed-in row. Values cancel the form's padding. */
+.directorist-affiliate-admin-form > .directorist-affiliate-modal-actions {
+	margin: 20px -22px -22px;
 }
 
 /* ---------------------------------------------------------------------------
@@ -1222,6 +1267,20 @@ a.directorist-affiliate-subtab-link.is-active {
 	color: var(--da-text-muted);
 }
 
+/* The label is the click target for the switch, so it has to refuse the
+   pointer too — the hidden checkbox alone would not show anything. */
+.directorist-affiliate-switch:has(input:disabled) {
+	cursor: not-allowed;
+}
+
+.directorist-affiliate-admin .directorist-affiliate-field-control select:disabled,
+.directorist-affiliate-admin .directorist-affiliate-field-control input[type="text"]:disabled,
+.directorist-affiliate-admin .directorist-affiliate-field-control input[type="number"]:disabled {
+	background: var(--da-surface-soft);
+	color: var(--da-text-muted);
+	cursor: not-allowed;
+}
+
 .directorist-affiliate-switch-text {
 	font-size: 13px;
 	font-weight: 600;
@@ -1345,8 +1404,17 @@ a.directorist-affiliate-subtab-link.is-active {
 	gap: 9px;
 }
 
+/* Opt-in for short one-word options (directory types), where a tall column of
+   single words wastes the row. Lists with sentence-length labels stay stacked. */
+.directorist-affiliate-checkboxes.is-inline {
+	flex-direction: row;
+	flex-wrap: wrap;
+	gap: 9px 18px;
+	align-items: center;
+}
+
 .directorist-affiliate-checkbox {
-	display: flex;
+	display: inline-flex;
 	gap: 9px;
 	align-items: center;
 	font-size: 13px;
@@ -1426,17 +1494,62 @@ a.directorist-affiliate-subtab-link.is-active {
 	font-size: 12px;
 }
 
-.directorist-affiliate-edit-email {
-	display: inline-flex !important;
+/* The switch is the action on this row; editing wording is a secondary path,
+   so it sits under the switch and reads as a link rather than a button. */
+.directorist-affiliate-field-control.is-stacked {
+	flex-direction: column;
+	align-items: flex-start;
+	gap: 10px;
+}
+
+.directorist-affiliate-email-links {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 6px;
+}
+
+.directorist-affiliate-admin .directorist-affiliate-edit-email {
+	display: inline-flex;
 	align-items: center;
 	gap: 5px;
-	margin-inline-start: 12px !important;
+	min-height: 0;
+	margin: 0;
+	padding: 5px 10px;
+	border: 0;
+	border-radius: var(--da-radius-sm);
+	background: var(--da-accent-soft);
+	box-shadow: none;
+	color: var(--da-accent);
+	font-size: 12.5px;
+	font-weight: 500;
+	line-height: 1.45;
+	text-decoration: none;
+	cursor: pointer;
+	transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.directorist-affiliate-admin .directorist-affiliate-edit-email:hover,
+.directorist-affiliate-admin .directorist-affiliate-edit-email:focus {
+	background: var(--da-accent-softer);
+	color: var(--da-accent-hover);
+	text-decoration: underline;
+}
+
+/* Keyboard focus only — a mouse click must not leave a ring behind. */
+.directorist-affiliate-admin .directorist-affiliate-edit-email:focus {
+	outline: 0;
+}
+
+.directorist-affiliate-admin .directorist-affiliate-edit-email:focus-visible {
+	outline: 2px solid var(--da-accent);
+	outline-offset: 2px;
 }
 
 .directorist-affiliate-edit-email .dashicons {
 	width: 15px;
 	height: 15px;
 	font-size: 15px;
+	text-decoration: none;
 }
 
 .directorist-affiliate-modal-actions .description {

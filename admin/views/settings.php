@@ -36,6 +36,14 @@ $directorist_affiliate_sections = array(
 
 $plan_available     = Directorist_Affiliate_Commission::is_pricing_plans_active();
 $featured_available = Directorist_Affiliate_Commission::is_featured_monetization_active();
+
+// With the dependency missing the event cannot pay, so the row reports off and
+// its controls are disabled. Disabled inputs post nothing, so each one is
+// shadowed by a hidden field carrying the stored value — otherwise pressing
+// Save would read the silence as "cleared" and destroy the admin's choice.
+// Their preference returns intact as soon as the dependency does.
+$plan_on     = $plan_available && absint( $settings['enable_plan_commission'] );
+$featured_on = $featured_available && absint( $settings['enable_featured_commission'] );
 ?>
 <?php if ( ! empty( $updated ) ) : ?>
 	<div class="notice notice-success is-dismissible"><p><?php esc_html_e( 'Settings saved.', 'directorist-affiliate' ); ?></p></div>
@@ -261,10 +269,18 @@ $featured_available = Directorist_Affiliate_Commission::is_featured_monetization
 							<input id="directorist-affiliate-listing-amount" type="text" inputmode="decimal" name="listing_amount" value="<?php echo esc_attr( $settings['listing_amount'] ); ?>" />
 							<span class="directorist-affiliate-affix"><?php esc_html_e( 'per listing', 'directorist-affiliate' ); ?></span>
 						</div>
-						<label class="screen-reader-text" for="directorist-affiliate-listing-trigger"><?php esc_html_e( 'Commission trigger', 'directorist-affiliate' ); ?></label>
+					</div>
+				</div>
+
+				<div class="directorist-affiliate-field">
+					<div class="directorist-affiliate-field-label">
+						<label for="directorist-affiliate-listing-trigger"><?php esc_html_e( 'Credit the listing commission', 'directorist-affiliate' ); ?></label>
+						<p class="description"><?php esc_html_e( 'Pay as soon as the listing is submitted, or wait until it is approved and published. Waiting avoids paying for listings you go on to reject.', 'directorist-affiliate' ); ?></p>
+					</div>
+					<div class="directorist-affiliate-field-control">
 						<select id="directorist-affiliate-listing-trigger" name="listing_trigger">
-							<option value="submission" <?php selected( $settings['listing_trigger'], 'submission' ); ?>><?php esc_html_e( 'Credit on submission', 'directorist-affiliate' ); ?></option>
-							<option value="publish" <?php selected( $settings['listing_trigger'], 'publish' ); ?>><?php esc_html_e( 'Credit on approval/publish', 'directorist-affiliate' ); ?></option>
+							<option value="submission" <?php selected( $settings['listing_trigger'], 'submission' ); ?>><?php esc_html_e( 'On submission', 'directorist-affiliate' ); ?></option>
+							<option value="publish" <?php selected( $settings['listing_trigger'], 'publish' ); ?>><?php esc_html_e( 'On approval or publish', 'directorist-affiliate' ); ?></option>
 						</select>
 					</div>
 				</div>
@@ -278,7 +294,7 @@ $featured_available = Directorist_Affiliate_Commission::is_featured_monetization
 						</div>
 						<div class="directorist-affiliate-field-control">
 							<?php $directorist_affiliate_chosen_dirs = array_map( 'absint', (array) $settings['listing_directory_types'] ); ?>
-							<div class="directorist-affiliate-checkboxes">
+							<div class="directorist-affiliate-checkboxes is-inline">
 								<?php foreach ( $directorist_affiliate_directories as $directorist_affiliate_dir_id => $directorist_affiliate_dir_name ) : ?>
 									<label class="directorist-affiliate-checkbox">
 										<input
@@ -312,19 +328,24 @@ $featured_available = Directorist_Affiliate_Commission::is_featured_monetization
 						<?php endif; ?>
 					</div>
 					<div class="directorist-affiliate-field-control">
+						<?php if ( ! $plan_available ) : ?>
+							<input type="hidden" name="enable_plan_commission" value="<?php echo esc_attr( $settings['enable_plan_commission'] ); ?>" />
+							<input type="hidden" name="plan_commission_type" value="<?php echo esc_attr( $settings['plan_commission_type'] ); ?>" />
+							<input type="hidden" name="plan_commission_value" value="<?php echo esc_attr( $settings['plan_commission_value'] ); ?>" />
+						<?php endif; ?>
 						<label class="directorist-affiliate-switch">
-							<input id="directorist-affiliate-enable-plan" type="checkbox" name="enable_plan_commission" value="1" <?php checked( $settings['enable_plan_commission'], 1 ); ?> />
+							<input id="directorist-affiliate-enable-plan" type="checkbox" name="enable_plan_commission" value="1" <?php checked( $plan_on ); ?> <?php disabled( ! $plan_available ); ?> />
 							<span class="directorist-affiliate-switch-track" aria-hidden="true"></span>
 							<span class="directorist-affiliate-switch-text"><?php esc_html_e( 'Enabled', 'directorist-affiliate' ); ?></span>
 						</label>
 						<div class="directorist-affiliate-rate-group">
 							<label class="screen-reader-text" for="directorist-affiliate-plan-type"><?php esc_html_e( 'Plan commission type', 'directorist-affiliate' ); ?></label>
-							<select id="directorist-affiliate-plan-type" name="plan_commission_type">
+							<select id="directorist-affiliate-plan-type" name="plan_commission_type" <?php disabled( ! $plan_available ); ?>>
 								<option value="percentage" <?php selected( $settings['plan_commission_type'], 'percentage' ); ?>><?php esc_html_e( 'Percentage (%)', 'directorist-affiliate' ); ?></option>
 								<option value="fixed" <?php selected( $settings['plan_commission_type'], 'fixed' ); ?>><?php esc_html_e( 'Fixed amount', 'directorist-affiliate' ); ?></option>
 							</select>
 							<label class="screen-reader-text" for="directorist-affiliate-plan-value"><?php esc_html_e( 'Plan commission value', 'directorist-affiliate' ); ?></label>
-							<input id="directorist-affiliate-plan-value" type="text" inputmode="decimal" name="plan_commission_value" value="<?php echo esc_attr( $settings['plan_commission_value'] ); ?>" />
+							<input id="directorist-affiliate-plan-value" type="text" inputmode="decimal" name="plan_commission_value" value="<?php echo esc_attr( $settings['plan_commission_value'] ); ?>" <?php disabled( ! $plan_available ); ?> />
 						</div>
 					</div>
 				</div>
@@ -339,19 +360,24 @@ $featured_available = Directorist_Affiliate_Commission::is_featured_monetization
 						<?php endif; ?>
 					</div>
 					<div class="directorist-affiliate-field-control">
+						<?php if ( ! $featured_available ) : ?>
+							<input type="hidden" name="enable_featured_commission" value="<?php echo esc_attr( $settings['enable_featured_commission'] ); ?>" />
+							<input type="hidden" name="featured_commission_type" value="<?php echo esc_attr( $settings['featured_commission_type'] ); ?>" />
+							<input type="hidden" name="featured_commission_value" value="<?php echo esc_attr( $settings['featured_commission_value'] ); ?>" />
+						<?php endif; ?>
 						<label class="directorist-affiliate-switch">
-							<input id="directorist-affiliate-enable-featured" type="checkbox" name="enable_featured_commission" value="1" <?php checked( $settings['enable_featured_commission'], 1 ); ?> />
+							<input id="directorist-affiliate-enable-featured" type="checkbox" name="enable_featured_commission" value="1" <?php checked( $featured_on ); ?> <?php disabled( ! $featured_available ); ?> />
 							<span class="directorist-affiliate-switch-track" aria-hidden="true"></span>
 							<span class="directorist-affiliate-switch-text"><?php esc_html_e( 'Enabled', 'directorist-affiliate' ); ?></span>
 						</label>
 						<div class="directorist-affiliate-rate-group">
 							<label class="screen-reader-text" for="directorist-affiliate-featured-type"><?php esc_html_e( 'Featured commission type', 'directorist-affiliate' ); ?></label>
-							<select id="directorist-affiliate-featured-type" name="featured_commission_type">
+							<select id="directorist-affiliate-featured-type" name="featured_commission_type" <?php disabled( ! $featured_available ); ?>>
 								<option value="percentage" <?php selected( $settings['featured_commission_type'], 'percentage' ); ?>><?php esc_html_e( 'Percentage (%)', 'directorist-affiliate' ); ?></option>
 								<option value="fixed" <?php selected( $settings['featured_commission_type'], 'fixed' ); ?>><?php esc_html_e( 'Fixed amount', 'directorist-affiliate' ); ?></option>
 							</select>
 							<label class="screen-reader-text" for="directorist-affiliate-featured-value"><?php esc_html_e( 'Featured commission value', 'directorist-affiliate' ); ?></label>
-							<input id="directorist-affiliate-featured-value" type="text" inputmode="decimal" name="featured_commission_value" value="<?php echo esc_attr( $settings['featured_commission_value'] ); ?>" />
+							<input id="directorist-affiliate-featured-value" type="text" inputmode="decimal" name="featured_commission_value" value="<?php echo esc_attr( $settings['featured_commission_value'] ); ?>" <?php disabled( ! $featured_available ); ?> />
 						</div>
 					</div>
 				</div>
@@ -474,24 +500,35 @@ $featured_available = Directorist_Affiliate_Commission::is_featured_monetization
 							<label for="<?php echo esc_attr( $directorist_affiliate_field_id ); ?>"><?php echo esc_html( $directorist_affiliate_meta['label'] ); ?></label>
 							<p class="description"><?php echo esc_html( $directorist_affiliate_meta['desc'] ); ?></p>
 						</div>
-						<div class="directorist-affiliate-field-control">
+						<div class="directorist-affiliate-field-control is-stacked">
 							<label class="directorist-affiliate-switch">
 								<input id="<?php echo esc_attr( $directorist_affiliate_field_id ); ?>" type="checkbox" name="<?php echo esc_attr( $directorist_affiliate_toggle ); ?>" value="1" <?php checked( $settings[ $directorist_affiliate_toggle ], 1 ); ?> />
 								<span class="directorist-affiliate-switch-track" aria-hidden="true"></span>
 								<span class="directorist-affiliate-switch-text"><?php esc_html_e( 'Enabled', 'directorist-affiliate' ); ?></span>
 							</label>
-							<?php foreach ( $directorist_affiliate_owned as $directorist_affiliate_key => $directorist_affiliate_template ) : ?>
-								<button type="button" class="button directorist-affiliate-edit-email" data-da-modal-open="da-email-<?php echo esc_attr( $directorist_affiliate_key ); ?>">
-									<span class="dashicons dashicons-edit" aria-hidden="true"></span>
-									<?php
-									echo esc_html(
-										count( $directorist_affiliate_owned ) > 1
-											? $directorist_affiliate_template['label']
-											: __( 'Edit content', 'directorist-affiliate' )
-									);
-									?>
-								</button>
-							<?php endforeach; ?>
+							<?php if ( $directorist_affiliate_owned ) : ?>
+								<div class="directorist-affiliate-email-links">
+									<?php foreach ( $directorist_affiliate_owned as $directorist_affiliate_key => $directorist_affiliate_template ) : ?>
+										<button type="button" class="directorist-affiliate-edit-email" data-da-modal-open="da-email-<?php echo esc_attr( $directorist_affiliate_key ); ?>">
+											<span class="dashicons dashicons-edit" aria-hidden="true"></span>
+											<?php
+											// The row heading already names the audience, so the link
+											// uses the short label rather than repeating "(to affiliate)".
+											// Templates added through the filter may omit it.
+											$directorist_affiliate_short = isset( $directorist_affiliate_template['short'] )
+												? $directorist_affiliate_template['short']
+												: $directorist_affiliate_template['label'];
+
+											echo esc_html(
+												count( $directorist_affiliate_owned ) > 1
+													? $directorist_affiliate_short
+													: __( 'Edit content', 'directorist-affiliate' )
+											);
+											?>
+										</button>
+									<?php endforeach; ?>
+								</div>
+							<?php endif; ?>
 						</div>
 					</div>
 				<?php endforeach; ?>
@@ -540,8 +577,8 @@ $featured_available = Directorist_Affiliate_Commission::is_featured_monetization
 					</div>
 
 					<div class="directorist-affiliate-modal-actions">
-						<button type="button" class="button button-primary" data-da-modal-close><?php esc_html_e( 'Done', 'directorist-affiliate' ); ?></button>
 						<p class="description"><?php esc_html_e( 'Changes are saved with the Save settings button.', 'directorist-affiliate' ); ?></p>
+						<button type="button" class="button button-primary" data-da-modal-close><?php esc_html_e( 'Done', 'directorist-affiliate' ); ?></button>
 					</div>
 				</dialog>
 			<?php endforeach; ?>

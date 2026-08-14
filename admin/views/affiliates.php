@@ -102,6 +102,7 @@ Directorist_Affiliate_View::partial(
 	'filter-bar.php',
 	array(
 		'tab'         => 'affiliates',
+		'export'         => 'affiliates',
 		'filters'     => $filters,
 		'lead_button' => array(
 			'modal' => 'directorist-affiliate-add-modal',

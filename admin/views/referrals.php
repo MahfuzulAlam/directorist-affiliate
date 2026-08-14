@@ -38,6 +38,7 @@ Directorist_Affiliate_View::partial(
 	'filter-bar.php',
 	array(
 		'tab'            => 'referrals',
+		'export'            => 'referrals',
 		'filters'        => $filters,
 		'affiliate_list' => $affiliate_list,
 		'fields'         => array(

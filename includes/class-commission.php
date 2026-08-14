@@ -60,14 +60,14 @@ final class Directorist_Affiliate_Commission {
 	public function program_terms(): array {
 		$terms = array();
 
-		if ( absint( $this->settings->get( 'enable_plan_commission', 1 ) ) ) {
+		if ( $this->plan_commission_enabled() ) {
 			$terms[] = array(
 				'label' => __( 'Plan purchases', 'directorist-affiliate' ),
 				'value' => $this->rate_label( 'plan_commission_type', 'plan_commission_value' ),
 			);
 		}
 
-		if ( absint( $this->settings->get( 'enable_featured_commission', 1 ) ) ) {
+		if ( $this->featured_commission_enabled() ) {
 			$terms[] = array(
 				'label' => __( 'Featured listings', 'directorist-affiliate' ),
 				'value' => $this->rate_label( 'featured_commission_type', 'featured_commission_value' ),
@@ -122,9 +122,8 @@ final class Directorist_Affiliate_Commission {
 	/**
 	 * Whether a pricing plans extension is active.
 	 *
-	 * Advisory only — used to hint on the settings screen. Commission
-	 * recording deliberately does NOT depend on it: a paid plan order can
-	 * only exist if the extension produced it.
+	 * Gates plan commissions only. Featured listings are core Directorist and
+	 * must never be gated on this — see is_featured_monetization_active().
 	 *
 	 * Supports Directorist Pricing Plans v4+ and the legacy fee manager.
 	 *
@@ -137,9 +136,9 @@ final class Directorist_Affiliate_Commission {
 	/**
 	 * Whether Directorist featured-listing monetization is active.
 	 *
-	 * Advisory only. Featured listings are core Directorist (Monetization →
-	 * Featured Listings), independent of the Pricing Plans extension, and a
-	 * paid featured order proves the feature was purchasable.
+	 * Featured listings live in core Directorist under Monetization → Featured
+	 * Listings with their own price, independent of the Pricing Plans
+	 * extension, so this is the only dependency featured commissions have.
 	 *
 	 * @return bool
 	 */
@@ -149,6 +148,26 @@ final class Directorist_Affiliate_Commission {
 		}
 
 		return directorist_is_monetization_enabled() && directorist_is_featured_listing_enabled();
+	}
+
+	/**
+	 * Whether plan commissions are payable right now.
+	 *
+	 * Both the admin's switch and the extension that sells plans must be on.
+	 *
+	 * @return bool
+	 */
+	public function plan_commission_enabled(): bool {
+		return (bool) absint( $this->settings->get( 'enable_plan_commission', 1 ) ) && self::is_pricing_plans_active();
+	}
+
+	/**
+	 * Whether featured commissions are payable right now.
+	 *
+	 * @return bool
+	 */
+	public function featured_commission_enabled(): bool {
+		return (bool) absint( $this->settings->get( 'enable_featured_commission', 1 ) ) && self::is_featured_monetization_active();
 	}
 
 	/**
@@ -211,14 +230,14 @@ final class Directorist_Affiliate_Commission {
 	 * Commission for a referred pricing-plan purchase.
 	 *
 	 * Returns null (event disabled) when the affiliate system is off, the
-	 * event is disabled, or no pricing plans extension is active.
+	 * admin switched the event off, or no pricing plans extension is active.
 	 *
 	 * @param float $order_total Paid order total.
 	 *
 	 * @return float|null
 	 */
 	public function plan_amount( float $order_total ): ?float {
-		if ( ! $this->settings->is_enabled() || ! absint( $this->settings->get( 'enable_plan_commission', 1 ) ) ) {
+		if ( ! $this->settings->is_enabled() || ! $this->plan_commission_enabled() ) {
 			return null;
 		}
 
@@ -241,14 +260,14 @@ final class Directorist_Affiliate_Commission {
 	 * Commission for a referred featured-listing purchase.
 	 *
 	 * Returns null (event disabled) when the affiliate system is off, the
-	 * event is disabled, or featured-listing monetization is not active.
+	 * admin switched the event off, or featured-listing monetization is off.
 	 *
 	 * @param float $order_total Paid order total.
 	 *
 	 * @return float|null
 	 */
 	public function featured_amount( float $order_total ): ?float {
-		if ( ! $this->settings->is_enabled() || ! absint( $this->settings->get( 'enable_featured_commission', 1 ) ) ) {
+		if ( ! $this->settings->is_enabled() || ! $this->featured_commission_enabled() ) {
 			return null;
 		}
 

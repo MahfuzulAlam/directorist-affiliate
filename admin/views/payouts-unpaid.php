@@ -7,9 +7,13 @@
 
 defined( 'ABSPATH' ) || exit;
 
-$export_url = wp_nonce_url(
-	Directorist_Affiliate_Admin::page_url( 'payouts', array( 'directorist_affiliate_export' => 'payouts' ) ),
-	'directorist_affiliate_export_payouts'
+// This screen lists approved referrals awaiting payment, so it exports the
+// referral rows behind the balance — not the payout records, which are what
+// the Payout history sub-tab exports.
+$export_url = Directorist_Affiliate_Admin_Export::url(
+	'referrals',
+	array( 'status' => 'approved' ),
+	'payouts'
 );
 
 $directorist_affiliate_outstanding = 0.0;
@@ -82,7 +86,7 @@ Directorist_Affiliate_View::partial(
 			</span>
 		<?php endif; ?>
 	</div>
-	<a class="button" href="<?php echo esc_url( $export_url ); ?>">
+	<a class="button directorist-affiliate-icon-btn" href="<?php echo esc_url( $export_url ); ?>">
 		<span class="dashicons dashicons-download" aria-hidden="true"></span>
 		<?php esc_html_e( 'Export CSV', 'directorist-affiliate' ); ?>
 	</a>

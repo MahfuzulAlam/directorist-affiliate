@@ -2,14 +2,14 @@
 # This file is distributed under the GPL v2 or later.
 msgid ""
 msgstr ""
-"Project-Id-Version: Directorist - Affiliate 1.13.0\n"
+"Project-Id-Version: Directorist - Affiliate 1.14.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/directorist-affiliate\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-08-14T17:47:19+00:00\n"
+"POT-Creation-Date: 2026-08-14T18:53:56+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: directorist-affiliate\n"
@@ -47,6 +47,10 @@ msgstr ""
 msgid "Rejected by an administrator."
 msgstr ""
 
+#: admin/class-admin-export.php:214
+msgid "You are not allowed to export this data."
+msgstr ""
+
 #: admin/class-admin.php:100
 msgid "Dashboard"
 msgstr ""
@@ -57,7 +61,7 @@ msgid "Affiliates"
 msgstr ""
 
 #: admin/class-admin.php:110
-#: admin/views/affiliates.php:142
+#: admin/views/affiliates.php:143
 #: admin/views/dashboard.php:58
 #: public/views/affiliate-dashboard.php:39
 #: public/views/affiliate-dashboard.php:250
@@ -83,13 +87,13 @@ msgstr ""
 #: admin/class-admin.php:151
 #: admin/class-admin.php:152
 #: admin/class-admin.php:251
-#: admin/views/affiliates.php:139
+#: admin/views/affiliates.php:140
 #: admin/views/dashboard.php:98
-#: admin/views/payouts-history.php:62
+#: admin/views/payouts-history.php:63
 #: admin/views/payouts-requests.php:65
-#: admin/views/payouts-unpaid.php:102
-#: admin/views/referrals.php:90
-#: admin/views/visits.php:41
+#: admin/views/payouts-unpaid.php:106
+#: admin/views/referrals.php:91
+#: admin/views/visits.php:42
 #: includes/class-directorist-integration.php:228
 msgid "Affiliate"
 msgstr ""
@@ -120,22 +124,22 @@ msgstr ""
 msgid "Affiliate sections"
 msgstr ""
 
-#: admin/class-admin.php:688
+#: admin/class-admin.php:651
 msgid "Requests"
 msgstr ""
 
-#: admin/class-admin.php:689
+#: admin/class-admin.php:652
 msgid "Unpaid approved commissions"
 msgstr ""
 
-#: admin/class-admin.php:690
+#: admin/class-admin.php:653
 #: public/views/affiliate-dashboard.php:361
 msgid "Payout history"
 msgstr ""
 
 #: admin/views/affiliates.php:24
 #: admin/views/affiliates.php:71
-#: admin/views/affiliates.php:108
+#: admin/views/affiliates.php:109
 msgid "Add affiliate"
 msgstr ""
 
@@ -158,7 +162,7 @@ msgstr ""
 
 #: admin/views/affiliates.php:43
 #: admin/views/affiliates.php:84
-#: admin/views/payouts-unpaid.php:103
+#: admin/views/payouts-unpaid.php:107
 #: public/views/affiliate-dashboard.php:341
 #: public/views/registration-form.php:108
 msgid "Payout email"
@@ -166,10 +170,10 @@ msgstr ""
 
 #: admin/views/affiliates.php:47
 #: admin/views/affiliates.php:82
-#: admin/views/affiliates.php:140
+#: admin/views/affiliates.php:141
 #: admin/views/dashboard.php:101
-#: admin/views/payouts-history.php:64
-#: admin/views/referrals.php:95
+#: admin/views/payouts-history.php:65
+#: admin/views/referrals.php:96
 #: public/views/affiliate-dashboard.php:260
 #: public/views/affiliate-dashboard.php:269
 msgid "Status"
@@ -213,75 +217,75 @@ msgstr ""
 msgid "All statuses"
 msgstr ""
 
-#: admin/views/affiliates.php:114
-#: admin/views/referrals.php:54
+#: admin/views/affiliates.php:115
+#: admin/views/referrals.php:55
 msgid "Filter by status"
 msgstr ""
 
-#: admin/views/affiliates.php:121
+#: admin/views/affiliates.php:122
 msgid "Search affiliates"
 msgstr ""
 
-#: admin/views/affiliates.php:122
+#: admin/views/affiliates.php:123
 msgid "Search name, email, code…"
 msgstr ""
 
 #. translators: %s: number of affiliates.
-#: admin/views/affiliates.php:128
+#: admin/views/affiliates.php:129
 #, php-format
 msgid "%s affiliate"
 msgid_plural "%s affiliates"
 msgstr[0] ""
 msgstr[1] ""
 
-#: admin/views/affiliates.php:141
+#: admin/views/affiliates.php:142
 msgid "Code"
 msgstr ""
 
-#: admin/views/affiliates.php:143
+#: admin/views/affiliates.php:144
 msgid "Total earned"
 msgstr ""
 
-#: admin/views/affiliates.php:144
+#: admin/views/affiliates.php:145
 msgid "Unpaid"
 msgstr ""
 
-#: admin/views/affiliates.php:145
+#: admin/views/affiliates.php:146
 msgid "Applied"
 msgstr ""
 
-#: admin/views/affiliates.php:146
+#: admin/views/affiliates.php:147
 #: admin/views/payouts-requests.php:70
-#: admin/views/referrals.php:97
+#: admin/views/referrals.php:98
 msgid "Actions"
 msgstr ""
 
-#: admin/views/affiliates.php:156
-#: admin/views/referrals.php:76
-#: admin/views/referrals.php:142
+#: admin/views/affiliates.php:157
+#: admin/views/referrals.php:77
+#: admin/views/referrals.php:143
 msgid "Approve"
 msgstr ""
 
-#: admin/views/affiliates.php:157
+#: admin/views/affiliates.php:158
 #: admin/views/payouts-requests.php:122
-#: admin/views/referrals.php:77
-#: admin/views/referrals.php:145
+#: admin/views/referrals.php:78
+#: admin/views/referrals.php:146
 msgid "Reject"
 msgstr ""
 
-#: admin/views/affiliates.php:158
+#: admin/views/affiliates.php:159
 msgid "Suspend"
 msgstr ""
 
-#: admin/views/affiliates.php:191
+#: admin/views/affiliates.php:192
 msgid "Details"
 msgstr ""
 
-#: admin/views/affiliates.php:206
+#: admin/views/affiliates.php:207
 msgid "No affiliates match the current filters."
 msgstr ""
 
-#: admin/views/affiliates.php:207
+#: admin/views/affiliates.php:208
 msgid "No affiliates yet. Share your registration page to start receiving applications."
 msgstr ""
 
@@ -312,9 +316,9 @@ msgid "All conversion events"
 msgstr ""
 
 #: admin/views/dashboard.php:65
-#: admin/views/payouts-history.php:66
+#: admin/views/payouts-history.php:67
 #: admin/views/settings.php:20
-#: admin/views/settings.php:181
+#: admin/views/settings.php:189
 msgid "Commissions"
 msgstr ""
 
@@ -355,27 +359,27 @@ msgid "Type"
 msgstr ""
 
 #: admin/views/dashboard.php:100
-#: admin/views/referrals.php:94
+#: admin/views/referrals.php:95
 #: public/views/affiliate-dashboard.php:259
 #: public/views/affiliate-dashboard.php:268
 msgid "Commission"
 msgstr ""
 
 #: admin/views/dashboard.php:102
-#: admin/views/payouts-unpaid.php:106
-#: admin/views/referrals.php:96
-#: admin/views/visits.php:45
+#: admin/views/payouts-unpaid.php:110
+#: admin/views/referrals.php:97
+#: admin/views/visits.php:46
 #: public/views/affiliate-dashboard.php:261
 #: public/views/affiliate-dashboard.php:270
 msgid "Date"
 msgstr ""
 
 #: admin/views/dashboard.php:110
-#: admin/views/payouts-history.php:81
+#: admin/views/payouts-history.php:82
 #: admin/views/payouts-requests.php:85
-#: admin/views/payouts-unpaid.php:115
-#: admin/views/referrals.php:111
-#: admin/views/visits.php:60
+#: admin/views/payouts-unpaid.php:119
+#: admin/views/referrals.php:112
+#: admin/views/visits.php:61
 msgid "Unknown"
 msgstr ""
 
@@ -387,96 +391,101 @@ msgstr ""
 msgid "View all referrals →"
 msgstr ""
 
-#: admin/views/partials/filter-bar.php:50
+#: admin/views/partials/filter-bar.php:81
 msgid "Filter by affiliate"
 msgstr ""
 
-#: admin/views/partials/filter-bar.php:52
+#: admin/views/partials/filter-bar.php:83
 msgid "All affiliates"
 msgstr ""
 
-#: admin/views/partials/filter-bar.php:84
+#: admin/views/partials/filter-bar.php:115
 msgid "Filter by date"
 msgstr ""
 
-#: admin/views/partials/filter-bar.php:94
+#: admin/views/partials/filter-bar.php:125
 msgid "Start date"
 msgstr ""
 
-#: admin/views/partials/filter-bar.php:97
+#: admin/views/partials/filter-bar.php:128
 msgid "End date"
 msgstr ""
 
-#: admin/views/partials/filter-bar.php:102
+#: admin/views/partials/filter-bar.php:133
 msgid "Filter"
 msgstr ""
 
-#: admin/views/partials/filter-bar.php:106
+#: admin/views/partials/filter-bar.php:137
 msgid "Reset"
+msgstr ""
+
+#: admin/views/partials/filter-bar.php:144
+#: admin/views/payouts-unpaid.php:91
+msgid "Export CSV"
 msgstr ""
 
 #: admin/views/partials/payout-sections.php:14
 msgid "Payout sections"
 msgstr ""
 
-#: admin/views/payouts-history.php:29
+#: admin/views/payouts-history.php:30
 msgid "Search by payout email"
 msgstr ""
 
-#: admin/views/payouts-history.php:30
+#: admin/views/payouts-history.php:31
 msgid "Payout email…"
 msgstr ""
 
 #. translators: %s: number of payouts.
-#: admin/views/payouts-history.php:36
+#: admin/views/payouts-history.php:37
 #, php-format
 msgid "%s payout"
 msgid_plural "%s payouts"
 msgstr[0] ""
 msgstr[1] ""
 
-#: admin/views/payouts-history.php:44
+#: admin/views/payouts-history.php:45
 msgid "Total paid"
 msgstr ""
 
-#: admin/views/payouts-history.php:50
+#: admin/views/payouts-history.php:51
 msgid "Matching the current filters"
 msgstr ""
 
-#: admin/views/payouts-history.php:51
+#: admin/views/payouts-history.php:52
 msgid "All payouts on record"
 msgstr ""
 
-#: admin/views/payouts-history.php:63
+#: admin/views/payouts-history.php:64
 #: admin/views/payouts-requests.php:66
-#: admin/views/payouts-unpaid.php:105
+#: admin/views/payouts-unpaid.php:109
 #: public/views/affiliate-dashboard.php:368
 #: public/views/affiliate-dashboard.php:376
 msgid "Amount"
 msgstr ""
 
-#: admin/views/payouts-history.php:65
+#: admin/views/payouts-history.php:66
 msgid "Paid by"
 msgstr ""
 
-#: admin/views/payouts-history.php:67
+#: admin/views/payouts-history.php:68
 #: public/views/affiliate-dashboard.php:370
 #: public/views/affiliate-dashboard.php:378
 msgid "Date paid"
 msgstr ""
 
-#: admin/views/payouts-history.php:68
+#: admin/views/payouts-history.php:69
 msgid "Notes"
 msgstr ""
 
-#: admin/views/payouts-history.php:84
+#: admin/views/payouts-history.php:85
 #: admin/views/payouts-requests.php:88
 msgid "View referrals"
 msgstr ""
 
 #. translators: %s: number of commissions covered by the payout.
 #. translators: %s: number of commissions.
-#: admin/views/payouts-history.php:101
+#: admin/views/payouts-history.php:102
 #: admin/views/payouts-requests.php:107
 #, php-format
 msgid "%s commission"
@@ -484,11 +493,11 @@ msgid_plural "%s commissions"
 msgstr[0] ""
 msgstr[1] ""
 
-#: admin/views/payouts-history.php:120
+#: admin/views/payouts-history.php:121
 msgid "No payouts match the current filters."
 msgstr ""
 
-#: admin/views/payouts-history.php:121
+#: admin/views/payouts-history.php:122
 msgid "No payouts recorded yet."
 msgstr ""
 
@@ -532,7 +541,7 @@ msgid "Covers"
 msgstr ""
 
 #: admin/views/payouts-requests.php:119
-#: admin/views/referrals.php:148
+#: admin/views/referrals.php:149
 msgid "Mark paid"
 msgstr ""
 
@@ -545,7 +554,7 @@ msgid "Marking a request paid pays every commission it still covers; rejecting l
 msgstr ""
 
 #. translators: %s: number of payouts.
-#: admin/views/payouts-unpaid.php:36
+#: admin/views/payouts-unpaid.php:40
 #: includes/class-ajax.php:369
 #, php-format
 msgid "%s payout recorded."
@@ -554,44 +563,40 @@ msgstr[0] ""
 msgstr[1] ""
 
 #. translators: 1: number of affiliates, 2: minimum payout amount.
-#: admin/views/payouts-unpaid.php:52
+#: admin/views/payouts-unpaid.php:56
 #, php-format
 msgid "%1$s affiliate was skipped because the selected total is below the minimum payout of %2$s."
 msgid_plural "%1$s affiliates were skipped because their selected totals are below the minimum payout of %2$s."
 msgstr[0] ""
 msgstr[1] ""
 
-#: admin/views/payouts-unpaid.php:69
+#: admin/views/payouts-unpaid.php:73
 msgid "Outstanding balance"
 msgstr ""
 
 #. translators: %s: minimum payout amount.
-#: admin/views/payouts-unpaid.php:77
+#: admin/views/payouts-unpaid.php:81
 #, php-format
 msgid "Minimum per affiliate: %s"
 msgstr ""
 
-#: admin/views/payouts-unpaid.php:87
-msgid "Export CSV"
-msgstr ""
-
-#: admin/views/payouts-unpaid.php:100
+#: admin/views/payouts-unpaid.php:104
 msgid "Select all commissions"
 msgstr ""
 
-#: admin/views/payouts-unpaid.php:104
+#: admin/views/payouts-unpaid.php:108
 msgid "Referral"
 msgstr ""
 
-#: admin/views/payouts-unpaid.php:114
+#: admin/views/payouts-unpaid.php:118
 msgid "Select commission"
 msgstr ""
 
-#: admin/views/payouts-unpaid.php:127
+#: admin/views/payouts-unpaid.php:131
 msgid "Nothing awaiting payment. Approved commissions appear here."
 msgstr ""
 
-#: admin/views/payouts-unpaid.php:138
+#: admin/views/payouts-unpaid.php:142
 msgid "Mark selected as paid"
 msgstr ""
 
@@ -619,569 +624,573 @@ msgstr ""
 msgid "All event types"
 msgstr ""
 
-#: admin/views/referrals.php:47
+#: admin/views/referrals.php:48
 msgid "Filter by event type"
 msgstr ""
 
 #. translators: %s: number of referrals.
-#: admin/views/referrals.php:61
+#: admin/views/referrals.php:62
 #, php-format
 msgid "%s referral"
 msgid_plural "%s referrals"
 msgstr[0] ""
 msgstr[1] ""
 
-#: admin/views/referrals.php:73
+#: admin/views/referrals.php:74
 msgid "Bulk action"
 msgstr ""
 
-#: admin/views/referrals.php:75
+#: admin/views/referrals.php:76
 msgid "Bulk actions"
 msgstr ""
 
-#: admin/views/referrals.php:78
+#: admin/views/referrals.php:79
 msgid "Mark as paid"
 msgstr ""
 
-#: admin/views/referrals.php:80
+#: admin/views/referrals.php:81
 msgid "Apply"
 msgstr ""
 
-#: admin/views/referrals.php:88
+#: admin/views/referrals.php:89
 msgid "Select all referrals"
 msgstr ""
 
-#: admin/views/referrals.php:91
+#: admin/views/referrals.php:92
 #: public/views/affiliate-dashboard.php:258
 #: public/views/affiliate-dashboard.php:267
 msgid "Event"
 msgstr ""
 
-#: admin/views/referrals.php:92
+#: admin/views/referrals.php:93
 msgid "Referred"
 msgstr ""
 
-#: admin/views/referrals.php:93
+#: admin/views/referrals.php:94
 msgid "Source"
 msgstr ""
 
-#: admin/views/referrals.php:109
+#: admin/views/referrals.php:110
 msgid "Select referral"
 msgstr ""
 
-#: admin/views/referrals.php:118
+#: admin/views/referrals.php:119
 msgid "Guest"
 msgstr ""
 
-#: admin/views/referrals.php:134
+#: admin/views/referrals.php:135
 msgid "Free event"
 msgstr ""
 
-#: admin/views/referrals.php:161
+#: admin/views/referrals.php:162
 msgid "No referrals match the current filters."
 msgstr ""
 
-#: admin/views/referrals.php:162
+#: admin/views/referrals.php:163
 msgid "No referrals recorded yet."
 msgstr ""
 
 #: admin/views/settings.php:16
-#: admin/views/settings.php:59
+#: admin/views/settings.php:67
 msgid "General"
 msgstr ""
 
 #: admin/views/settings.php:24
-#: admin/views/settings.php:376
+#: admin/views/settings.php:402
 msgid "Payout"
 msgstr ""
 
 #: admin/views/settings.php:28
-#: admin/views/settings.php:432
+#: admin/views/settings.php:458
 msgid "Notifications"
 msgstr ""
 
 #: admin/views/settings.php:32
-#: admin/views/settings.php:551
+#: admin/views/settings.php:588
 msgid "Advanced"
 msgstr ""
 
-#: admin/views/settings.php:41
+#: admin/views/settings.php:49
 #: includes/class-ajax.php:334
 msgid "Settings saved."
 msgstr ""
 
-#: admin/views/settings.php:45
+#: admin/views/settings.php:53
 msgid "Settings sections"
 msgstr ""
 
-#: admin/views/settings.php:64
+#: admin/views/settings.php:72
 msgid "Affiliate system"
 msgstr ""
 
-#: admin/views/settings.php:65
+#: admin/views/settings.php:73
 msgid "Master switch. When off, no visits are tracked and no commissions are recorded."
 msgstr ""
 
-#: admin/views/settings.php:71
-#: admin/views/settings.php:125
-#: admin/views/settings.php:173
-#: admin/views/settings.php:198
-#: admin/views/settings.php:257
-#: admin/views/settings.php:318
-#: admin/views/settings.php:345
-#: admin/views/settings.php:368
-#: admin/views/settings.php:481
-#: admin/views/settings.php:563
+#: admin/views/settings.php:79
+#: admin/views/settings.php:133
+#: admin/views/settings.php:181
+#: admin/views/settings.php:206
+#: admin/views/settings.php:265
+#: admin/views/settings.php:339
+#: admin/views/settings.php:371
+#: admin/views/settings.php:394
+#: admin/views/settings.php:507
+#: admin/views/settings.php:600
 msgid "Enabled"
 msgstr ""
 
-#: admin/views/settings.php:78
+#: admin/views/settings.php:86
 msgid "Referral URL parameter"
 msgstr ""
 
-#: admin/views/settings.php:79
+#: admin/views/settings.php:87
 msgid "The query key in referral links, e.g. ?ref=CODE."
 msgstr ""
 
-#: admin/views/settings.php:92
+#: admin/views/settings.php:100
 msgid "Cookie duration"
 msgstr ""
 
-#: admin/views/settings.php:93
+#: admin/views/settings.php:101
 msgid "How long a click stays credited to the affiliate. 30–90 days is typical."
 msgstr ""
 
-#: admin/views/settings.php:98
+#: admin/views/settings.php:106
 msgid "days"
 msgstr ""
 
-#: admin/views/settings.php:105
+#: admin/views/settings.php:113
 msgid "Attribution model"
 msgstr ""
 
-#: admin/views/settings.php:106
+#: admin/views/settings.php:114
 msgid "First click keeps the original affiliate credited until the cookie expires. Last click lets a newer affiliate link take over."
 msgstr ""
 
-#: admin/views/settings.php:110
+#: admin/views/settings.php:118
 msgid "First click (recommended)"
 msgstr ""
 
-#: admin/views/settings.php:111
+#: admin/views/settings.php:119
 msgid "Last click"
 msgstr ""
 
-#: admin/views/settings.php:118
+#: admin/views/settings.php:126
 msgid "Accept applications"
 msgstr ""
 
-#: admin/views/settings.php:119
+#: admin/views/settings.php:127
 msgid "Show the application form and accept new submissions. Turn off to pause recruiting without disabling tracking."
 msgstr ""
 
-#: admin/views/settings.php:132
+#: admin/views/settings.php:140
 msgid "Affiliate dashboard page"
 msgstr ""
 
-#: admin/views/settings.php:133
+#: admin/views/settings.php:141
 msgid "The page holding the [directorist_affiliate_dashboard] shortcode. Affiliates who have already applied are sent here instead of the application form. Leave unset to use the Directorist user dashboard."
 msgstr ""
 
-#: admin/views/settings.php:142
+#: admin/views/settings.php:150
 msgid "— Use the Directorist dashboard —"
 msgstr ""
 
-#: admin/views/settings.php:152
+#: admin/views/settings.php:160
 msgid "Require login to apply"
 msgstr ""
 
-#: admin/views/settings.php:153
+#: admin/views/settings.php:161
 msgid "Applicants must have a WordPress account. When off, applying creates an account automatically."
 msgstr ""
 
-#: admin/views/settings.php:159
+#: admin/views/settings.php:167
 msgid "Required"
 msgstr ""
 
-#: admin/views/settings.php:166
+#: admin/views/settings.php:174
 msgid "Anonymize visitor IP"
 msgstr ""
 
-#: admin/views/settings.php:167
+#: admin/views/settings.php:175
 msgid "Store visit IPs with the last octet removed (recommended for GDPR compliance)."
 msgstr ""
 
-#: admin/views/settings.php:185
+#: admin/views/settings.php:193
 msgid "Free events"
 msgstr ""
 
-#: admin/views/settings.php:186
+#: admin/views/settings.php:194
 msgid "Flat rewards for non-monetary conversions."
 msgstr ""
 
-#: admin/views/settings.php:191
+#: admin/views/settings.php:199
 #: includes/class-referral.php:41
 msgid "User registration"
 msgstr ""
 
-#: admin/views/settings.php:192
+#: admin/views/settings.php:200
 msgid "Pay a flat amount when a referred visitor creates an account."
 msgstr ""
 
-#: admin/views/settings.php:201
+#: admin/views/settings.php:209
 msgid "Registration commission amount"
 msgstr ""
 
-#: admin/views/settings.php:203
+#: admin/views/settings.php:211
 msgid "per signup"
 msgstr ""
 
-#: admin/views/settings.php:210
+#: admin/views/settings.php:218
 msgid "Credit the commission"
 msgstr ""
 
-#: admin/views/settings.php:211
+#: admin/views/settings.php:219
 msgid "Wait for email verification to weed out throwaway signups. If Directorist email verification is switched off, the commission is credited on registration regardless."
 msgstr ""
 
-#: admin/views/settings.php:215
+#: admin/views/settings.php:223
 msgid "On registration"
 msgstr ""
 
-#: admin/views/settings.php:216
+#: admin/views/settings.php:224
 msgid "On email verification"
 msgstr ""
 
-#: admin/views/settings.php:219
+#: admin/views/settings.php:227
 msgid "Note:"
 msgstr ""
 
-#: admin/views/settings.php:219
+#: admin/views/settings.php:227
 msgid "email verification is currently off in Directorist, so commissions credit on registration."
 msgstr ""
 
-#: admin/views/settings.php:226
+#: admin/views/settings.php:234
 msgid "Pay for these user types"
 msgstr ""
 
-#: admin/views/settings.php:227
+#: admin/views/settings.php:235
 msgid "Directorist asks new users whether they are signing up to post listings or just to browse. Untick a type to stop paying for it. Leaving both unticked keeps both paid."
 msgstr ""
 
-#: admin/views/settings.php:232
+#: admin/views/settings.php:240
 msgid "Author — signs up to post listings"
 msgstr ""
 
-#: admin/views/settings.php:233
+#: admin/views/settings.php:241
 msgid "User — signs up to browse only"
 msgstr ""
 
-#: admin/views/settings.php:250
+#: admin/views/settings.php:258
 #: includes/class-referral.php:42
 msgid "Listing submission"
 msgstr ""
 
-#: admin/views/settings.php:251
+#: admin/views/settings.php:259
 msgid "Pay a flat amount when a referred user adds a listing."
 msgstr ""
 
-#: admin/views/settings.php:260
+#: admin/views/settings.php:268
 msgid "Listing commission amount"
 msgstr ""
 
-#: admin/views/settings.php:262
+#: admin/views/settings.php:270
 msgid "per listing"
 msgstr ""
 
-#: admin/views/settings.php:264
-msgid "Commission trigger"
+#: admin/views/settings.php:277
+msgid "Credit the listing commission"
 msgstr ""
 
-#: admin/views/settings.php:266
-msgid "Credit on submission"
+#: admin/views/settings.php:278
+msgid "Pay as soon as the listing is submitted, or wait until it is approved and published. Waiting avoids paying for listings you go on to reject."
 msgstr ""
 
-#: admin/views/settings.php:267
-msgid "Credit on approval/publish"
+#: admin/views/settings.php:282
+msgid "On submission"
 msgstr ""
 
-#: admin/views/settings.php:276
+#: admin/views/settings.php:283
+msgid "On approval or publish"
+msgstr ""
+
+#: admin/views/settings.php:292
 msgid "Pay for these directory types"
 msgstr ""
 
-#: admin/views/settings.php:277
+#: admin/views/settings.php:293
 msgid "Restrict listing commissions to particular directories. Leaving every box unticked pays for all of them, including any added later."
 msgstr ""
 
-#: admin/views/settings.php:301
+#: admin/views/settings.php:317
 msgid "Paid orders"
 msgstr ""
 
-#: admin/views/settings.php:302
+#: admin/views/settings.php:318
 msgid "Commissions on completed paid orders. Refunded or cancelled orders reverse their commission automatically."
 msgstr ""
 
-#: admin/views/settings.php:307
+#: admin/views/settings.php:323
 msgid "Pricing plan purchases"
 msgstr ""
 
-#: admin/views/settings.php:309
+#: admin/views/settings.php:325
 msgid "Pay when a referred user buys a pricing plan."
 msgstr ""
 
-#: admin/views/settings.php:311
-#: admin/views/settings.php:338
+#: admin/views/settings.php:327
+#: admin/views/settings.php:359
 msgid "Inactive"
 msgstr ""
 
-#: admin/views/settings.php:311
+#: admin/views/settings.php:327
 msgid "Requires the Directorist Pricing Plans extension."
 msgstr ""
 
-#: admin/views/settings.php:321
+#: admin/views/settings.php:342
 msgid "Plan commission type"
 msgstr ""
 
-#: admin/views/settings.php:323
-#: admin/views/settings.php:350
+#: admin/views/settings.php:344
+#: admin/views/settings.php:376
 msgid "Percentage (%)"
 msgstr ""
 
-#: admin/views/settings.php:324
-#: admin/views/settings.php:351
+#: admin/views/settings.php:345
+#: admin/views/settings.php:377
 msgid "Fixed amount"
 msgstr ""
 
-#: admin/views/settings.php:326
+#: admin/views/settings.php:347
 msgid "Plan commission value"
 msgstr ""
 
-#: admin/views/settings.php:334
+#: admin/views/settings.php:355
 msgid "Featured listing purchases"
 msgstr ""
 
-#: admin/views/settings.php:336
+#: admin/views/settings.php:357
 msgid "Pay when a referred user buys featured status."
 msgstr ""
 
-#: admin/views/settings.php:338
+#: admin/views/settings.php:359
 msgid "Requires Directorist monetization with featured listings enabled."
 msgstr ""
 
-#: admin/views/settings.php:348
+#: admin/views/settings.php:374
 msgid "Featured commission type"
 msgstr ""
 
-#: admin/views/settings.php:353
+#: admin/views/settings.php:379
 msgid "Featured commission value"
 msgstr ""
 
-#: admin/views/settings.php:361
+#: admin/views/settings.php:387
 msgid "Auto-approve commissions"
 msgstr ""
 
-#: admin/views/settings.php:362
+#: admin/views/settings.php:388
 msgid "New referrals are created as Approved (payable immediately) instead of Pending review."
 msgstr ""
 
-#: admin/views/settings.php:381
+#: admin/views/settings.php:407
 #: public/views/affiliate-dashboard.php:350
 msgid "Minimum payout"
 msgstr ""
 
-#: admin/views/settings.php:382
+#: admin/views/settings.php:408
 msgid "Bulk payouts skip affiliates whose selected total is below this amount. Use 0 for no minimum."
 msgstr ""
 
-#: admin/views/settings.php:391
+#: admin/views/settings.php:417
 msgid "Available payout methods"
 msgstr ""
 
-#: admin/views/settings.php:392
+#: admin/views/settings.php:418
 msgid "What affiliates can choose from when they ask to be paid. Each method asks them for the details it needs. Leaving all unticked keeps every method available."
 msgstr ""
 
-#: admin/views/settings.php:397
+#: admin/views/settings.php:423
 msgid "PayPal — asks for a PayPal email"
 msgstr ""
 
-#: admin/views/settings.php:398
+#: admin/views/settings.php:424
 msgid "Bank transfer — asks for account details"
 msgstr ""
 
-#: admin/views/settings.php:399
+#: admin/views/settings.php:425
 msgid "Cash — asks for a phone number"
 msgstr ""
 
-#: admin/views/settings.php:421
+#: admin/views/settings.php:447
 msgid "Payout instructions"
 msgstr ""
 
-#: admin/views/settings.php:422
+#: admin/views/settings.php:448
 msgid "Shown to affiliates on their dashboard — payment schedule, method, or who to contact."
 msgstr ""
 
-#: admin/views/settings.php:438
+#: admin/views/settings.php:464
 #: includes/class-email-templates.php:49
 msgid "New application (to admin)"
 msgstr ""
 
-#: admin/views/settings.php:439
+#: admin/views/settings.php:465
 msgid "Email the site admin when someone applies to the program."
 msgstr ""
 
-#: admin/views/settings.php:442
+#: admin/views/settings.php:468
 msgid "Application decision (to affiliate)"
 msgstr ""
 
-#: admin/views/settings.php:443
+#: admin/views/settings.php:469
 msgid "Email the applicant when you approve or reject their application."
 msgstr ""
 
-#: admin/views/settings.php:446
-#: includes/class-email-templates.php:70
+#: admin/views/settings.php:472
+#: includes/class-email-templates.php:73
 msgid "New referral (to affiliate)"
 msgstr ""
 
-#: admin/views/settings.php:447
+#: admin/views/settings.php:473
 msgid "Email the affiliate each time one of their referrals converts."
 msgstr ""
 
-#: admin/views/settings.php:450
+#: admin/views/settings.php:476
 msgid "Payout requested (to you)"
 msgstr ""
 
-#: admin/views/settings.php:451
+#: admin/views/settings.php:477
 msgid "Email you when an affiliate asks to be paid, so requests do not sit unnoticed."
 msgstr ""
 
-#: admin/views/settings.php:454
+#: admin/views/settings.php:480
 msgid "Payout decision (to affiliate)"
 msgstr ""
 
-#: admin/views/settings.php:455
+#: admin/views/settings.php:481
 msgid "Email the affiliate when you pay or decline their payout request."
 msgstr ""
 
-#: admin/views/settings.php:490
+#: admin/views/settings.php:525
 msgid "Edit content"
 msgstr ""
 
-#: admin/views/settings.php:505
+#: admin/views/settings.php:542
 #: public/views/affiliate-dashboard.php:448
 msgid "Close"
 msgstr ""
 
-#: admin/views/settings.php:511
+#: admin/views/settings.php:548
 msgid "Leave a field empty to use the wording that ships with the plugin, which stays translatable through your language files."
 msgstr ""
 
-#: admin/views/settings.php:514
+#: admin/views/settings.php:551
 msgid "Subject"
 msgstr ""
 
-#: admin/views/settings.php:525
+#: admin/views/settings.php:562
 msgid "Message"
 msgstr ""
 
-#: admin/views/settings.php:535
+#: admin/views/settings.php:572
 msgid "Placeholders you can use"
 msgstr ""
 
-#: admin/views/settings.php:543
-msgid "Done"
-msgstr ""
-
-#: admin/views/settings.php:544
+#: admin/views/settings.php:580
 msgid "Changes are saved with the Save settings button."
 msgstr ""
 
-#: admin/views/settings.php:556
+#: admin/views/settings.php:581
+msgid "Done"
+msgstr ""
+
+#: admin/views/settings.php:593
 msgid "Delete data on uninstall"
 msgstr ""
 
-#: admin/views/settings.php:557
+#: admin/views/settings.php:594
 msgid "Permanently remove all affiliate tables, settings, and related user meta when the plugin is deleted."
 msgstr ""
 
-#: admin/views/settings.php:571
+#: admin/views/settings.php:608
 msgid "Shortcodes"
 msgstr ""
 
-#: admin/views/settings.php:572
+#: admin/views/settings.php:609
 msgid "Place these on any page to expose the affiliate program."
 msgstr ""
 
-#: admin/views/settings.php:577
+#: admin/views/settings.php:614
 msgid "Application form for new affiliates."
 msgstr ""
 
-#: admin/views/settings.php:581
+#: admin/views/settings.php:618
 msgid "Affiliate dashboard: referral link, stats, and history."
 msgstr ""
 
-#: admin/views/settings.php:588
+#: admin/views/settings.php:625
 msgid "Save settings"
 msgstr ""
 
-#: admin/views/visits.php:20
+#: admin/views/visits.php:21
 msgid "Filter by conversion"
 msgstr ""
 
-#: admin/views/visits.php:22
+#: admin/views/visits.php:23
 msgid "Converted or not"
 msgstr ""
 
-#: admin/views/visits.php:23
+#: admin/views/visits.php:24
 msgid "Converted only"
 msgstr ""
 
-#: admin/views/visits.php:24
+#: admin/views/visits.php:25
 msgid "Not converted"
 msgstr ""
 
 #. translators: %s: number of visits.
-#: admin/views/visits.php:31
+#: admin/views/visits.php:32
 #, php-format
 msgid "%s visit"
 msgid_plural "%s visits"
 msgstr[0] ""
 msgstr[1] ""
 
-#: admin/views/visits.php:42
+#: admin/views/visits.php:43
 msgid "Landing page"
 msgstr ""
 
-#: admin/views/visits.php:43
+#: admin/views/visits.php:44
 msgid "Came from"
 msgstr ""
 
-#: admin/views/visits.php:44
+#: admin/views/visits.php:45
 msgid "IP"
 msgstr ""
 
-#: admin/views/visits.php:46
-#: admin/views/visits.php:75
+#: admin/views/visits.php:47
+#: admin/views/visits.php:76
 msgid "Converted"
 msgstr ""
 
-#: admin/views/visits.php:55
+#: admin/views/visits.php:56
 msgid "Home"
 msgstr ""
 
-#: admin/views/visits.php:68
+#: admin/views/visits.php:69
 msgid "Direct"
 msgstr ""
 
-#: admin/views/visits.php:77
+#: admin/views/visits.php:78
 msgid "No"
 msgstr ""
 
-#: admin/views/visits.php:90
+#: admin/views/visits.php:91
 msgid "No visits match the current filters."
 msgstr ""
 
-#: admin/views/visits.php:91
+#: admin/views/visits.php:92
 msgid "No referral link visits recorded yet."
 msgstr ""
 
@@ -1344,94 +1353,122 @@ msgstr ""
 msgid "Created from Directorist listing %s trigger."
 msgstr ""
 
-#: includes/class-email-templates.php:51
-msgid "New affiliate application"
+#: includes/class-email-templates.php:50
+msgid "New application"
 msgstr ""
 
 #: includes/class-email-templates.php:52
+msgid "New affiliate application"
+msgstr ""
+
+#: includes/class-email-templates.php:53
 msgid ""
 "A new affiliate application was submitted by {affiliate_email}.\n"
 "\n"
 "Review it here: {admin_url}"
 msgstr ""
 
-#: includes/class-email-templates.php:56
+#: includes/class-email-templates.php:57
 msgid "Application approved (to affiliate)"
 msgstr ""
 
 #: includes/class-email-templates.php:58
+msgid "Application approved"
+msgstr ""
+
+#: includes/class-email-templates.php:60
 msgid "Your affiliate application was approved"
 msgstr ""
 
-#: includes/class-email-templates.php:59
+#: includes/class-email-templates.php:61
 msgid ""
 "Good news — your affiliate application for {site_name} has been approved.\n"
 "\n"
 "Your referral link is waiting on your dashboard: {dashboard_url}"
 msgstr ""
 
-#: includes/class-email-templates.php:63
+#: includes/class-email-templates.php:65
 msgid "Application rejected (to affiliate)"
 msgstr ""
 
-#: includes/class-email-templates.php:65
+#: includes/class-email-templates.php:66
+msgid "Application rejected"
+msgstr ""
+
+#: includes/class-email-templates.php:68
 msgid "Your affiliate application was not approved"
 msgstr ""
 
-#: includes/class-email-templates.php:66
+#: includes/class-email-templates.php:69
 msgid "Thank you for applying to the {site_name} affiliate program. On this occasion your application was not approved."
 msgstr ""
 
-#: includes/class-email-templates.php:72
+#: includes/class-email-templates.php:74
+msgid "New referral"
+msgstr ""
+
+#: includes/class-email-templates.php:76
 msgid "You earned a new referral"
 msgstr ""
 
-#: includes/class-email-templates.php:73
+#: includes/class-email-templates.php:77
 msgid ""
 "A new \"{referral_type}\" referral was recorded, earning you {amount}.\n"
 "\n"
 "See it on your dashboard: {dashboard_url}"
 msgstr ""
 
-#: includes/class-email-templates.php:77
+#: includes/class-email-templates.php:81
 msgid "Payout requested (to admin)"
 msgstr ""
 
-#: includes/class-email-templates.php:79
+#: includes/class-email-templates.php:82
+msgid "Payout requested"
+msgstr ""
+
+#: includes/class-email-templates.php:84
 msgid "New affiliate payout request"
 msgstr ""
 
-#: includes/class-email-templates.php:80
+#: includes/class-email-templates.php:85
 msgid ""
 "{affiliate_name} has requested a payout of {amount}, to be paid by {payout_method}.\n"
 "\n"
 "Review it here: {admin_url}"
 msgstr ""
 
-#: includes/class-email-templates.php:84
+#: includes/class-email-templates.php:89
 msgid "Payout paid (to affiliate)"
 msgstr ""
 
-#: includes/class-email-templates.php:86
+#: includes/class-email-templates.php:90
+msgid "Payout paid"
+msgstr ""
+
+#: includes/class-email-templates.php:92
 msgid "Your payout has been sent"
 msgstr ""
 
-#: includes/class-email-templates.php:87
+#: includes/class-email-templates.php:93
 msgid ""
 "Your payout of {amount} has been marked as paid, via {payout_method}.\n"
 "\n"
 "Thank you for promoting {site_name}."
 msgstr ""
 
-#: includes/class-email-templates.php:91
+#: includes/class-email-templates.php:97
 msgid "Payout declined (to affiliate)"
 msgstr ""
 
-#: includes/class-email-templates.php:93
+#: includes/class-email-templates.php:98
+msgid "Payout declined"
+msgstr ""
+
+#: includes/class-email-templates.php:100
 msgid "Your payout request was declined"
 msgstr ""
 
-#: includes/class-email-templates.php:94
+#: includes/class-email-templates.php:101
 msgid "Your payout request of {amount} was not approved. Those commissions stay in your balance, so you can request them again."
 msgstr ""
 

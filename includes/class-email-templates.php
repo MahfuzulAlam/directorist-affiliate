@@ -41,12 +41,13 @@ final class Directorist_Affiliate_Email_Templates {
 	/**
 	 * Every template: its audience, default wording and placeholders.
 	 *
-	 * @return array<string,array{label:string,toggle:string,subject:string,body:string,tokens:string[]}>
+	 * @return array<string,array{label:string,short:string,toggle:string,subject:string,body:string,tokens:string[]}>
 	 */
 	public function all(): array {
 		$templates = array(
 			'admin_application'        => array(
 				'label'   => __( 'New application (to admin)', 'directorist-affiliate' ),
+				'short'   => __( 'New application', 'directorist-affiliate' ),
 				'toggle'  => 'notify_admin_application',
 				'subject' => __( 'New affiliate application', 'directorist-affiliate' ),
 				'body'    => __( "A new affiliate application was submitted by {affiliate_email}.\n\nReview it here: {admin_url}", 'directorist-affiliate' ),
@@ -54,6 +55,7 @@ final class Directorist_Affiliate_Email_Templates {
 			),
 			'affiliate_approved'       => array(
 				'label'   => __( 'Application approved (to affiliate)', 'directorist-affiliate' ),
+				'short'   => __( 'Application approved', 'directorist-affiliate' ),
 				'toggle'  => 'notify_affiliate_status',
 				'subject' => __( 'Your affiliate application was approved', 'directorist-affiliate' ),
 				'body'    => __( "Good news — your affiliate application for {site_name} has been approved.\n\nYour referral link is waiting on your dashboard: {dashboard_url}", 'directorist-affiliate' ),
@@ -61,6 +63,7 @@ final class Directorist_Affiliate_Email_Templates {
 			),
 			'affiliate_rejected'       => array(
 				'label'   => __( 'Application rejected (to affiliate)', 'directorist-affiliate' ),
+				'short'   => __( 'Application rejected', 'directorist-affiliate' ),
 				'toggle'  => 'notify_affiliate_status',
 				'subject' => __( 'Your affiliate application was not approved', 'directorist-affiliate' ),
 				'body'    => __( 'Thank you for applying to the {site_name} affiliate program. On this occasion your application was not approved.', 'directorist-affiliate' ),
@@ -68,6 +71,7 @@ final class Directorist_Affiliate_Email_Templates {
 			),
 			'affiliate_referral'       => array(
 				'label'   => __( 'New referral (to affiliate)', 'directorist-affiliate' ),
+				'short'   => __( 'New referral', 'directorist-affiliate' ),
 				'toggle'  => 'notify_affiliate_referral',
 				'subject' => __( 'You earned a new referral', 'directorist-affiliate' ),
 				'body'    => __( "A new \"{referral_type}\" referral was recorded, earning you {amount}.\n\nSee it on your dashboard: {dashboard_url}", 'directorist-affiliate' ),
@@ -75,6 +79,7 @@ final class Directorist_Affiliate_Email_Templates {
 			),
 			'admin_payout_request'     => array(
 				'label'   => __( 'Payout requested (to admin)', 'directorist-affiliate' ),
+				'short'   => __( 'Payout requested', 'directorist-affiliate' ),
 				'toggle'  => 'notify_admin_payout_request',
 				'subject' => __( 'New affiliate payout request', 'directorist-affiliate' ),
 				'body'    => __( "{affiliate_name} has requested a payout of {amount}, to be paid by {payout_method}.\n\nReview it here: {admin_url}", 'directorist-affiliate' ),
@@ -82,6 +87,7 @@ final class Directorist_Affiliate_Email_Templates {
 			),
 			'affiliate_payout_paid'    => array(
 				'label'   => __( 'Payout paid (to affiliate)', 'directorist-affiliate' ),
+				'short'   => __( 'Payout paid', 'directorist-affiliate' ),
 				'toggle'  => 'notify_affiliate_payout',
 				'subject' => __( 'Your payout has been sent', 'directorist-affiliate' ),
 				'body'    => __( "Your payout of {amount} has been marked as paid, via {payout_method}.\n\nThank you for promoting {site_name}.", 'directorist-affiliate' ),
@@ -89,6 +95,7 @@ final class Directorist_Affiliate_Email_Templates {
 			),
 			'affiliate_payout_rejected' => array(
 				'label'   => __( 'Payout declined (to affiliate)', 'directorist-affiliate' ),
+				'short'   => __( 'Payout declined', 'directorist-affiliate' ),
 				'toggle'  => 'notify_affiliate_payout',
 				'subject' => __( 'Your payout request was declined', 'directorist-affiliate' ),
 				'body'    => __( 'Your payout request of {amount} was not approved. Those commissions stay in your balance, so you can request them again.', 'directorist-affiliate' ),

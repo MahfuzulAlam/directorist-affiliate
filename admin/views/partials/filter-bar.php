@@ -14,6 +14,9 @@
  *   $section         string  Optional sub-tab to preserve.
  *   $lead_button     array   Optional primary action rendered before the filters:
  *                            array{modal:string, label:string}.
+ *   $export          string  Optional dataset key ('affiliates', 'referrals',
+ *                            'visits', 'payouts'). Renders an Export CSV link
+ *                            carrying exactly the filters shown here.
  *
  * @package DirectoristAffiliate
  */
@@ -29,6 +32,34 @@ foreach ( $fields as $da_field ) {
 		$da_has_filters = true;
 		break;
 	}
+}
+
+// The export link carries the same query vars this form would submit, so the
+// download always matches the rows on screen rather than the whole table.
+$da_export_carry = array();
+
+if ( ! empty( $filters['affiliate_id'] ) ) {
+	$da_export_carry['affiliate'] = (string) $filters['affiliate_id'];
+}
+
+foreach ( array(
+	Directorist_Affiliate_Date_Range::PARAM_PRESET => 'range',
+	Directorist_Affiliate_Date_Range::PARAM_FROM   => 'from',
+	Directorist_Affiliate_Date_Range::PARAM_TO     => 'to',
+) as $da_param => $da_key ) {
+	if ( ! empty( $filters[ $da_key ] ) ) {
+		$da_export_carry[ $da_param ] = (string) $filters[ $da_key ];
+	}
+}
+
+foreach ( $fields as $da_field ) {
+	if ( ! empty( $da_field['value'] ) ) {
+		$da_export_carry[ $da_field['name'] ] = (string) $da_field['value'];
+	}
+}
+
+if ( ! empty( $section ) ) {
+	$da_export_carry['section'] = $section;
 }
 ?>
 <form method="get" class="directorist-affiliate-filter-bar" action="<?php echo esc_url( admin_url( 'edit.php' ) ); ?>">
@@ -104,6 +135,13 @@ foreach ( $fields as $da_field ) {
 	<?php if ( $da_has_filters ) : ?>
 		<a class="directorist-affiliate-filter-reset" href="<?php echo esc_url( Directorist_Affiliate_Admin::page_url( $tab, ! empty( $section ) ? array( 'section' => $section ) : array() ) ); ?>">
 			<?php esc_html_e( 'Reset', 'directorist-affiliate' ); ?>
+		</a>
+	<?php endif; ?>
+
+	<?php if ( ! empty( $export ) ) : ?>
+		<a class="button directorist-affiliate-icon-btn" href="<?php echo esc_url( Directorist_Affiliate_Admin_Export::url( $export, $da_export_carry, $tab ) ); ?>">
+			<span class="dashicons dashicons-download" aria-hidden="true"></span>
+			<?php esc_html_e( 'Export CSV', 'directorist-affiliate' ); ?>
 		</a>
 	<?php endif; ?>
 

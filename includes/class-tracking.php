@@ -382,6 +382,35 @@ final class Directorist_Affiliate_Tracking {
 	}
 
 	/**
+	 * Visit totals for every affiliate, in one grouped query.
+	 *
+	 * Mirrors Referral::stats_by_affiliate(). Screens and exports that show a
+	 * per-affiliate visit count must use this rather than calling count() per
+	 * row, which would be one query per affiliate.
+	 *
+	 * @return array<int,object>
+	 */
+	public function stats_by_affiliate(): array {
+		global $wpdb;
+
+		$rows = $wpdb->get_results(
+			"SELECT affiliate_id,
+				COUNT(*) AS total_visits,
+				COALESCE(SUM(CASE WHEN converted = 1 THEN 1 ELSE 0 END), 0) AS converted_visits
+			FROM {$this->table()}
+			GROUP BY affiliate_id"
+		);
+
+		$stats = array();
+
+		foreach ( $rows as $row ) {
+			$stats[ (int) $row->affiliate_id ] = $row;
+		}
+
+		return $stats;
+	}
+
+	/**
 	 * Build the shared WHERE clause for list()/count().
 	 *
 	 * `converted` accepts a bool, or '1'/'0' strings from a request; anything

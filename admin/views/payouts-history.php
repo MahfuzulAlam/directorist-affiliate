@@ -19,6 +19,7 @@ Directorist_Affiliate_View::partial(
 	'filter-bar.php',
 	array(
 		'tab'            => 'payouts',
+		'export'            => 'payouts',
 		'section'        => 'history',
 		'filters'        => $filters,
 		'affiliate_list' => $affiliate_list,

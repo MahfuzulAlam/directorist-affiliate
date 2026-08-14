@@ -61,7 +61,7 @@ final class Directorist_Affiliate_Admin_Actions {
 		$this->handle_referral_bulk();
 		$this->handle_payout_request_action();
 		$this->handle_payout_post();
-		$this->handle_export();
+		( new Directorist_Affiliate_Admin_Export( $this->plugin ) )->maybe_handle();
 	}
 
 	/**
@@ -300,71 +300,6 @@ final class Directorist_Affiliate_Admin_Actions {
 		);
 	}
 
-	/**
-	 * Handle payout CSV export.
-	 *
-	 * @return void
-	 */
-	private function handle_export(): void {
-		$export = isset( $_GET['directorist_affiliate_export'] ) ? sanitize_key( wp_unslash( $_GET['directorist_affiliate_export'] ) ) : '';
-
-		if ( 'payouts' !== $export ) {
-			return;
-		}
-
-		check_admin_referer( 'directorist_affiliate_export_payouts' );
-
-		$referrals = $this->plugin->referral->list(
-			array(
-				'status' => 'approved',
-				'limit'  => 1000,
-			)
-		);
-
-		header( 'Content-Type: text/csv; charset=utf-8' );
-		header( 'Content-Disposition: attachment; filename=directorist-affiliate-payouts.csv' );
-
-		$affiliates_map = $this->plugin->affiliate->get_many( wp_list_pluck( $referrals, 'affiliate_id' ) );
-		$output         = fopen( 'php://output', 'w' );
-
-		if ( false !== $output ) {
-			fputcsv( $output, array( 'affiliate_id', 'payout_email', 'referral_id', 'amount', 'date_created' ) );
-
-			foreach ( $referrals as $referral ) {
-				$affiliate = $affiliates_map[ (int) $referral->affiliate_id ] ?? null;
-				fputcsv(
-					$output,
-					array(
-						$referral->affiliate_id,
-						$this->escape_csv_field( $affiliate ? $affiliate->payout_email : '' ),
-						$referral->id,
-						$referral->commission_amount,
-						$referral->date_created,
-					)
-				);
-			}
-		}
-
-		exit;
-	}
-
-	/**
-	 * Neutralize spreadsheet formula injection in a CSV cell.
-	 *
-	 * Cells starting with =, +, -, @, tab, or CR are prefixed with an
-	 * apostrophe so spreadsheet apps treat them as text, never formulas.
-	 *
-	 * @param string $value Cell value.
-	 *
-	 * @return string
-	 */
-	private function escape_csv_field( string $value ): string {
-		if ( '' !== $value && in_array( $value[0], array( '=', '+', '-', '@', "\t", "\r" ), true ) ) {
-			return "'" . $value;
-		}
-
-		return $value;
-	}
 
 	/**
 	 * Redirect to a tab of the Affiliate admin page and stop execution.
