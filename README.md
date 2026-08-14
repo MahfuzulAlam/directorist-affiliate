@@ -6,7 +6,7 @@ Affiliate tracking and fixed-commission referral system for [Directorist](https:
 
 | Item | Value |
 | --- | --- |
-| Version | 1.11.1 (plugin) / 0.3.0 (DB schema) |
+| Version | 1.12.0 (plugin) / 0.3.0 (DB schema) |
 | Author | [wpXplore](https://wpxplore.com) |
 | Website | https://wpxplore.com/tools/directorist-affiliate/ |
 | Requires | WordPress 6.3+, PHP 7.4+ |
@@ -325,9 +325,12 @@ Stored in one option, `directorist_affiliate_settings` (autoload off):
 | `applications_require_login` | `0` | Require a WordPress account to apply; when off, applying creates one |
 | `enable_registration` | `1` | Pay commission on referred user registration |
 | `registration_amount` | `0.00` | Fixed amount per registration |
+| `registration_credit_on` | `registration` | When it is credited: `registration`, or `verification` (waits for Directorist email verification) |
+| `registration_user_types` | `['author','general']` | Which Directorist user types earn it. Empty falls back to both |
 | `enable_listing` | `1` | Pay commission on referred listing |
 | `listing_amount` | `0.00` | Fixed amount per listing |
 | `listing_trigger` | `submission` | `submission` (on create) or `publish` (on first publish) |
+| `listing_directory_types` | `[]` | Directory type term IDs that earn a listing commission. Empty = all, including types added later |
 | `attribution_model` | `first_click` | `first_click` (existing credit kept until cookie expiry) or `last_click` (newest link wins) |
 | `enable_plan_commission` | `1` | Commission on pricing-plan purchases — inert unless a Pricing Plans extension is active |
 | `plan_commission_type` / `plan_commission_value` | `percentage` / `0.00` | Fixed amount or % of order total (percentages capped at 100) |
@@ -379,6 +382,19 @@ Filters: `directorist_affiliate_link_types( $types )` (content types in the link
 Usage examples are in [DOCUMENTATION.md](DOCUMENTATION.md#developer-reference).
 
 ## Changelog
+
+### 1.12.0 — 2026-08-14
+
+Three new commission controls, all reading real Directorist state rather than guessing.
+
+**User registration**
+- **Credit the commission** — *on registration* (as before) or *on email verification*, which waits for Directorist to clear its `directorist_user_email_unverified` flag. Useful for weeding out throwaway signups. If email verification is switched off in Directorist, this falls back to crediting on registration rather than never paying — and the settings screen says so when it detects that.
+- **Pay for these user types** — Author (signs up to post listings) and/or User (browse only), read from Directorist's `_user_type`. Unticking both falls back to paying for both, so the setting cannot silently stop all registration commissions.
+
+**Listing submission**
+- **Pay for these directory types** — restricts listing commissions to chosen directories, read from `_directory_type`. Only shown on multi-directory sites. Ticking every box is stored as "all" rather than a list of IDs, so a directory type added later is included automatically instead of silently earning nothing.
+
+**Implementation note.** Directorist writes `_user_type` *after* firing `atbdp_user_registration_completed`, and email verification happens on a later request entirely — so neither gate can be evaluated at registration time. Crediting is therefore re-evaluated on the `added_user_meta`/`updated_user_meta`/`deleted_user_meta` writes that carry those values. Referral creation is already deduplicated per user, so re-running is harmless. Deferred crediting resolves the affiliate from the mapping saved at registration, not the cookie, so an admin marking a user verified from their own browser still credits the right affiliate.
 
 ### 1.11.1 — 2026-08-14
 

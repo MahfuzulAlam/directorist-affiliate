@@ -204,8 +204,10 @@ Covered in full in the next section.
 
 Two cards. **Free events** are flat rewards for conversions where no money changes hands:
 
-- **User registration** — a flat amount when a referred visitor creates an account.
-- **Listing submission** — a flat amount when a referred user adds a listing, plus the **trigger**: credit *on submission* (the moment it's created, even awaiting moderation) or *on approval/publish* (only when it goes live). **Publish is recommended** if you moderate listings; it keeps spam submissions from earning anything.
+- **User registration** — a flat amount when a referred visitor creates an account. Two extra controls sit under it:
+  - **Credit the commission** — *on registration*, or *on email verification*, which holds the commission until the person actually confirms their address. Verification is the safer choice if throwaway signups are a concern. If you have Directorist's email verification switched off, this setting has no effect and commissions credit on registration; the screen tells you when it detects that.
+  - **Pay for these user types** — Directorist asks new users whether they are signing up to post listings (**Author**) or just to browse (**User**). Untick a type to stop paying for it. Leaving both unticked keeps both paid, rather than silently stopping every registration commission.
+- **Listing submission** — a flat amount when a referred user adds a listing, plus the **trigger**: credit *on submission* (the moment it's created, even awaiting moderation) or *on approval/publish* (only when it goes live). **Publish is recommended** if you moderate listings; it keeps spam submissions from earning anything. If you run more than one directory, **Pay for these directory types** appears too — untick a directory to stop paying for listings in it. Leave every box ticked to pay for all of them, including directories you add later.
 
 **Paid orders** are the revenue events — commissions on money actually paid on your site. Each can be a **fixed amount** or a **percentage of the order total**, and each is automatically inactive (greyed out with an explanation) when the feature it depends on isn't available:
 

@@ -32,9 +32,12 @@ final class Directorist_Affiliate_Settings {
 			'dashboard_page'             => 0,
 			'enable_registration'        => 1,
 			'registration_amount'        => '0.00',
+			'registration_credit_on'     => 'registration',
+			'registration_user_types'    => array( 'author', 'general' ),
 			'enable_listing'             => 1,
 			'listing_amount'             => '0.00',
 			'listing_trigger'            => 'submission',
+			'listing_directory_types'    => array(),
 			'enable_plan_commission'     => 1,
 			'plan_commission_type'       => 'percentage',
 			'plan_commission_value'      => '0.00',
@@ -118,6 +121,12 @@ final class Directorist_Affiliate_Settings {
 		$ref_param = isset( $raw['ref_param'] ) ? sanitize_key( wp_unslash( $raw['ref_param'] ) ) : $defaults['ref_param'];
 		$ref_param = $ref_param ? $ref_param : 'ref';
 
+		$credit_on = isset( $raw['registration_credit_on'] ) ? sanitize_key( wp_unslash( $raw['registration_credit_on'] ) ) : $defaults['registration_credit_on'];
+
+		if ( ! in_array( $credit_on, array( 'registration', 'verification' ), true ) ) {
+			$credit_on = 'registration';
+		}
+
 		$attribution = isset( $raw['attribution_model'] ) ? sanitize_key( wp_unslash( $raw['attribution_model'] ) ) : $defaults['attribution_model'];
 
 		if ( ! in_array( $attribution, array( 'first_click', 'last_click' ), true ) ) {
@@ -134,9 +143,12 @@ final class Directorist_Affiliate_Settings {
 			'dashboard_page'             => absint( $raw['dashboard_page'] ?? 0 ),
 			'enable_registration'        => empty( $raw['enable_registration'] ) ? 0 : 1,
 			'registration_amount'        => $this->sanitize_amount( $raw['registration_amount'] ?? $defaults['registration_amount'] ),
+			'registration_credit_on'     => $credit_on,
+			'registration_user_types'    => $this->sanitize_user_types( $raw['registration_user_types'] ?? $defaults['registration_user_types'] ),
 			'enable_listing'             => empty( $raw['enable_listing'] ) ? 0 : 1,
 			'listing_amount'             => $this->sanitize_amount( $raw['listing_amount'] ?? $defaults['listing_amount'] ),
 			'listing_trigger'            => $trigger,
+			'listing_directory_types'    => $this->sanitize_directory_types( $raw['listing_directory_types'] ?? array() ),
 			'enable_plan_commission'     => empty( $raw['enable_plan_commission'] ) ? 0 : 1,
 			'plan_commission_type'       => $this->sanitize_commission_type( $raw['plan_commission_type'] ?? $defaults['plan_commission_type'] ),
 			'plan_commission_value'      => $this->sanitize_commission_value(
@@ -161,6 +173,45 @@ final class Directorist_Affiliate_Settings {
 			'anonymize_ip'               => empty( $raw['anonymize_ip'] ) ? 0 : 1,
 			'delete_data_on_uninstall'   => empty( $raw['delete_data_on_uninstall'] ) ? 0 : 1,
 		);
+	}
+
+	/**
+	 * Sanitize the directory types that earn a listing commission.
+	 *
+	 * Selecting every existing type is stored as "all" rather than as a list
+	 * of IDs, so a directory type added later is included automatically
+	 * instead of silently earning nothing.
+	 *
+	 * @param mixed $types Raw value.
+	 *
+	 * @return int[]
+	 */
+	private function sanitize_directory_types( $types ): array {
+		$clean = array_values( array_unique( array_filter( array_map( 'absint', (array) $types ) ) ) );
+
+		if ( ! $clean || ! class_exists( 'Directorist_Affiliate_Directorist_Integration' ) ) {
+			return $clean;
+		}
+
+		$known = array_keys( Directorist_Affiliate_Directorist_Integration::directory_types() );
+
+		return $known && ! array_diff( $known, $clean ) ? array() : $clean;
+	}
+
+	/**
+	 * Sanitize which Directorist user types earn a registration commission.
+	 *
+	 * @param mixed $types Raw value.
+	 *
+	 * @return string[]
+	 */
+	private function sanitize_user_types( $types ): array {
+		$known = array( 'author', 'general' );
+		$clean = array_values( array_intersect( $known, array_map( 'sanitize_key', (array) $types ) ) );
+
+		// Never leave zero types selected: that would silently stop all
+		// registration commissions with no visible cause.
+		return $clean ? $clean : $known;
 	}
 
 	/**

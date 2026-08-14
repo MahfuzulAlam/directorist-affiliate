@@ -205,6 +205,46 @@ $featured_available = Directorist_Affiliate_Commission::is_featured_monetization
 					</div>
 				</div>
 
+				<div class="directorist-affiliate-field">
+					<div class="directorist-affiliate-field-label">
+						<label for="directorist-affiliate-registration-credit-on"><?php esc_html_e( 'Credit the commission', 'directorist-affiliate' ); ?></label>
+						<p class="description"><?php esc_html_e( 'Wait for email verification to weed out throwaway signups. If Directorist email verification is switched off, the commission is credited on registration regardless.', 'directorist-affiliate' ); ?></p>
+					</div>
+					<div class="directorist-affiliate-field-control">
+						<select id="directorist-affiliate-registration-credit-on" name="registration_credit_on">
+							<option value="registration" <?php selected( $settings['registration_credit_on'], 'registration' ); ?>><?php esc_html_e( 'On registration', 'directorist-affiliate' ); ?></option>
+							<option value="verification" <?php selected( $settings['registration_credit_on'], 'verification' ); ?>><?php esc_html_e( 'On email verification', 'directorist-affiliate' ); ?></option>
+						</select>
+						<?php if ( function_exists( 'directorist_is_email_verification_enabled' ) && ! directorist_is_email_verification_enabled() ) : ?>
+							<p class="description"><strong><?php esc_html_e( 'Note:', 'directorist-affiliate' ); ?></strong> <?php esc_html_e( 'email verification is currently off in Directorist, so commissions credit on registration.', 'directorist-affiliate' ); ?></p>
+						<?php endif; ?>
+					</div>
+				</div>
+
+				<div class="directorist-affiliate-field">
+					<div class="directorist-affiliate-field-label">
+						<label><?php esc_html_e( 'Pay for these user types', 'directorist-affiliate' ); ?></label>
+						<p class="description"><?php esc_html_e( 'Directorist asks new users whether they are signing up to post listings or just to browse. Untick a type to stop paying for it. Leaving both unticked keeps both paid.', 'directorist-affiliate' ); ?></p>
+					</div>
+					<div class="directorist-affiliate-field-control">
+						<?php
+						$directorist_affiliate_user_types = array(
+							'author'  => __( 'Author — signs up to post listings', 'directorist-affiliate' ),
+							'general' => __( 'User — signs up to browse only', 'directorist-affiliate' ),
+						);
+						$directorist_affiliate_chosen_types = (array) $settings['registration_user_types'];
+						?>
+						<div class="directorist-affiliate-checkboxes">
+							<?php foreach ( $directorist_affiliate_user_types as $directorist_affiliate_type_key => $directorist_affiliate_type_label ) : ?>
+								<label class="directorist-affiliate-checkbox">
+									<input type="checkbox" name="registration_user_types[]" value="<?php echo esc_attr( $directorist_affiliate_type_key ); ?>" <?php checked( in_array( $directorist_affiliate_type_key, $directorist_affiliate_chosen_types, true ) ); ?> />
+									<span><?php echo esc_html( $directorist_affiliate_type_label ); ?></span>
+								</label>
+							<?php endforeach; ?>
+						</div>
+					</div>
+				</div>
+
 				<div class="directorist-affiliate-field is-toggle">
 					<div class="directorist-affiliate-field-label">
 						<label for="directorist-affiliate-enable-listing"><?php esc_html_e( 'Listing submission', 'directorist-affiliate' ); ?></label>
@@ -228,6 +268,32 @@ $featured_available = Directorist_Affiliate_Commission::is_featured_monetization
 						</select>
 					</div>
 				</div>
+
+				<?php $directorist_affiliate_directories = Directorist_Affiliate_Directorist_Integration::directory_types(); ?>
+				<?php if ( count( $directorist_affiliate_directories ) > 1 ) : ?>
+					<div class="directorist-affiliate-field">
+						<div class="directorist-affiliate-field-label">
+							<label><?php esc_html_e( 'Pay for these directory types', 'directorist-affiliate' ); ?></label>
+							<p class="description"><?php esc_html_e( 'Restrict listing commissions to particular directories. Leaving every box unticked pays for all of them, including any added later.', 'directorist-affiliate' ); ?></p>
+						</div>
+						<div class="directorist-affiliate-field-control">
+							<?php $directorist_affiliate_chosen_dirs = array_map( 'absint', (array) $settings['listing_directory_types'] ); ?>
+							<div class="directorist-affiliate-checkboxes">
+								<?php foreach ( $directorist_affiliate_directories as $directorist_affiliate_dir_id => $directorist_affiliate_dir_name ) : ?>
+									<label class="directorist-affiliate-checkbox">
+										<input
+											type="checkbox"
+											name="listing_directory_types[]"
+											value="<?php echo esc_attr( (string) $directorist_affiliate_dir_id ); ?>"
+											<?php checked( ! $directorist_affiliate_chosen_dirs || in_array( (int) $directorist_affiliate_dir_id, $directorist_affiliate_chosen_dirs, true ) ); ?>
+										/>
+										<span><?php echo esc_html( $directorist_affiliate_dir_name ); ?></span>
+									</label>
+								<?php endforeach; ?>
+							</div>
+						</div>
+					</div>
+				<?php endif; ?>
 			</div>
 
 			<div class="directorist-affiliate-card directorist-affiliate-field-card">
