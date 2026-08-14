@@ -95,6 +95,37 @@ final class Directorist_Affiliate_Shortcodes {
 	}
 
 	/**
+	 * Enqueue and localize the link builder script.
+	 *
+	 * @return void
+	 */
+	private function enqueue_link_builder(): void {
+		wp_enqueue_script( 'directorist-affiliate-link-builder' );
+
+		wp_localize_script(
+			'directorist-affiliate-link-builder',
+			'directoristAffiliateLinkBuilder',
+			array(
+				'ajaxUrl'   => admin_url( 'admin-ajax.php' ),
+				'nonce'     => wp_create_nonce( 'directorist_affiliate_link_builder' ),
+				'minLength' => Directorist_Affiliate_Link_Search::MIN_TERM_LENGTH,
+				'i18n'      => array(
+					'searching'  => __( 'Searching…', 'directorist-affiliate' ),
+					'noResults'  => __( 'Nothing matched. Try a different word from the title.', 'directorist-affiliate' ),
+					'error'      => __( 'Could not search right now. Please try again.', 'directorist-affiliate' ),
+					'typeMore'   => sprintf(
+						/* translators: %d: minimum number of characters. */
+						_n( 'Type at least %d character.', 'Type at least %d characters.', Directorist_Affiliate_Link_Search::MIN_TERM_LENGTH, 'directorist-affiliate' ),
+						Directorist_Affiliate_Link_Search::MIN_TERM_LENGTH
+					),
+					'resultsFound' => __( '%d results available. Use the arrow keys to choose one.', 'directorist-affiliate' ),
+					'checking'   => __( 'Checking the address…', 'directorist-affiliate' ),
+				),
+			)
+		);
+	}
+
+	/**
 	 * URL of the page carrying the affiliate dashboard.
 	 *
 	 * Prefers the page chosen in settings, then Directorist's own user
@@ -229,12 +260,19 @@ final class Directorist_Affiliate_Shortcodes {
 			)
 		);
 
+		// The link builder is only usable by approved affiliates, so its
+		// script loads only for them — and only on this shortcode's page.
+		if ( 'approved' === $affiliate->status ) {
+			$this->enqueue_link_builder();
+		}
+
 		return $this->render(
 			'affiliate-dashboard.php',
 			array(
 				'plugin'              => $this->plugin,
 				'affiliate'           => $affiliate,
 				'referrals'           => $referrals,
+				'link_types'          => $this->plugin->link_search->types(),
 				'payouts'             => $this->plugin->payout->list_by_affiliate( (int) $affiliate->id, 20 ),
 				'visits'              => $this->plugin->tracking->count( array( 'affiliate_id' => (int) $affiliate->id ) ),
 				'total_referrals'     => $this->plugin->referral->count( array( 'affiliate_id' => (int) $affiliate->id ) ),

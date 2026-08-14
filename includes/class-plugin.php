@@ -75,6 +75,13 @@ final class Directorist_Affiliate_Plugin {
 	public $shortcodes;
 
 	/**
+	 * Link builder search service.
+	 *
+	 * @var Directorist_Affiliate_Link_Search
+	 */
+	public $link_search;
+
+	/**
 	 * Registration service.
 	 *
 	 * @var Directorist_Affiliate_Registration
@@ -200,6 +207,7 @@ final class Directorist_Affiliate_Plugin {
 		$this->payout       = new Directorist_Affiliate_Payout( $this->referral, $this->affiliate );
 		$this->email        = new Directorist_Affiliate_Email( $this->settings );
 		$this->registration = new Directorist_Affiliate_Registration( $this->affiliate, $this->email, $this->settings );
+		$this->link_search  = new Directorist_Affiliate_Link_Search( $this->settings );
 		$this->shortcodes   = new Directorist_Affiliate_Shortcodes( $this );
 	}
 

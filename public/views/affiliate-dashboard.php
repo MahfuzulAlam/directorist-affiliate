@@ -164,25 +164,74 @@ $da_shortfall = max( 0, $minimum_payout - (float) $approved_commission );
 		</div>
 	</div>
 
-	<?php if ( $da_approved && ! empty( $link_targets ) ) : ?>
-		<section class="da-card da-builder" aria-labelledby="da-builder-title">
-			<h2 id="da-builder-title"><?php esc_html_e( 'Link to a specific page', 'directorist-affiliate' ); ?></h2>
-			<p class="da-muted"><?php esc_html_e( 'Send people straight where you want them, with your code attached.', 'directorist-affiliate' ); ?></p>
-			<div class="da-builder-row">
-				<label class="da-sr" for="directorist-affiliate-link-target"><?php esc_html_e( 'Destination page', 'directorist-affiliate' ); ?></label>
-				<select id="directorist-affiliate-link-target" data-da-link-select data-da-link-output="directorist-affiliate-built-link">
-					<?php foreach ( $link_targets as $target_url => $target_label ) : ?>
-						<option value="<?php echo esc_url( $target_url ); ?>"><?php echo esc_html( $target_label ); ?></option>
-					<?php endforeach; ?>
-				</select>
+	<?php if ( $da_approved ) : ?>
+		<section class="da-card da-builder" aria-labelledby="da-builder-title" data-da-builder>
+			<div class="da-builder-head">
+				<h2 id="da-builder-title"><?php esc_html_e( 'Build a link to anywhere on the site', 'directorist-affiliate' ); ?></h2>
+				<p class="da-muted"><?php esc_html_e( 'Pick what you want to promote and we will attach your referral code to it.', 'directorist-affiliate' ); ?></p>
 			</div>
-			<div class="da-copyfield">
-				<label class="da-sr" for="directorist-affiliate-built-link"><?php esc_html_e( 'Generated referral link', 'directorist-affiliate' ); ?></label>
-				<input id="directorist-affiliate-built-link" type="text" readonly value="<?php echo esc_url( (string) array_key_first( $link_targets ) ); ?>" onfocus="this.select();" />
+
+			<div class="da-builder-row">
+				<div class="da-field">
+					<label for="da-builder-type">
+						<?php esc_html_e( 'What are you linking to?', 'directorist-affiliate' ); ?>
+						<span class="da-tip" tabindex="0" role="note" aria-label="<?php esc_attr_e( 'Choose the kind of content first. A search box appears next to it so you can find the exact item by name.', 'directorist-affiliate' ); ?>">
+							<span aria-hidden="true">?</span>
+						</span>
+					</label>
+					<select id="da-builder-type" data-da-builder-type>
+						<?php foreach ( $link_types as $da_type_key => $da_type ) : ?>
+							<option value="<?php echo esc_attr( $da_type_key ); ?>" data-hint="<?php echo esc_attr( $da_type['hint'] ); ?>" data-kind="<?php echo esc_attr( $da_type['kind'] ); ?>">
+								<?php echo esc_html( $da_type['label'] ); ?>
+							</option>
+						<?php endforeach; ?>
+					</select>
+					<small class="da-hint" data-da-builder-hint><?php echo esc_html( $link_types ? reset( $link_types )['hint'] : '' ); ?></small>
+				</div>
+
+				<div class="da-field da-combo" data-da-builder-search>
+					<label for="da-builder-search"><?php esc_html_e( 'Find it by name', 'directorist-affiliate' ); ?></label>
+					<input
+						id="da-builder-search"
+						type="text"
+						autocomplete="off"
+						role="combobox"
+						aria-expanded="false"
+						aria-autocomplete="list"
+						aria-controls="da-builder-results"
+						placeholder="<?php esc_attr_e( 'Start typing a title…', 'directorist-affiliate' ); ?>"
+					/>
+					<ul class="da-combo-list" id="da-builder-results" role="listbox" hidden></ul>
+					<small class="da-hint" data-da-builder-status role="status" aria-live="polite"></small>
+				</div>
+
+				<div class="da-field" data-da-builder-custom hidden>
+					<label for="da-builder-url"><?php esc_html_e( 'Paste the address', 'directorist-affiliate' ); ?></label>
+					<input id="da-builder-url" type="url" autocomplete="off" placeholder="<?php echo esc_attr( home_url( '/some-page/' ) ); ?>" />
+					<small class="da-hint" data-da-builder-custom-status role="status" aria-live="polite"><?php esc_html_e( 'Only addresses on this website can be tracked.', 'directorist-affiliate' ); ?></small>
+				</div>
+			</div>
+
+			<div class="da-copyfield" data-da-builder-output hidden>
+				<label class="da-sr" for="directorist-affiliate-built-link"><?php esc_html_e( 'Your referral link', 'directorist-affiliate' ); ?></label>
+				<input id="directorist-affiliate-built-link" type="text" readonly value="" onfocus="this.select();" />
 				<button type="button" class="da-btn da-btn--copy directorist-affiliate-copy" data-target="directorist-affiliate-built-link" data-copied-label="<?php esc_attr_e( 'Copied', 'directorist-affiliate' ); ?>">
 					<?php esc_html_e( 'Copy', 'directorist-affiliate' ); ?>
 				</button>
 			</div>
+
+			<?php if ( ! empty( $link_targets ) ) : ?>
+				<div class="da-quick">
+					<span class="da-share-label"><?php esc_html_e( 'Quick links', 'directorist-affiliate' ); ?></span>
+					<?php foreach ( $link_targets as $target_url => $target_label ) : ?>
+						<button type="button" class="da-chip" data-da-quick-link="<?php echo esc_url( $target_url ); ?>"><?php echo esc_html( $target_label ); ?></button>
+					<?php endforeach; ?>
+				</div>
+			<?php endif; ?>
+
+			<noscript>
+				<p class="da-muted"><?php esc_html_e( 'The link builder needs JavaScript. You can still add your referral code to any address by appending it manually.', 'directorist-affiliate' ); ?></p>
+			</noscript>
 		</section>
 	<?php endif; ?>
 

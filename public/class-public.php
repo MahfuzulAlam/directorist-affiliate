@@ -61,6 +61,19 @@ final class Directorist_Affiliate_Public {
 			)
 		);
 
+		// Registered, not enqueued: only the dashboard shortcode pulls this in,
+		// so the link builder never loads on the rest of the site.
+		wp_register_script(
+			'directorist-affiliate-link-builder',
+			DIRECTORIST_AFFILIATE_URL . 'assets/js/link-builder.js',
+			array(),
+			DIRECTORIST_AFFILIATE_VERSION,
+			array(
+				'in_footer' => true,
+				'strategy'  => 'defer',
+			)
+		);
+
 		wp_localize_script(
 			'directorist-affiliate',
 			'directoristAffiliate',

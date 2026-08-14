@@ -275,7 +275,7 @@ Add `[directorist_affiliate_dashboard]` to a page — and/or rely on the **Affil
 
 - **Their referral link, front and centre** — with a **Copy** button, one-tap sharing to WhatsApp, X, Facebook or email, and (on phones) the device's own share sheet. Underneath, a plain sentence telling them how long a click stays credited to them.
 - **"Ready to be paid" as the headline figure**, followed by pending, paid-to-date and traffic. If you have set a **minimum payout**, a progress bar shows how close they are and exactly how much more they need — this is the question affiliates ask most often, so it is answered without them having to write to you.
-- **Link builder** — a dropdown of key destinations (Home, Add Listing, All Listings, Checkout); picking one instantly produces the ready-to-share link with their code attached.
+- **Link builder** — this is where affiliates promote something specific. They pick what they're linking to (**Page, Post, Listing, Category, Location** or **Custom link**), then start typing a name; matching items appear in a list and choosing one produces the finished referral link. Custom link lets them paste any address on your site — links to other websites are refused, because a referral can only be tracked on your own domain. The four original shortcuts (Home, Add Listing, All Listings, Checkout) remain as one-click **Quick links**.
 - **Activity** — referrals and payouts in one card, switched with a tab rather than stacked, so the page stays short.
 - **How you get paid** — their payout email, referral code, your minimum, and your payout instructions.
 
@@ -284,6 +284,8 @@ Sharing works on any URL: `?ref=CODE` can be appended to the homepage, a listing
 > ⚠️ **Note for affiliates:** self-referrals don't count (the plugin blocks them). If a visitor clicks two different affiliate links, whichever wins depends on your **Attribution model** setting — first click by default.
 
 **If suspended or rejected:** a banner explains the situation instead of showing a link, and no new referrals are tracked. Commissions already earned stay visible in their history.
+
+> 💡 **Note:** searches match the **title only** and show at most 10 results, so tell affiliates to search by a word they know is in the name. Only published content appears — drafts and private pages are never offered.
 
 > 💡 **Tip for developers:** the block picks up your theme's font automatically and renders light by default. To match your brand colour, set `--da-accent` on `.directorist-affiliate-wrap` in your theme's CSS. If your theme is dark, add the class `da-dark` to the page body (or the wrapper) and the block switches to a dark palette — it deliberately ignores the visitor's OS dark-mode setting, since that would otherwise put a dark panel on a light page.
 

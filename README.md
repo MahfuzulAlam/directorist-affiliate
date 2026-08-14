@@ -6,7 +6,7 @@ Affiliate tracking and fixed-commission referral system for [Directorist](https:
 
 | Item | Value |
 | --- | --- |
-| Version | 1.5.0 (plugin) / 0.2.0 (DB schema) |
+| Version | 1.6.0 (plugin) / 0.2.0 (DB schema) |
 | Author | [wpXplore](https://wpxplore.com) |
 | Website | https://wpxplore.com/tools/directorist-affiliate/ |
 | Requires | WordPress 6.3+, PHP 7.4+ |
@@ -53,6 +53,7 @@ directorist-affiliate/
 ├── includes/
 │   ├── class-autoloader.php             # Classmap autoloader (lazy class loading)
 │   ├── class-date-range.php             # Date-range presets → MySQL datetime bounds
+│   ├── class-link-search.php            # Link builder: content search + URL validation
 │   ├── class-plugin.php                 # Service container / dependency checks
 │   ├── class-activator.php              # dbDelta table creation + default options
 │   ├── class-deactivator.php            # flush_rewrite_rules only
@@ -224,12 +225,31 @@ Tab rendering lives in `Directorist_Affiliate_Admin`; all mutations live in `Dir
 **Shortcodes**
 
 - `[directorist_affiliate_registration]` — Application form opening with a **"What you earn" panel built from live settings** (`Commission::program_terms()` — only events that are enabled *and* whose dependency is active, plus the cookie duration), so applicants can see the offer before committing. Fields are grouped into *About you* / *How you will promote us* / *Getting paid*, with an invisible **honeypot anti-spam field** (bot submissions are silently discarded). For visitors who aren't logged in it **creates a WordPress account** via the shared `Affiliate::register_user()` helper (username derived from the email local-part, random password, standard new-user email). If the email already belongs to an account, it asks them to log in first. One application per user.
-- `[directorist_affiliate_dashboard]` — For logged-in affiliates. Built around the three questions an affiliate actually has: **share block** (referral link with copy button, WhatsApp/X/Facebook/email share links, native share sheet where the device offers one, and how long a click stays credited); **stat tiles** led by *Ready to be paid* with a **progress bar toward the payout minimum** and how much is still to go, then pending, paid-to-date and traffic with conversion rate; a **link builder** for deep links; an **Activity** card whose Referrals / Payouts panels switch via a segmented control (both render stacked without JavaScript); and a *How you get paid* card with payout email, referral code and minimum. Status-specific banners cover pending, suspended, and rejected accounts.
+- `[directorist_affiliate_dashboard]` — For logged-in affiliates. Built around the three questions an affiliate actually has: **share block** (referral link with copy button, WhatsApp/X/Facebook/email share links, native share sheet where the device offers one, and how long a click stays credited); **stat tiles** led by *Ready to be paid* with a **progress bar toward the payout minimum** and how much is still to go, then pending, paid-to-date and traffic with conversion rate; a **link builder** (see below); an **Activity** card whose Referrals / Payouts panels switch via a segmented control (both render stacked without JavaScript); and a *How you get paid* card with payout email, referral code and minimum. Status-specific banners cover pending, suspended, and rejected accounts.
 - `[directorist_affiliate_link page="add-listing" text="Add your business"]` — Renders the current affiliate's referral link to a named Directorist page (`home`, `add-listing`, `all-listings`, `dashboard`, `checkout`) or an explicit same-site `url`. Outputs nothing for visitors who are not approved affiliates.
 
 **Directorist dashboard tab** — The same dashboard renders inside Directorist's user dashboard as an "Affiliate" tab (icon `las la-handshake`) via the `directorist_dashboard_tabs` filter.
 
 The registration shortcode also respects the application gates: it shows a "closed" notice when `enable_applications` is off and a login prompt when `applications_require_login` is on.
+
+### Link builder
+
+The dashboard builder resolves a referral link to anything on the site. A type dropdown (`Directorist_Affiliate_Link_Search::types()`) offers **Page, Post, Listing, Category, Location, Custom link**; the Directorist entries drop out automatically when the post type or taxonomy is not registered, so it never offers a search that cannot return anything.
+
+Picking a content type reveals a title search; picking Custom link reveals a URL field instead. Both are backed by AJAX:
+
+| Action | Input | Returns |
+| --- | --- | --- |
+| `directorist_affiliate_search_content` | `type`, `term` | Up to 10 `{id, title, url, link}` matches |
+| `directorist_affiliate_custom_link` | `url` | The validated referral `link`, or a 400 with the reason |
+
+Both go through `guard_affiliate()`: nonce (`directorist_affiliate_link_builder`) **and** an approved affiliate record — there is no `nopriv` registration. **The referral code always comes from the affiliate's database row**, never from the request, so a tampered payload cannot mint a link for someone else.
+
+Searches match **titles only** (`posts_search` filtered for the duration of one query; taxonomies use `name__like`), because an affiliate is looking for something they can already name and body-copy matches are noise. Terms shorter than 2 characters are never queried, terms are capped at 100 characters, and results are limited to published, non-password-protected content.
+
+Custom URLs are validated server-side, since only the server knows what counts as "on this site": the host must match `home_url()` (ignoring `www.`), the scheme must be http(s), and `/wp-admin` and `wp-login.php` are refused. Bare paths (`/pricing/`) and scheme-less hosts are resolved rather than rejected. Every refusal explains itself.
+
+The builder's JavaScript lives in its own file (`assets/js/link-builder.js`) enqueued **only by the dashboard shortcode, and only for approved affiliates** — it never loads elsewhere on the site. The combobox implements the ARIA pattern (arrow keys, Enter, Escape), debounces at 300ms, and aborts superseded requests so a slow earlier search cannot overwrite a newer one.
 
 **Existing affiliates are redirected to their dashboard.** A logged-in user who already has an affiliate record and opens a page containing `[directorist_affiliate_registration]` is sent to the dashboard instead of being shown a form they cannot use. The redirect runs on `template_redirect` (priority 5) — a shortcode renders inside `the_content`, by which point headers are already sent — and bails on any of: no affiliate record, a POST in flight, a page that also hosts the dashboard shortcode, or no dashboard destination. The destination is `dashboard_page` if set, else Directorist's own user dashboard (which carries the Affiliate tab), and is filterable via `directorist_affiliate_dashboard_url`. When no destination exists the form falls back to an "already applied" notice, linking to the dashboard when one is known.
 
@@ -315,11 +335,29 @@ Stored in one option, `directorist_affiliate_settings` (autoload off):
 
 Actions: `directorist_affiliate_created( $affiliate_id, $status )`, `directorist_affiliate_status_changed( $affiliate_id, $status )`, `directorist_affiliate_referral_created( $referral_id, $affiliate_id, $type )`, `directorist_affiliate_referral_reversed( $referral_id, $new_status, $order_status )`, `directorist_affiliate_payout_recorded( $payout_id, $affiliate_id, $amount, $referral_ids )`.
 
-Filters: `directorist_affiliate_dashboard_url( $url )` (where existing affiliates are sent), `directorist_affiliate_program_terms( $terms )`, `directorist_affiliate_should_track( $should_track, $code )` (veto tracking, e.g. before cookie consent), `directorist_affiliate_visit_dedupe_window( $seconds )`, `directorist_affiliate_registration_commission( $amount )`, `directorist_affiliate_listing_commission( $amount, $trigger )`, `directorist_affiliate_plan_commission( $amount, $order_total )`, `directorist_affiliate_featured_commission( $amount, $order_total )`, `directorist_affiliate_link_targets( $targets, $code )` (destinations offered by the dashboard link builder).
+Filters: `directorist_affiliate_link_types( $types )` (content types in the link builder), `directorist_affiliate_dashboard_url( $url )` (where existing affiliates are sent), `directorist_affiliate_program_terms( $terms )`, `directorist_affiliate_should_track( $should_track, $code )` (veto tracking, e.g. before cookie consent), `directorist_affiliate_visit_dedupe_window( $seconds )`, `directorist_affiliate_registration_commission( $amount )`, `directorist_affiliate_listing_commission( $amount, $trigger )`, `directorist_affiliate_plan_commission( $amount, $order_total )`, `directorist_affiliate_featured_commission( $amount, $order_total )`, `directorist_affiliate_link_targets( $targets, $code )` (destinations offered by the dashboard link builder).
 
 Usage examples are in [DOCUMENTATION.md](DOCUMENTATION.md#developer-reference).
 
 ## Changelog
+
+### 1.6.0 — 2026-08-14
+
+**Link builder rebuilt.** It previously offered four fixed destinations; it now reaches anything on the site.
+
+- A type dropdown — **Page, Post, Listing, Category, Location, Custom link** — with a plain-language description under it that updates as you choose, and a tooltip on the label for the longer explanation. Directorist types disappear automatically when the post type or taxonomy is not registered.
+- Choosing a content type reveals a **search-as-you-type field** returning up to 10 published matches, each showing its title and URL. Matching is on **title only** — an affiliate is looking for something they can already name, so body-copy hits are noise. Terms under 2 characters are never queried.
+- The list is a proper ARIA combobox: arrow keys move, Enter selects, Escape closes, and the result count is announced to screen readers. Requests debounce at 300ms and supersede each other, so a slow early search can never overwrite a newer one.
+- **Custom link** accepts any address on this site and refuses everything else, because a referral cookie cannot be set on another domain. Bare paths (`/pricing/`) and scheme-less hosts are resolved rather than rejected; `/wp-admin` and `wp-login.php` are refused; every refusal says why.
+- The original four destinations remain as one-click **Quick links**.
+
+**Security**
+- Two new AJAX endpoints, both authenticated-only (no `nopriv`), each requiring a nonce **and** an approved affiliate record. **The referral code is always read from the affiliate's database row**, never from the request, so a tampered payload cannot mint a link for another affiliate.
+- Custom URLs are validated server-side; the client never decides what counts as on-site.
+- Search terms are capped at 100 characters, `LIKE` wildcards are escaped, and only published, non-password-protected content is returned.
+
+**Performance**
+- The builder ships as its own JavaScript file, enqueued **only by the dashboard shortcode and only for approved affiliates**. It does not load anywhere else on the site.
 
 ### 1.5.0 — 2026-08-13
 

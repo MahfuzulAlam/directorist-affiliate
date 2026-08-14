@@ -41,6 +41,93 @@ final class Directorist_Affiliate_Ajax {
 		add_action( 'wp_ajax_directorist_affiliate_add_affiliate', array( $this, 'add_affiliate' ) );
 		add_action( 'wp_ajax_directorist_affiliate_save_settings', array( $this, 'save_settings' ) );
 		add_action( 'wp_ajax_directorist_affiliate_mark_paid', array( $this, 'mark_paid' ) );
+
+		// Link builder — logged-in affiliates only, so no nopriv counterpart.
+		add_action( 'wp_ajax_directorist_affiliate_search_content', array( $this, 'search_content' ) );
+		add_action( 'wp_ajax_directorist_affiliate_custom_link', array( $this, 'custom_link' ) );
+	}
+
+	/**
+	 * Link builder: search published content of one type by title.
+	 *
+	 * @return void
+	 */
+	public function search_content(): void {
+		$affiliate = $this->guard_affiliate( 'directorist_affiliate_link_builder' );
+
+		$type = isset( $_POST['type'] ) ? sanitize_key( wp_unslash( $_POST['type'] ) ) : '';
+		$term = isset( $_POST['term'] ) ? sanitize_text_field( wp_unslash( $_POST['term'] ) ) : '';
+
+		if ( ! $this->plugin->link_search->is_valid_type( $type ) ) {
+			wp_send_json_error( array( 'message' => __( 'Choose what you want to link to.', 'directorist-affiliate' ) ), 400 );
+		}
+
+		// Cap the term so a pathological string never reaches the query.
+		$results = $this->plugin->link_search->search( $type, mb_substr( $term, 0, 100 ), (string) $affiliate->referral_code );
+
+		wp_send_json_success(
+			array(
+				'results' => $results,
+				'message' => $results
+					? ''
+					: __( 'Nothing matched. Try a different word from the title.', 'directorist-affiliate' ),
+			)
+		);
+	}
+
+	/**
+	 * Link builder: validate a hand-typed URL and return its referral link.
+	 *
+	 * @return void
+	 */
+	public function custom_link(): void {
+		$affiliate = $this->guard_affiliate( 'directorist_affiliate_link_builder' );
+
+		$url    = isset( $_POST['url'] ) ? esc_url_raw( wp_unslash( $_POST['url'] ) ) : '';
+		$result = $this->plugin->link_search->build_custom_link( $url, (string) $affiliate->referral_code );
+
+		if ( ! $result['valid'] ) {
+			wp_send_json_error( array( 'message' => $result['message'] ), 400 );
+		}
+
+		wp_send_json_success(
+			array(
+				'link' => $result['link'],
+				'url'  => $result['url'],
+			)
+		);
+	}
+
+	/**
+	 * Verify nonce and approved-affiliate status for front-end endpoints.
+	 *
+	 * Sends a JSON error and exits on failure; returns the affiliate row so
+	 * the referral code is always taken from the database, never the request.
+	 *
+	 * @param string $action Nonce action.
+	 *
+	 * @return object Approved affiliate row.
+	 */
+	private function guard_affiliate( string $action ): object {
+		if ( ! check_ajax_referer( $action, 'nonce', false ) ) {
+			wp_send_json_error(
+				array( 'message' => __( 'Security check failed. Please reload the page and try again.', 'directorist-affiliate' ) ),
+				403
+			);
+		}
+
+		$affiliate = is_user_logged_in()
+			? $this->plugin->affiliate->get_by_user_id( get_current_user_id() )
+			: null;
+
+		if ( ! $affiliate || 'approved' !== $affiliate->status ) {
+			wp_send_json_error(
+				array( 'message' => __( 'Only approved affiliates can build referral links.', 'directorist-affiliate' ) ),
+				403
+			);
+		}
+
+		return $affiliate;
 	}
 
 	/**

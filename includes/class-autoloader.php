@@ -20,6 +20,7 @@ final class Directorist_Affiliate_Autoloader {
 	private const CLASSMAP = array(
 		'Directorist_Affiliate_Settings'                => 'includes/class-settings.php',
 		'Directorist_Affiliate_Date_Range'              => 'includes/class-date-range.php',
+		'Directorist_Affiliate_Link_Search'             => 'includes/class-link-search.php',
 		'Directorist_Affiliate_Affiliate'               => 'includes/class-affiliate.php',
 		'Directorist_Affiliate_Referral'                => 'includes/class-referral.php',
 		'Directorist_Affiliate_Tracking'                => 'includes/class-tracking.php',
