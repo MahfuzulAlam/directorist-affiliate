@@ -45,6 +45,47 @@ final class Directorist_Affiliate_Ajax {
 		// Link builder — logged-in affiliates only, so no nopriv counterpart.
 		add_action( 'wp_ajax_directorist_affiliate_search_content', array( $this, 'search_content' ) );
 		add_action( 'wp_ajax_directorist_affiliate_custom_link', array( $this, 'custom_link' ) );
+		add_action( 'wp_ajax_directorist_affiliate_request_payout', array( $this, 'request_payout' ) );
+	}
+
+	/**
+	 * Affiliate asks to be paid their approved commissions.
+	 *
+	 * @return void
+	 */
+	public function request_payout(): void {
+		$affiliate = $this->guard_affiliate( 'directorist_affiliate_request_payout', 'directorist_affiliate_nonce' );
+
+		$email = isset( $_POST['payout_email'] ) ? sanitize_email( wp_unslash( $_POST['payout_email'] ) ) : '';
+		$note  = isset( $_POST['note'] ) ? sanitize_textarea_field( wp_unslash( $_POST['note'] ) ) : '';
+
+		if ( ! is_email( $email ) ) {
+			wp_send_json_error( array( 'message' => __( 'Enter a valid email address for the payment.', 'directorist-affiliate' ) ), 400 );
+		}
+
+		$result = $this->plugin->payout->request(
+			$affiliate,
+			$email,
+			$note,
+			(float) $this->plugin->settings->get( 'minimum_payout', '0.00' )
+		);
+
+		if ( ! $result['success'] ) {
+			wp_send_json_error( array( 'message' => $result['message'] ), 400 );
+		}
+
+		// Keep the affiliate's payout email in step with where they asked to be paid.
+		if ( $email !== $affiliate->payout_email ) {
+			$this->plugin->affiliate->update( (int) $affiliate->id, array( 'payout_email' => $email ) );
+		}
+
+		$payout = $this->plugin->payout->get( $result['payout_id'] );
+
+		if ( $payout ) {
+			$this->plugin->email->payout_requested( $affiliate, $payout );
+		}
+
+		wp_send_json_success( array( 'message' => $result['message'] ) );
 	}
 
 	/**
@@ -105,11 +146,12 @@ final class Directorist_Affiliate_Ajax {
 	 * the referral code is always taken from the database, never the request.
 	 *
 	 * @param string $action Nonce action.
+	 * @param string $field Request field holding the nonce.
 	 *
 	 * @return object Approved affiliate row.
 	 */
-	private function guard_affiliate( string $action ): object {
-		if ( ! check_ajax_referer( $action, 'nonce', false ) ) {
+	private function guard_affiliate( string $action, string $field = 'nonce' ): object {
+		if ( ! check_ajax_referer( $action, $field, false ) ) {
 			wp_send_json_error(
 				array( 'message' => __( 'Security check failed. Please reload the page and try again.', 'directorist-affiliate' ) ),
 				403
@@ -122,7 +164,7 @@ final class Directorist_Affiliate_Ajax {
 
 		if ( ! $affiliate || 'approved' !== $affiliate->status ) {
 			wp_send_json_error(
-				array( 'message' => __( 'Only approved affiliates can build referral links.', 'directorist-affiliate' ) ),
+				array( 'message' => __( 'This is only available to approved affiliates.', 'directorist-affiliate' ) ),
 				403
 			);
 		}

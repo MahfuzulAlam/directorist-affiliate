@@ -589,6 +589,29 @@ final class Directorist_Affiliate_Admin {
 			'plugin'         => $this->plugin,
 		);
 
+		if ( 'requests' === $section ) {
+			$requests = $this->plugin->payout->list(
+				array(
+					'status' => 'requested',
+					'limit'  => self::PER_PAGE,
+				)
+			);
+
+			$this->render(
+				'payouts-requests.php',
+				array_merge(
+					$context,
+					array(
+						'requests'       => $requests,
+						'affiliates_map' => $this->plugin->affiliate->get_many( wp_list_pluck( $requests, 'affiliate_id' ) ),
+						'total'          => $this->plugin->payout->count( array( 'status' => 'requested' ) ),
+					)
+				)
+			);
+
+			return;
+		}
+
 		if ( 'history' === $section ) {
 			$filters = $this->request_filters( array( 'email' ) );
 			$paged   = $this->current_paged();
@@ -598,6 +621,8 @@ final class Directorist_Affiliate_Admin {
 				'email'        => $filters['email'],
 				'date_from'    => $filters['date_from'],
 				'date_to'      => $filters['date_to'],
+				// Open requests live on their own tab.
+				'status__in'   => array( 'paid', 'rejected' ),
 			);
 
 			$payouts = $this->plugin->payout->list(
@@ -657,9 +682,12 @@ final class Directorist_Affiliate_Admin {
 	 * @return array<string,string>
 	 */
 	private function payout_sections(): array {
+		$pending = $this->plugin->payout->count( array( 'status' => 'requested' ) );
+
 		return array(
-			'unpaid'  => __( 'Unpaid approved commissions', 'directorist-affiliate' ),
-			'history' => __( 'Payout history', 'directorist-affiliate' ),
+			'requests' => __( 'Requests', 'directorist-affiliate' ) . ( $pending ? ' (' . number_format_i18n( $pending ) . ')' : '' ),
+			'unpaid'   => __( 'Unpaid approved commissions', 'directorist-affiliate' ),
+			'history'  => __( 'Payout history', 'directorist-affiliate' ),
 		);
 	}
 
@@ -669,9 +697,14 @@ final class Directorist_Affiliate_Admin {
 	 * @return string
 	 */
 	private function current_payout_section(): string {
-		$section = isset( $_GET['section'] ) ? sanitize_key( wp_unslash( $_GET['section'] ) ) : 'unpaid'; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+		$section = isset( $_GET['section'] ) ? sanitize_key( wp_unslash( $_GET['section'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 
-		return array_key_exists( $section, $this->payout_sections() ) ? $section : 'unpaid';
+		if ( array_key_exists( $section, $this->payout_sections() ) ) {
+			return $section;
+		}
+
+		// Land on outstanding requests when there are any to deal with.
+		return $this->plugin->payout->count( array( 'status' => 'requested' ) ) ? 'requests' : 'unpaid';
 	}
 
 	/**

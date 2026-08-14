@@ -1333,3 +1333,7 @@ a.directorist-affiliate-subtab-link.is-active {
 		transform: none;
 	}
 }
+
+/* Payout request states reuse the referral badge palette. */
+.directorist-affiliate-badge.is-requested { background: var(--da-warning-bg); color: var(--da-warning); }
+.directorist-affiliate-badge.is-rejected { background: var(--da-danger-bg); color: var(--da-danger); }

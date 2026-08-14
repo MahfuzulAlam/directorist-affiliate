@@ -728,6 +728,112 @@
 	border-top: 1px solid var(--da-line);
 }
 
+/* ------------------------------------------------------- payout requesting */
+
+.da-payout-head {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 12px;
+	align-items: center;
+	justify-content: space-between;
+}
+
+.da-request-state {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 8px 12px;
+	align-items: center;
+	padding: 13px 16px;
+	border: 1px solid var(--da-line);
+	border-radius: var(--da-radius-sm);
+	background: var(--da-sunken);
+}
+
+.da-request-state p { color: var(--da-ink-soft); font-size: .875rem; }
+
+.da-badge.is-requested { background: var(--da-warn-soft); color: var(--da-warn); }
+
+.da-request-amount {
+	display: flex;
+	flex-direction: column;
+	gap: 3px;
+	padding: 16px 18px;
+	border: 1px solid var(--da-line);
+	border-radius: var(--da-radius-sm);
+	background: linear-gradient(180deg, var(--da-accent-soft), transparent 65%), var(--da-surface);
+}
+
+.da-request-amount .da-stat-value { color: var(--da-accent); font-size: 1.75rem; }
+
+/* Modal — native <dialog>, so focus trapping and Escape come from the browser. */
+
+.directorist-affiliate-wrap .da-modal,
+dialog.da-modal {
+	width: min(520px, calc(100vw - 32px));
+	padding: 0;
+	border: 1px solid var(--da-line);
+	border-radius: var(--da-radius);
+	background: var(--da-surface);
+	color: var(--da-ink);
+	box-shadow: 0 24px 64px -16px rgba(16, 24, 40, .4);
+}
+
+dialog.da-modal::backdrop { background: rgba(16, 24, 40, .45); }
+
+dialog.da-modal[open] { animation: da-modal-in .18s cubic-bezier(.4, 0, .2, 1); }
+
+@keyframes da-modal-in {
+	from { opacity: 0; transform: translateY(8px) scale(.98); }
+	to { opacity: 1; transform: none; }
+}
+
+.da-modal-head {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 16px;
+	padding: 18px 22px;
+	border-bottom: 1px solid var(--da-line);
+}
+
+.da-modal-head h2 { font-size: 1.0625rem; }
+
+.directorist-affiliate-wrap .da-modal-close,
+dialog.da-modal .da-modal-close {
+	width: 32px;
+	height: 32px;
+	padding: 0;
+	border: 0;
+	border-radius: 8px;
+	background: transparent;
+	color: var(--da-ink-soft);
+	font-size: 22px;
+	line-height: 1;
+	cursor: pointer;
+}
+
+dialog.da-modal .da-modal-close:hover { background: var(--da-sunken); color: var(--da-ink); }
+
+dialog.da-modal .da-modal-form {
+	gap: 16px;
+	padding: 20px 22px 22px;
+	border: 0;
+	border-radius: 0;
+	background: none;
+	box-shadow: none;
+}
+
+.da-modal-actions {
+	display: flex;
+	justify-content: flex-end;
+	gap: 8px;
+	padding-top: 16px;
+	border-top: 1px solid var(--da-line);
+}
+
+/* Notices injected by the AJAX handler sit above the modal header. */
+dialog.da-modal > .directorist-affiliate-js-notice { margin: 16px 22px -6px; }
+
 /* ---------------------------------------------------------------- buttons */
 
 .directorist-affiliate-wrap .da-btn {
@@ -759,6 +865,21 @@
 
 .directorist-affiliate-wrap .da-btn:focus-visible { outline: 2px solid var(--da-accent); outline-offset: 2px; }
 .directorist-affiliate-wrap .da-btn[disabled] { opacity: .6; cursor: progress; transform: none; box-shadow: none; }
+
+.directorist-affiliate-wrap .da-btn--ghost {
+	background: var(--da-surface);
+	border-color: var(--da-line-strong);
+	color: var(--da-ink-soft);
+}
+
+.directorist-affiliate-wrap .da-btn--ghost:hover,
+dialog.da-modal .da-btn--ghost:hover {
+	background: var(--da-sunken);
+	color: var(--da-ink);
+	filter: none;
+	box-shadow: none;
+	transform: none;
+}
 
 .directorist-affiliate-wrap .da-btn--copy {
 	background: var(--da-surface);

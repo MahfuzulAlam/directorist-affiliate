@@ -280,8 +280,62 @@ $da_shortfall = max( 0, $minimum_payout - (float) $approved_commission );
 		</div>
 	</section>
 
+	<?php
+	$da_can_request = $da_approved
+		&& empty( $open_request )
+		&& (float) $approved_commission > 0
+		&& ( $minimum_payout <= 0 || (float) $approved_commission >= $minimum_payout );
+	?>
 	<section class="da-card da-payout-info">
-		<h2><?php esc_html_e( 'How you get paid', 'directorist-affiliate' ); ?></h2>
+		<div class="da-payout-head">
+			<h2><?php esc_html_e( 'How you get paid', 'directorist-affiliate' ); ?></h2>
+			<?php if ( $da_approved ) : ?>
+				<?php if ( $da_can_request ) : ?>
+					<button type="button" class="da-btn" data-da-modal-open="directorist-affiliate-payout-modal">
+						<?php esc_html_e( 'Request payout', 'directorist-affiliate' ); ?>
+					</button>
+				<?php else : ?>
+					<button type="button" class="da-btn" disabled aria-describedby="da-payout-blocked">
+						<?php esc_html_e( 'Request payout', 'directorist-affiliate' ); ?>
+					</button>
+				<?php endif; ?>
+			<?php endif; ?>
+		</div>
+
+		<?php if ( ! empty( $open_request ) ) : ?>
+			<div class="da-request-state" id="da-payout-blocked">
+				<span class="da-badge is-requested"><?php esc_html_e( 'Requested', 'directorist-affiliate' ); ?></span>
+				<p>
+					<?php
+					echo esc_html(
+						sprintf(
+							/* translators: 1: requested amount, 2: date requested. */
+							__( 'You asked for %1$s on %2$s. We will email you once it has been processed.', 'directorist-affiliate' ),
+							Directorist_Affiliate_Commission::format_money( (float) $open_request->amount ),
+							mysql2date( get_option( 'date_format' ), $open_request->date_created )
+						)
+					);
+					?>
+				</p>
+			</div>
+		<?php elseif ( $da_approved && ! $da_can_request ) : ?>
+			<p class="da-muted" id="da-payout-blocked">
+				<?php if ( (float) $approved_commission <= 0 ) : ?>
+					<?php esc_html_e( 'You can request a payout once you have approved commissions waiting.', 'directorist-affiliate' ); ?>
+				<?php else : ?>
+					<?php
+					echo esc_html(
+						sprintf(
+							/* translators: %s: minimum payout amount. */
+							__( 'You can request a payout once your approved balance reaches %s.', 'directorist-affiliate' ),
+							Directorist_Affiliate_Commission::format_money( $minimum_payout )
+						)
+					);
+					?>
+				<?php endif; ?>
+			</p>
+		<?php endif; ?>
+
 		<dl class="da-deflist">
 			<div>
 				<dt><?php esc_html_e( 'Payout email', 'directorist-affiliate' ); ?></dt>
@@ -302,4 +356,39 @@ $da_shortfall = max( 0, $minimum_payout - (float) $approved_commission );
 			<p class="da-muted"><?php echo nl2br( esc_html( $payout_instructions ) ); ?></p>
 		<?php endif; ?>
 	</section>
+
+	<?php if ( $da_can_request ) : ?>
+		<dialog id="directorist-affiliate-payout-modal" class="da-modal" aria-labelledby="da-payout-modal-title">
+			<div class="da-modal-head">
+				<h2 id="da-payout-modal-title"><?php esc_html_e( 'Request a payout', 'directorist-affiliate' ); ?></h2>
+				<button type="button" class="da-modal-close" data-da-modal-close aria-label="<?php esc_attr_e( 'Close', 'directorist-affiliate' ); ?>">&times;</button>
+			</div>
+
+			<form method="post" class="da-form da-modal-form" data-da-ajax="directorist_affiliate_request_payout" data-da-success="reload">
+				<?php wp_nonce_field( 'directorist_affiliate_request_payout', 'directorist_affiliate_nonce' ); ?>
+
+				<div class="da-request-amount">
+					<span class="da-stat-label"><?php esc_html_e( 'Amount to be paid', 'directorist-affiliate' ); ?></span>
+					<span class="da-stat-value"><?php echo esc_html( Directorist_Affiliate_Commission::format_money( (float) $approved_commission ) ); ?></span>
+					<span class="da-stat-meta"><?php esc_html_e( 'Every approved commission in your balance right now.', 'directorist-affiliate' ); ?></span>
+				</div>
+
+				<div class="da-field">
+					<label for="da-request-email"><?php esc_html_e( 'Pay me at', 'directorist-affiliate' ); ?><span class="da-req" aria-hidden="true">*</span></label>
+					<input id="da-request-email" type="email" name="payout_email" required value="<?php echo esc_attr( $affiliate->payout_email ); ?>" />
+					<small class="da-hint"><?php esc_html_e( 'Changing this updates the payout email on your account.', 'directorist-affiliate' ); ?></small>
+				</div>
+
+				<div class="da-field">
+					<label for="da-request-note"><?php esc_html_e( 'Note (optional)', 'directorist-affiliate' ); ?></label>
+					<textarea id="da-request-note" name="note" rows="3" placeholder="<?php esc_attr_e( 'Anything the team should know about this payment…', 'directorist-affiliate' ); ?>"></textarea>
+				</div>
+
+				<div class="da-modal-actions">
+					<button type="button" class="da-btn da-btn--ghost" data-da-modal-close><?php esc_html_e( 'Cancel', 'directorist-affiliate' ); ?></button>
+					<button type="submit" class="da-btn"><?php esc_html_e( 'Send request', 'directorist-affiliate' ); ?></button>
+				</div>
+			</form>
+		</dialog>
+	<?php endif; ?>
 </div>

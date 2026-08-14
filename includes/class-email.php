@@ -113,6 +113,77 @@ final class Directorist_Affiliate_Email {
 	}
 
 	/**
+	 * Tell the admin an affiliate has asked to be paid.
+	 *
+	 * @param object $affiliate Affiliate row.
+	 * @param object $payout Payout row.
+	 *
+	 * @return void
+	 */
+	public function payout_requested( $affiliate, $payout ): void {
+		if ( ! absint( $this->settings->get( 'notify_admin_payout_request', 1 ) ) ) {
+			return;
+		}
+
+		wp_mail(
+			get_option( 'admin_email' ),
+			__( 'New affiliate payout request', 'directorist-affiliate' ),
+			sprintf(
+				/* translators: 1: affiliate name, 2: amount, 3: admin URL. */
+				__( "%1\$s has requested a payout of %2\$s.\n\nReview it here: %3\$s", 'directorist-affiliate' ),
+				Directorist_Affiliate_Plugin::instance()->affiliate->get_name( $affiliate ),
+				Directorist_Affiliate_Commission::format_money( (float) $payout->amount ),
+				Directorist_Affiliate_Admin::page_url( 'payouts', array( 'section' => 'requests' ) )
+			)
+		);
+	}
+
+	/**
+	 * Tell an affiliate what happened to their payout request.
+	 *
+	 * @param object $affiliate Affiliate row.
+	 * @param object $payout Payout row.
+	 * @param string $status New payout status.
+	 *
+	 * @return void
+	 */
+	public function payout_decision( $affiliate, $payout, string $status ): void {
+		if ( ! absint( $this->settings->get( 'notify_affiliate_payout', 1 ) ) ) {
+			return;
+		}
+
+		$email = $this->affiliate_email( $affiliate );
+
+		if ( ! $email ) {
+			return;
+		}
+
+		$amount = Directorist_Affiliate_Commission::format_money( (float) $payout->amount );
+
+		if ( 'paid' === $status ) {
+			$subject = __( 'Your payout has been sent', 'directorist-affiliate' );
+			$message = sprintf(
+				/* translators: %s: amount paid. */
+				__( 'Your payout of %s has been marked as paid.', 'directorist-affiliate' ),
+				$amount
+			);
+		} else {
+			$subject = __( 'Your payout request was declined', 'directorist-affiliate' );
+			$message = sprintf(
+				/* translators: %s: requested amount. */
+				__( 'Your payout request of %s was not approved. Your commissions remain in your balance.', 'directorist-affiliate' ),
+				$amount
+			);
+		}
+
+		if ( ! empty( $payout->notes ) ) {
+			$message .= "\n\n" . $payout->notes;
+		}
+
+		wp_mail( $email, $subject, $message );
+	}
+
+	/**
 	 * Get affiliate email.
 	 *
 	 * @param object $affiliate Affiliate row.

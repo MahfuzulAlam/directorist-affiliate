@@ -6,7 +6,7 @@ Affiliate tracking and fixed-commission referral system for [Directorist](https:
 
 | Item | Value |
 | --- | --- |
-| Version | 1.7.0 (plugin) / 0.2.0 (DB schema) |
+| Version | 1.8.0 (plugin) / 0.2.0 (DB schema) |
 | Author | [wpXplore](https://wpxplore.com) |
 | Website | https://wpxplore.com/tools/directorist-affiliate/ |
 | Requires | WordPress 6.3+, PHP 7.4+ |
@@ -14,7 +14,7 @@ Affiliate tracking and fixed-commission referral system for [Directorist](https:
 | Text domain | `directorist-affiliate` — fully translatable; POT template at `languages/directorist-affiliate.pot` |
 | Commission model | Fixed amounts for registration/listing events; **fixed or percentage of order total** for paid plan/featured orders; all filterable |
 | Revenue events | Pricing-plan purchases (requires Pricing Plans extension) and featured-listing purchases (requires Directorist monetization) — auto-disabled when the dependency is missing |
-| Payouts | Manual (recorded by admin; no gateway integration); per-affiliate minimum enforced on bulk payouts |
+| Payouts | Manual (recorded by admin; no gateway integration). Affiliates can **request** a payout from their dashboard; per-affiliate minimum enforced on both bulk payouts and requests |
 | Assets | One front-end stylesheet + one admin stylesheet + one vanilla JS file (AJAX forms, copy link, link builder, bulk select) |
 | Forms | All forms submit via AJAX (`admin-ajax.php`) with full no-JavaScript POST fallbacks |
 | User guide | [DOCUMENTATION.md](DOCUMENTATION.md) |
@@ -213,7 +213,7 @@ One tabbed **Affiliate** page registered as a submenu of the Directorist listing
 | `affiliates` | An **Add affiliate** button leads the filter bar and opens a native `<dialog>` **modal** (creates/reuses a WP user, can start as approved); affiliate detail card; filters (status, search across name/email/code/website, applied-date range); **paginated** table (20/page) with per-row Approve / Reject / Suspend links (nonce-protected; the action matching the current status is hidden) and referral/commission rollups from one grouped query. |
 | `referrals` | Filters: **affiliate, event type, status, and date range**; 20/page; **bulk actions** (Approve / Reject / Mark as paid) alongside per-row actions. "Mark paid" is **restricted to `approved` referrals** and always routes through the payout service so every payment leaves a payout record; other statuses get an error notice. |
 | `visits` | Filters: **affiliate, converted/not converted, and date range**; 20/page. Columns: affiliate + code, landing path, referring host, IP, timestamp, converted badge. |
-| `payouts` | Two sub-tabs (`&section=`). **Unpaid approved commissions** (`unpaid`, default): outstanding-balance toolbar, checkbox list with select-all → "Mark selected as paid" (grouped into one payout per affiliate, **skipping affiliates below the configured minimum payout** with a warning notice), and **Export approved payouts CSV** (up to 1,000 rows: affiliate_id, payout_email, referral_id, amount, date_created — cells starting with `=`/`+`/`-`/`@` are neutralized against spreadsheet formula injection). **Payout history** (`history`): filters by **affiliate, payout email, and date range** with a total-paid summary, 20/page, each row linking to that affiliate's referrals. |
+| `payouts` | Three sub-tabs (`&section=`). **Requests** (`requests`) — open claims from affiliates with **Mark paid** / **Reject**; it is the default landing section whenever any are outstanding, and the sub-tab label carries a count. **Unpaid approved commissions** (`unpaid`, default): outstanding-balance toolbar, checkbox list with select-all → "Mark selected as paid" (grouped into one payout per affiliate, **skipping affiliates below the configured minimum payout** with a warning notice), and **Export approved payouts CSV** (up to 1,000 rows: affiliate_id, payout_email, referral_id, amount, date_created — cells starting with `=`/`+`/`-`/`@` are neutralized against spreadsheet formula injection). **Payout history** (`history`): settled payouts only (`paid` + `rejected`, since open requests have their own tab), filtered by **affiliate, payout email, and date range** with a total-paid summary and a status column, 20/page. |
 | `settings` | The settings form below, organized into pill-style sub-tabs (General / Commissions / Payout / Notifications / Advanced) with toggle switches, inline field descriptions, and a **sticky save bar**. One form underneath — a single save submits every section (AJAX with POST fallback); JS-off renders the sections stacked. Sub-tab state is kept in the URL hash (`#da-general`); leaving with unsaved changes warns first. |
 
 Tab rendering lives in `Directorist_Affiliate_Admin`; all mutations live in `Directorist_Affiliate_Admin_Actions`, run through `admin_init`, are capability-checked (`manage_options`) and nonce-verified (`check_admin_referer`), then redirect back to the relevant tab with a success/error notice (or return JSON via the AJAX endpoints).
@@ -225,7 +225,7 @@ Tab rendering lives in `Directorist_Affiliate_Admin`; all mutations live in `Dir
 **Shortcodes**
 
 - `[directorist_affiliate_registration]` — Application form opening with a **"What you earn" panel built from live settings** (`Commission::program_terms()` — only events that are enabled *and* whose dependency is active, plus the cookie duration), so applicants can see the offer before committing. Fields are grouped into *About you* / *How you will promote us* / *Getting paid*, with an invisible **honeypot anti-spam field** (bot submissions are silently discarded). For visitors who aren't logged in it **creates a WordPress account** via the shared `Affiliate::register_user()` helper (username derived from the email local-part, random password, standard new-user email). If the email already belongs to an account, it asks them to log in first. One application per user.
-- `[directorist_affiliate_dashboard]` — For logged-in affiliates. Built around the three questions an affiliate actually has: **"Your referral link"** — one block combining the link, the builder and the share buttons (see below); **stat tiles** led by *Ready to be paid* with a **progress bar toward the payout minimum** and how much is still to go, then pending, paid-to-date and traffic with conversion rate;  an **Activity** card whose Referrals / Payouts panels switch via a segmented control (both render stacked without JavaScript); and a *How you get paid* card with payout email, referral code and minimum. Status-specific banners cover pending, suspended, and rejected accounts.
+- `[directorist_affiliate_dashboard]` — For logged-in affiliates. Built around the three questions an affiliate actually has: **"Your referral link"** — one block combining the link, the builder and the share buttons (see below); **stat tiles** led by *Ready to be paid* with a **progress bar toward the payout minimum** and how much is still to go, then pending, paid-to-date and traffic with conversion rate;  an **Activity** card whose Referrals / Payouts panels switch via a segmented control (both render stacked without JavaScript); and a *How you get paid* card with payout email, referral code, minimum, and a **Request payout** button. Status-specific banners cover pending, suspended, and rejected accounts.
 - `[directorist_affiliate_link page="add-listing" text="Add your business"]` — Renders the current affiliate's referral link to a named Directorist page (`home`, `add-listing`, `all-listings`, `dashboard`, `checkout`) or an explicit same-site `url`. Outputs nothing for visitors who are not approved affiliates.
 
 **Directorist dashboard tab** — The same dashboard renders inside Directorist's user dashboard as an "Affiliate" tab (icon `las la-handshake`) via the `directorist_dashboard_tabs` filter.
@@ -252,6 +252,22 @@ Custom URLs are validated server-side, since only the server knows what counts a
 The **Share via** buttons (WhatsApp, X, Facebook, email) are rebuilt in JavaScript whenever the link changes, so sharing always sends whatever was just built rather than the rendered home link. They are plain anchors, so they still work — pointed at the home referral link — without JavaScript.
 
 The builder's JavaScript lives in its own file (`assets/js/link-builder.js`) enqueued **only by the dashboard shortcode, and only for approved affiliates** — it never loads elsewhere on the site. The combobox implements the ARIA pattern (arrow keys, Enter, Escape), debounces at 300ms, and aborts superseded requests so a slow earlier search cannot overwrite a newer one.
+
+### Payout requests
+
+Affiliates claim their approved commissions from the dashboard rather than waiting to be noticed. **Request payout** opens a `<dialog>` modal showing the amount (server-rendered — never an editable field) and their payout email, and posts to `directorist_affiliate_request_payout` through the same `guard_affiliate()` gate as the link builder.
+
+The lifecycle is `requested → paid | rejected`, all on the existing `status` column, so **no schema change**:
+
+| Step | What happens |
+| --- | --- |
+| **Request** | Writes a `requested` payout row covering every currently-approved commission, recording their IDs. The referrals stay `approved` — no money has moved and the request may still be declined. One open request per affiliate. |
+| **Mark paid** | **Recalculates** the amount from the referrals that are *still* approved (a commission can be refunded between request and payment), flips those to `paid`, stores the corrected amount and covered IDs, and stamps `date_paid`. Refuses if nothing is payable any more. |
+| **Reject** | Marks the row `rejected` with a reason; the commissions stay in the affiliate's balance so they can request again. |
+
+Requesting is blocked — with the reason shown, not just a disabled button — when the affiliate is unapproved, has no approved balance, is below `minimum_payout`, or already has an open request. The amount and covered referrals are always derived server-side from the affiliate's own rows.
+
+Admin-initiated bulk payouts (Payouts → Unpaid) are unchanged and still write `paid` rows directly.
 
 **Existing affiliates are redirected to their dashboard.** A logged-in user who already has an affiliate record and opens a page containing `[directorist_affiliate_registration]` is sent to the dashboard instead of being shown a form they cannot use. The redirect runs on `template_redirect` (priority 5) — a shortcode renders inside `the_content`, by which point headers are already sent — and bails on any of: no affiliate record, a POST in flight, a page that also hosts the dashboard shortcode, or no dashboard destination. The destination is `dashboard_page` if set, else Directorist's own user dashboard (which carries the Affiliate tab), and is filterable via `directorist_affiliate_dashboard_url`. When no destination exists the form falls back to an "already applied" notice, linking to the dashboard when one is known.
 
@@ -342,6 +358,19 @@ Filters: `directorist_affiliate_link_types( $types )` (content types in the link
 Usage examples are in [DOCUMENTATION.md](DOCUMENTATION.md#developer-reference).
 
 ## Changelog
+
+### 1.8.0 — 2026-08-14
+
+**Affiliates can now request a payout** instead of waiting for the admin to notice their balance.
+
+- **Request payout** button in the dashboard's *How you get paid* card, opening a modal with the amount and payout email. Changing the email there updates it on their account.
+- Requesting is blocked, with the reason stated, when there is no approved balance, the balance is below the minimum payout, or a request is already open — one open request per affiliate.
+- New **Payouts → Requests** admin sub-tab with **Mark paid** and **Reject**. It becomes the default section whenever requests are outstanding, and the sub-tab label carries a count so pending claims are visible from the Payouts tab.
+- **The amount is recalculated when a request is paid**, from the commissions that are *still* approved. A commission refunded between request and payment is dropped rather than paid out, and the stored amount and covered IDs are corrected. If nothing remains payable the request cannot be paid, only rejected.
+- Rejecting leaves the commissions in the affiliate's balance, so they can request again.
+- Two new notification toggles: payout requested (to you) and payout decision (to the affiliate).
+- Payout history now shows a status column and lists settled payouts only, since open requests have their own tab.
+- Uses the existing `status` column, so there is **no database change** — `requested`, `paid` and `rejected` are the three payout statuses.
 
 ### 1.7.0 — 2026-08-14
 

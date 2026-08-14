@@ -59,6 +59,7 @@ final class Directorist_Affiliate_Admin_Actions {
 		$this->handle_affiliate_action();
 		$this->handle_referral_action();
 		$this->handle_referral_bulk();
+		$this->handle_payout_request_action();
 		$this->handle_payout_post();
 		$this->handle_export();
 	}
@@ -215,6 +216,58 @@ final class Directorist_Affiliate_Admin_Actions {
 		}
 
 		$this->redirect( 'referrals', array( 'directorist_affiliate_notice' => 'referral_bulk_updated' ) );
+	}
+
+	/**
+	 * Approve or reject an affiliate's payout request.
+	 *
+	 * @return void
+	 */
+	private function handle_payout_request_action(): void {
+		if ( empty( $_GET['directorist_payout_action'] ) || empty( $_GET['payout_id'] ) ) {
+			return;
+		}
+
+		$action    = sanitize_key( wp_unslash( $_GET['directorist_payout_action'] ) );
+		$payout_id = absint( $_GET['payout_id'] );
+
+		if ( ! in_array( $action, array( 'pay', 'reject' ), true ) ) {
+			return;
+		}
+
+		check_admin_referer( 'directorist_payout_action_' . $payout_id );
+
+		$payout = $this->plugin->payout->get( $payout_id );
+
+		if ( ! $payout ) {
+			$this->redirect( 'payouts', array( 'section' => 'requests', 'directorist_affiliate_notice' => 'payout_missing' ) );
+		}
+
+		$affiliate = $this->plugin->affiliate->get( (int) $payout->affiliate_id );
+
+		if ( 'pay' === $action ) {
+			$result = $this->plugin->payout->fulfil( $payout_id );
+
+			if ( $result['success'] && $affiliate ) {
+				$this->plugin->email->payout_decision( $affiliate, $this->plugin->payout->get( $payout_id ), 'paid' );
+			}
+
+			$this->redirect(
+				'payouts',
+				array(
+					'section'                      => 'requests',
+					'directorist_affiliate_notice' => $result['success'] ? 'payout_paid' : 'payout_unpayable',
+				)
+			);
+		}
+
+		$note = __( 'Rejected by an administrator.', 'directorist-affiliate' );
+
+		if ( $this->plugin->payout->reject( $payout_id, $note ) && $affiliate ) {
+			$this->plugin->email->payout_decision( $affiliate, $this->plugin->payout->get( $payout_id ), 'rejected' );
+		}
+
+		$this->redirect( 'payouts', array( 'section' => 'requests', 'directorist_affiliate_notice' => 'payout_rejected' ) );
 	}
 
 	/**

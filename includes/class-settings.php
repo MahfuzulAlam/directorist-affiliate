@@ -47,6 +47,8 @@ final class Directorist_Affiliate_Settings {
 			'notify_admin_application'   => 1,
 			'notify_affiliate_status'    => 1,
 			'notify_affiliate_referral'  => 1,
+			'notify_admin_payout_request' => 1,
+			'notify_affiliate_payout'    => 1,
 			'anonymize_ip'               => 0,
 			'delete_data_on_uninstall'   => 0,
 		);
@@ -152,6 +154,8 @@ final class Directorist_Affiliate_Settings {
 			'notify_admin_application'   => empty( $raw['notify_admin_application'] ) ? 0 : 1,
 			'notify_affiliate_status'    => empty( $raw['notify_affiliate_status'] ) ? 0 : 1,
 			'notify_affiliate_referral'  => empty( $raw['notify_affiliate_referral'] ) ? 0 : 1,
+			'notify_admin_payout_request' => empty( $raw['notify_admin_payout_request'] ) ? 0 : 1,
+			'notify_affiliate_payout'    => empty( $raw['notify_affiliate_payout'] ) ? 0 : 1,
 			'anonymize_ip'               => empty( $raw['anonymize_ip'] ) ? 0 : 1,
 			'delete_data_on_uninstall'   => empty( $raw['delete_data_on_uninstall'] ) ? 0 : 1,
 		);

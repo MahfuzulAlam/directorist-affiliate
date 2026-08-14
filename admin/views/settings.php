@@ -377,6 +377,34 @@ $featured_available = Directorist_Affiliate_Commission::is_featured_monetization
 						</label>
 					</div>
 				</div>
+
+				<div class="directorist-affiliate-field is-toggle">
+					<div class="directorist-affiliate-field-label">
+						<label for="directorist-affiliate-notify-payout-request"><?php esc_html_e( 'Payout requested (to you)', 'directorist-affiliate' ); ?></label>
+						<p class="description"><?php esc_html_e( 'Email you when an affiliate asks to be paid, so requests do not sit unnoticed.', 'directorist-affiliate' ); ?></p>
+					</div>
+					<div class="directorist-affiliate-field-control">
+						<label class="directorist-affiliate-switch">
+							<input id="directorist-affiliate-notify-payout-request" type="checkbox" name="notify_admin_payout_request" value="1" <?php checked( $settings['notify_admin_payout_request'], 1 ); ?> />
+							<span class="directorist-affiliate-switch-track" aria-hidden="true"></span>
+							<span class="directorist-affiliate-switch-text"><?php esc_html_e( 'Enabled', 'directorist-affiliate' ); ?></span>
+						</label>
+					</div>
+				</div>
+
+				<div class="directorist-affiliate-field is-toggle">
+					<div class="directorist-affiliate-field-label">
+						<label for="directorist-affiliate-notify-payout"><?php esc_html_e( 'Payout decision (to affiliate)', 'directorist-affiliate' ); ?></label>
+						<p class="description"><?php esc_html_e( 'Email the affiliate when you pay or decline their payout request.', 'directorist-affiliate' ); ?></p>
+					</div>
+					<div class="directorist-affiliate-field-control">
+						<label class="directorist-affiliate-switch">
+							<input id="directorist-affiliate-notify-payout" type="checkbox" name="notify_affiliate_payout" value="1" <?php checked( $settings['notify_affiliate_payout'], 1 ); ?> />
+							<span class="directorist-affiliate-switch-track" aria-hidden="true"></span>
+							<span class="directorist-affiliate-switch-text"><?php esc_html_e( 'Enabled', 'directorist-affiliate' ); ?></span>
+						</label>
+					</div>
+				</div>
 			</div>
 		</div>
 

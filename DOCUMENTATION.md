@@ -157,14 +157,18 @@ The click log per affiliate: the landing page they arrived on, the site they cam
 ![Screenshot: Payouts screen with selected referrals and payout history](docs/images/admin-payouts.png)
 <!-- 📸 IMAGE PLACEHOLDER: Payouts screen — some checkboxes ticked in "Unpaid approved commissions", the minimum-payout hint line, and the Payout history table below -->
 
-This screen has two sub-tabs.
+This screen has three sub-tabs.
 
-**Unpaid approved commissions** — your pay-day work queue:
+**Requests** — where affiliates' payout claims land. You see who is asking, how much, which email to pay, how many commissions it covers, and any note they left. **Mark paid** settles it: the covered commissions become Paid and the affiliate is emailed. **Reject** declines it and leaves those commissions in their balance, so they can ask again later. If any requests are open, this is the tab you land on, and the tab label shows how many.
+
+> 💡 If a commission gets refunded between the request and your payment, it is dropped automatically — you pay only what is still legitimately owed, and the recorded amount is corrected to match. If nothing is left payable, reject the request instead.
+
+**Unpaid approved commissions** — your pay-day work queue, for paying affiliates without waiting for them to ask:
 
 1. **Outstanding balance and Export CSV** (top bar) — see exactly what you owe right now, and download every approved, unpaid referral with the affiliate's payout email, ready for your bank or PayPal batch tool.
 2. **The list** — tick the referrals you're paying (or use the header checkbox to select all) and click **Mark selected as paid**. The plugin groups them into **one payout record per affiliate** and confirms inline (e.g. *"2 payouts recorded. 1 affiliate was skipped for being below the minimum payout."*), then refreshes.
 
-**Payout history** — the permanent ledger: who was paid, how much, when, to which email, and how many commissions each payment covered. Filter by affiliate, payout email, or date range, and the **Total paid** figure at the top updates to match your filters — handy for month-end reconciliation or answering *"how much did we pay Sam last quarter?"* Twenty per page.
+**Payout history** — the permanent ledger of settled payouts (paid and rejected; open requests stay on the Requests tab): who was paid, how much, when, to which email, and how many commissions each payment covered. Filter by affiliate, payout email, or date range, and the **Total paid** figure at the top updates to match your filters — handy for month-end reconciliation or answering *"how much did we pay Sam last quarter?"* Twenty per page.
 
 > 💡 **Tip:** Set a **Minimum payout amount** in Settings and the screen enforces it for you — affiliates under the threshold are skipped with a clear warning, never silently.
 
@@ -277,7 +281,7 @@ Add `[directorist_affiliate_dashboard]` to a page — and/or rely on the **Affil
 - **"Ready to be paid" as the headline figure**, followed by pending, paid-to-date and traffic. If you have set a **minimum payout**, a progress bar shows how close they are and exactly how much more they need — this is the question affiliates ask most often, so it is answered without them having to write to you.
 - **Pointing the link somewhere specific** — inside that same section, they pick what they're linking to (**Home page, Page, Post, Listing, Category, Location** or **Custom link**). Home page is selected by default, so the link is ready to share the moment the page loads. Choosing anything else reveals a search box: type part of a title, pick from the list, and the link updates. Custom link lets them paste any address on your site — links to other websites are refused, because a referral can only be tracked on your own domain. **The share buttons always match the link they just built.**
 - **Activity** — referrals and payouts in one card, switched with a tab rather than stacked, so the page stays short.
-- **How you get paid** — their payout email, referral code, your minimum, and your payout instructions.
+- **How you get paid** — their payout email, referral code, your minimum, your payout instructions, and a **Request payout** button. Clicking it opens a short form showing exactly what they'd be paid; submitting it sends you a request. If they have no approved balance, are below your minimum, or already have a request waiting, the button is disabled and the reason is shown.
 
 Sharing works on any URL: `?ref=CODE` can be appended to the homepage, a listing, a category — every entry page counts.
 

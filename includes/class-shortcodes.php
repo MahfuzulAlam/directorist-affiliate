@@ -290,6 +290,7 @@ final class Directorist_Affiliate_Shortcodes {
 				'referral_url'        => $this->referral_url( (string) $affiliate->referral_code ),
 				'payout_instructions' => $this->plugin->settings->get( 'payout_instructions', '' ),
 				'minimum_payout'      => (float) $this->plugin->settings->get( 'minimum_payout', '0.00' ),
+				'open_request'        => $this->plugin->payout->open_request( (int) $affiliate->id ),
 				'cookie_duration'     => absint( $this->plugin->settings->get( 'cookie_duration', 30 ) ),
 				'site_name'           => get_bloginfo( 'name' ),
 			)

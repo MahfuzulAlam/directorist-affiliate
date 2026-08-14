@@ -61,6 +61,7 @@ Directorist_Affiliate_View::partial(
 			<tr>
 				<th><?php esc_html_e( 'Affiliate', 'directorist-affiliate' ); ?></th>
 				<th class="is-num"><?php esc_html_e( 'Amount', 'directorist-affiliate' ); ?></th>
+				<th><?php esc_html_e( 'Status', 'directorist-affiliate' ); ?></th>
 				<th><?php esc_html_e( 'Payout email', 'directorist-affiliate' ); ?></th>
 				<th><?php esc_html_e( 'Commissions', 'directorist-affiliate' ); ?></th>
 				<th><?php esc_html_e( 'Date paid', 'directorist-affiliate' ); ?></th>
@@ -85,6 +86,7 @@ Directorist_Affiliate_View::partial(
 							<?php endif; ?>
 						</td>
 						<td class="is-num"><strong><?php echo esc_html( Directorist_Affiliate_Commission::format_money( (float) $payout->amount ) ); ?></strong></td>
+						<td><span class="directorist-affiliate-badge is-<?php echo esc_attr( sanitize_html_class( $payout->status ) ); ?>"><?php echo esc_html( $plugin->payout->status_label( (string) $payout->status ) ); ?></span></td>
 						<td><?php echo esc_html( $payout->payout_email ? $payout->payout_email : '—' ); ?></td>
 						<td>
 							<?php
@@ -104,7 +106,7 @@ Directorist_Affiliate_View::partial(
 				<?php endforeach; ?>
 			<?php else : ?>
 				<tr>
-					<td colspan="6">
+					<td colspan="7">
 						<div class="directorist-affiliate-empty">
 							<span class="dashicons dashicons-bank" aria-hidden="true"></span>
 							<p>
