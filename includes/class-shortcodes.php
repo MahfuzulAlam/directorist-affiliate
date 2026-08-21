@@ -85,13 +85,54 @@ final class Directorist_Affiliate_Shortcodes {
 
 		$url = $this->dashboard_url();
 
-		// Never bounce a page to itself.
-		if ( ! $url || untrailingslashit( $url ) === untrailingslashit( (string) get_permalink( $post ) ) ) {
+		if ( ! $url ) {
+			return;
+		}
+
+		// Never bounce a page to itself — compared by PATH, not by whole URL.
+		// dashboard_url() is built from home_url() while the permalink comes
+		// from the post, and the two can disagree on scheme or host (a reverse
+		// proxy terminating TLS, www vs non-www, a stale siteurl). A string
+		// compare then sees two different URLs for one page and redirects it to
+		// itself until the browser gives up with ERR_TOO_MANY_REDIRECTS.
+		$target = $this->url_path( $url );
+
+		if ( $target === $this->url_path( (string) get_permalink( $post ) ) ) {
+			return;
+		}
+
+		// The request URI catches the same page reached by a different route.
+		if ( isset( $_SERVER['REQUEST_URI'] ) && $target === $this->url_path( esc_url_raw( wp_unslash( $_SERVER['REQUEST_URI'] ) ) ) ) {
+			return;
+		}
+
+		// Loop breaker. Arriving here FROM the destination means something else
+		// — Directorist's checkout, a membership plugin, a login flow — is
+		// sending the visitor back. Bouncing again completes a cycle that ends
+		// in a redirect error instead of anywhere useful, so stand down and let
+		// the page render.
+		$referer = isset( $_SERVER['HTTP_REFERER'] ) ? esc_url_raw( wp_unslash( $_SERVER['HTTP_REFERER'] ) ) : '';
+
+		if ( $referer && $this->url_path( $referer ) === $target ) {
 			return;
 		}
 
 		wp_safe_redirect( $url );
 		exit;
+	}
+
+	/**
+	 * Path portion of a URL, normalised for comparison.
+	 *
+	 * @param string $url URL or path.
+	 *
+	 * @return string Path without a trailing slash; '/' for the site root.
+	 */
+	private function url_path( string $url ): string {
+		$path = (string) wp_parse_url( $url, PHP_URL_PATH );
+		$path = untrailingslashit( $path );
+
+		return '' === $path ? '/' : $path;
 	}
 
 	/**
@@ -102,6 +143,16 @@ final class Directorist_Affiliate_Shortcodes {
 	 * @return void
 	 */
 	private function enqueue_link_builder( string $code ): void {
+		// Directorist builds its user-dashboard tabs by rendering their content,
+		// and a block theme can do that before wp_enqueue_scripts has fired.
+		// wp_enqueue_script() survives that — the queue resolves once the handle
+		// registers — but wp_localize_script() does NOT: it returns false and
+		// drops the data, so the script loads with no ajaxUrl, no nonce and no
+		// home link. Register on demand so the data always has somewhere to go.
+		if ( ! wp_script_is( 'directorist-affiliate-link-builder', 'registered' ) && $this->plugin->public_hooks ) {
+			$this->plugin->public_hooks->register_assets();
+		}
+
 		wp_enqueue_script( 'directorist-affiliate-link-builder' );
 
 		wp_localize_script(
@@ -126,6 +177,7 @@ final class Directorist_Affiliate_Shortcodes {
 						_n( 'Type at least %d character.', 'Type at least %d characters.', Directorist_Affiliate_Link_Search::MIN_TERM_LENGTH, 'directorist-affiliate' ),
 						Directorist_Affiliate_Link_Search::MIN_TERM_LENGTH
 					),
+					/* translators: %d: number of link-builder search results. */
 					'resultsFound' => __( '%d results available. Use the arrow keys to choose one.', 'directorist-affiliate' ),
 					'checking'   => __( 'Checking the address…', 'directorist-affiliate' ),
 				),
@@ -163,6 +215,58 @@ final class Directorist_Affiliate_Shortcodes {
 		 * @param string $url Dashboard URL, or '' when none is configured.
 		 */
 		return (string) apply_filters( 'directorist_affiliate_dashboard_url', $url );
+	}
+
+	/**
+	 * URL of the page carrying the affiliate application form.
+	 *
+	 * Unlike the dashboard there is no sensible fallback: Directorist has no
+	 * application screen of its own, so an unset page means "no link".
+	 *
+	 * @return string Empty string when no application page is configured.
+	 */
+	public function registration_url(): string {
+		$page_id = absint( $this->plugin->settings->get( 'registration_page', 0 ) );
+		$url     = '';
+
+		if ( $page_id && 'publish' === get_post_status( $page_id ) ) {
+			$url = (string) get_permalink( $page_id );
+		}
+
+		/**
+		 * Filters where visitors are sent to apply for the affiliate program.
+		 *
+		 * @param string $url Application page URL, or '' when none is configured.
+		 */
+		return (string) apply_filters( 'directorist_affiliate_registration_url', $url );
+	}
+
+	/**
+	 * Anchor pointing at the application page, when one is worth showing.
+	 *
+	 * Empty when applications are closed, no page is configured, or the visitor
+	 * is already on that page — a link back to the current URL helps nobody.
+	 *
+	 * @return string Escaped anchor markup, or ''.
+	 */
+	private function registration_link(): string {
+		if ( ! $this->plugin->registration->applications_open() ) {
+			return '';
+		}
+
+		$url = $this->registration_url();
+
+		if ( ! $url ) {
+			return '';
+		}
+
+		$current = (string) get_permalink();
+
+		if ( $current && untrailingslashit( $url ) === untrailingslashit( $current ) ) {
+			return '';
+		}
+
+		return '<a href="' . esc_url( $url ) . '">' . esc_html__( 'Apply to the affiliate program', 'directorist-affiliate' ) . '</a>';
 	}
 
 	/**
@@ -258,6 +362,19 @@ final class Directorist_Affiliate_Shortcodes {
 		$affiliate = $this->plugin->affiliate->get_by_user_id( get_current_user_id() );
 
 		if ( ! $affiliate ) {
+			$apply = $this->registration_link();
+
+			if ( $apply ) {
+				return $this->notice(
+					sprintf(
+						/* translators: %s: link to the affiliate application page. */
+						__( 'You have not applied for the affiliate program yet. %s', 'directorist-affiliate' ),
+						$apply
+					),
+					true
+				);
+			}
+
 			return $this->notice( __( 'You have not applied for the affiliate program yet.', 'directorist-affiliate' ) );
 		}
 
@@ -273,6 +390,12 @@ final class Directorist_Affiliate_Shortcodes {
 		if ( 'approved' === $affiliate->status ) {
 			$this->enqueue_link_builder( (string) $affiliate->referral_code );
 		}
+
+		// Plan-level conversion is only meaningful where plan commissions are
+		// switched on. That follows the admin's setting, never extension
+		// detection — see the commission rules.
+		$da_plans_on   = (bool) absint( $this->plugin->settings->get( 'enable_plan_commission', 0 ) );
+		$da_plan_rows  = $da_plans_on ? $this->plan_conversion_rows( (int) $affiliate->id ) : array();
 
 		return $this->render(
 			'affiliate-dashboard.php',
@@ -290,6 +413,9 @@ final class Directorist_Affiliate_Shortcodes {
 					)
 				),
 				'total_referrals'     => $this->plugin->referral->count( array( 'affiliate_id' => (int) $affiliate->id ) ),
+				'type_counts'         => $this->plugin->referral->count_by_type( array( 'affiliate_id' => (int) $affiliate->id ) ),
+				'plan_rows'           => $da_plan_rows,
+				'plan_commission_on'  => $da_plans_on,
 				'pending_commission'  => $this->plugin->referral->sum_commission( 'pending', (int) $affiliate->id ),
 				'approved_commission' => $this->plugin->referral->sum_commission( 'approved', (int) $affiliate->id ),
 				'paid_commission'     => $this->plugin->referral->sum_commission( 'paid', (int) $affiliate->id ),
@@ -312,6 +438,51 @@ final class Directorist_Affiliate_Shortcodes {
 				'site_name'           => get_bloginfo( 'name' ),
 			)
 		);
+	}
+
+	/**
+	 * Plan-purchase referral counts, labelled with each plan's title.
+	 *
+	 * Titles are fetched in one query rather than per row, and a plan whose
+	 * post has since been deleted still reports its count under a placeholder
+	 * label — dropping it would make the per-plan figures fail to add up to the
+	 * overall one.
+	 *
+	 * @param int $affiliate_id Affiliate ID.
+	 *
+	 * @return array<int,array{label:string,count:int}> Highest count first.
+	 */
+	private function plan_conversion_rows( int $affiliate_id ): array {
+		$counts = $this->plugin->referral->count_by_plan( array( 'affiliate_id' => $affiliate_id ) );
+
+		if ( ! $counts ) {
+			return array();
+		}
+
+		$ids = array_map( 'absint', array_keys( $counts ) );
+
+		// Deliberately NOT a get_posts() lookup. Pricing plans are registered by
+		// an extension, and on a request where that registration has not run,
+		// every post-type-aware query returns nothing — which silently relabels
+		// real plans as deleted. Fetching by ID sidesteps post-type semantics
+		// entirely; _prime_post_caches() keeps it to one query for all plans.
+		if ( function_exists( '_prime_post_caches' ) ) {
+			_prime_post_caches( $ids, false, false );
+		}
+
+		$rows = array();
+
+		foreach ( $counts as $plan_id => $count ) {
+			$post  = get_post( (int) $plan_id );
+			$title = $post ? trim( (string) $post->post_title ) : '';
+
+			$rows[] = array(
+				'label' => '' === $title ? __( 'Removed plan', 'directorist-affiliate' ) : $title,
+				'count' => (int) $count,
+			);
+		}
+
+		return $rows;
 	}
 
 	/**

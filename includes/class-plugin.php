@@ -75,6 +75,13 @@ final class Directorist_Affiliate_Plugin {
 	public $shortcodes;
 
 	/**
+	 * Front-end hook class, kept so assets can be registered on demand.
+	 *
+	 * @var Directorist_Affiliate_Public
+	 */
+	public $public_hooks;
+
+	/**
 	 * Link builder search service.
 	 *
 	 * @var Directorist_Affiliate_Link_Search
@@ -240,7 +247,8 @@ final class Directorist_Affiliate_Plugin {
 		// Makes admin-entered email wording translatable in WPML/Polylang.
 		add_action( 'init', array( $this->email_templates, 'register_strings' ), 20 );
 
-		( new Directorist_Affiliate_Public( $this ) )->register();
+		$this->public_hooks = new Directorist_Affiliate_Public( $this );
+		$this->public_hooks->register();
 		$this->shortcodes->register();
 		( new Directorist_Affiliate_Directorist_Integration( $this ) )->register();
 		( new Directorist_Affiliate_Order_Integration( $this ) )->register();

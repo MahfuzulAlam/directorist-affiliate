@@ -258,32 +258,36 @@ final class Directorist_Affiliate_Referral {
 	 *
 	 * @return array{0:string,1:array<int,mixed>} WHERE fragment and its params.
 	 */
-	private function build_where( array $args ): array {
+	private function build_where( array $args, string $alias = '' ): array {
+		// Aggregates that JOIN another table must qualify their columns:
+		// `status` and `id` exist on Directorist's orders table too, and an
+		// unqualified reference is an ambiguous-column error, not a wrong row.
+		$column = $alias ? preg_replace( '/[^a-z_]/', '', $alias ) . '.' : '';
 		$where  = '1=1';
 		$params = array();
 
 		if ( ! empty( $args['affiliate_id'] ) ) {
-			$where   .= ' AND affiliate_id = %d';
+			$where   .= " AND {$column}affiliate_id = %d";
 			$params[] = absint( $args['affiliate_id'] );
 		}
 
 		if ( ! empty( $args['status'] ) && in_array( $args['status'], $this->statuses(), true ) ) {
-			$where   .= ' AND status = %s';
+			$where   .= " AND {$column}status = %s";
 			$params[] = sanitize_key( $args['status'] );
 		}
 
 		if ( ! empty( $args['referral_type'] ) && in_array( $args['referral_type'], $this->types(), true ) ) {
-			$where   .= ' AND referral_type = %s';
+			$where   .= " AND {$column}referral_type = %s";
 			$params[] = sanitize_key( $args['referral_type'] );
 		}
 
 		if ( ! empty( $args['date_from'] ) ) {
-			$where   .= ' AND date_created >= %s';
+			$where   .= " AND {$column}date_created >= %s";
 			$params[] = (string) $args['date_from'];
 		}
 
 		if ( ! empty( $args['date_to'] ) ) {
-			$where   .= ' AND date_created <= %s';
+			$where   .= " AND {$column}date_created <= %s";
 			$params[] = (string) $args['date_to'];
 		}
 
@@ -355,6 +359,108 @@ final class Directorist_Affiliate_Referral {
 		}
 
 		return (int) $wpdb->get_var( $sql );
+	}
+
+	/**
+	 * Referral counts per type, in one grouped query.
+	 *
+	 * Shares build_where() with list()/count(), so a filter added there applies
+	 * here too and the numbers cannot drift from the tables they summarise.
+	 *
+	 * @param array<string,mixed> $args Same query args as list().
+	 *
+	 * @return array<string,int> Every known type, zero-filled.
+	 */
+	public function count_by_type( array $args = array() ): array {
+		global $wpdb;
+
+		list( $where, $params ) = $this->build_where( $args );
+
+		$sql = "SELECT referral_type, COUNT(*) AS total FROM {$this->table()} WHERE {$where} GROUP BY referral_type";
+		$rows = $params
+			? $wpdb->get_results( $wpdb->prepare( $sql, $params ) )
+			: $wpdb->get_results( $sql );
+
+		$counts = array_fill_keys( $this->types(), 0 );
+
+		foreach ( (array) $rows as $row ) {
+			$type = (string) $row->referral_type;
+
+			if ( array_key_exists( $type, $counts ) ) {
+				$counts[ $type ] = (int) $row->total;
+			}
+		}
+
+		return $counts;
+	}
+
+	/**
+	 * Plan-purchase referral counts per pricing plan, in two grouped queries.
+	 *
+	 * The referral row records the order, not the plan, so the plan has to come
+	 * from wherever the order lives: `ref` on Directorist's orders table for the
+	 * current system (`ref_type = 'pricing_plan'`), and the `_fm_plans` post meta
+	 * for legacy orders. Both are grouped in SQL rather than resolved per row.
+	 *
+	 * Degrades to an empty array when neither order system has anything to say,
+	 * which is also what happens on a site whose orders table does not exist.
+	 *
+	 * @param array<string,mixed> $args Same query args as list().
+	 *
+	 * @return array<int,int> Plan post ID => referral count, highest first.
+	 */
+	public function count_by_plan( array $args = array() ): array {
+		global $wpdb;
+
+		$args['referral_type'] = 'plan_purchase';
+		$counts                = array();
+
+		$orders_table = $wpdb->prefix . 'directorist_orders';
+
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.SchemaChange -- existence probe, not a schema change.
+		if ( $orders_table === $wpdb->get_var( $wpdb->prepare( 'SHOW TABLES LIKE %s', $orders_table ) ) ) {
+			list( $where, $params ) = $this->build_where( $args, 'r' );
+
+			$rows = $wpdb->get_results(
+				$wpdb->prepare(
+					// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- table names and $where are built internally.
+					"SELECT o.ref AS plan_id, COUNT(*) AS total
+					FROM {$this->table()} r
+					INNER JOIN {$orders_table} o ON o.id = r.order_id
+					WHERE {$where} AND r.order_source = %s AND o.ref_type = %s AND o.ref > 0
+					GROUP BY o.ref",
+					array_merge( $params, array( 'directorist', 'pricing_plan' ) )
+				)
+			);
+
+			foreach ( (array) $rows as $row ) {
+				$counts[ (int) $row->plan_id ] = ( $counts[ (int) $row->plan_id ] ?? 0 ) + (int) $row->total;
+			}
+		}
+
+		list( $legacy_where, $legacy_params ) = $this->build_where( $args, 'r' );
+
+		$legacy_rows = $wpdb->get_results(
+			$wpdb->prepare(
+				// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- table names and $where are built internally.
+				"SELECT pm.meta_value AS plan_id, COUNT(*) AS total
+				FROM {$this->table()} r
+				INNER JOIN {$wpdb->postmeta} pm ON pm.post_id = r.order_id AND pm.meta_key = %s
+				WHERE {$legacy_where} AND r.order_source = %s AND pm.meta_value > 0
+				GROUP BY pm.meta_value",
+				array_merge( array( '_fm_plans' ), $legacy_params, array( 'legacy' ) )
+			)
+		);
+
+		foreach ( (array) $legacy_rows as $row ) {
+			$plan_id = (int) $row->plan_id;
+
+			$counts[ $plan_id ] = ( $counts[ $plan_id ] ?? 0 ) + (int) $row->total;
+		}
+
+		arsort( $counts );
+
+		return $counts;
 	}
 
 	/**

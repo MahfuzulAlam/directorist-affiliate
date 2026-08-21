@@ -11,6 +11,30 @@ $da_status    = (string) $affiliate->status;
 $da_approved  = 'approved' === $da_status;
 $da_lifetime  = (float) $pending_commission + (float) $approved_commission + (float) $paid_commission;
 $da_rate      = $visits > 0 ? ( (int) $converted_visits / (int) $visits ) * 100 : 0;
+
+// Conversion rates all share one denominator: the visits this affiliate sent.
+// The overall rate counts converted *visits*, while the per-event rates count
+// referrals — one visit can produce several, so those can exceed 100% and are
+// labelled with their raw counts rather than presented as a share of traffic.
+$da_visits     = (int) $visits;
+$da_type_rate  = static function ( $count ) use ( $da_visits ) {
+	return $da_visits > 0 ? ( (int) $count / $da_visits ) * 100 : 0;
+};
+$da_show_rate  = static function ( $rate ) use ( $da_visits ) {
+	/* translators: shown in place of a percentage when there is no traffic to divide by. */
+	return $da_visits > 0 ? number_format_i18n( $rate, 1 ) . '%' : __( '—', 'directorist-affiliate' );
+};
+// Counts are composed from two _n() calls rather than interpolated into one
+// string: "1 sign-ups from 1 visits" is what a single sprintf() produces, and
+// _n() needs literal singular/plural forms at every call site to be extracted.
+$da_visits_text = sprintf(
+	/* translators: %s: number of visits. */
+	_n( '%s visit', '%s visits', $da_visits, 'directorist-affiliate' ),
+	number_format_i18n( $da_visits )
+);
+$da_registrations = isset( $type_counts['user_registration'] ) ? (int) $type_counts['user_registration'] : 0;
+$da_listings      = isset( $type_counts['listing_submission'] ) ? (int) $type_counts['listing_submission'] : 0;
+$da_plan_sales    = isset( $type_counts['plan_purchase'] ) ? (int) $type_counts['plan_purchase'] : 0;
 $da_share_msg = sprintf(
 	/* translators: %s: site name. */
 	__( 'I recommend %s — take a look:', 'directorist-affiliate' ),
@@ -147,15 +171,121 @@ if ( $da_has_settings ) {
 					<?php
 					echo esc_html(
 						sprintf(
-							/* translators: 1: number of referrals, 2: conversion rate. */
-							__( '%1$s referrals · %2$s%% converted', 'directorist-affiliate' ),
-							number_format_i18n( (int) $total_referrals ),
-							number_format_i18n( $da_rate, 1 )
+							/* translators: %s: number of referrals. */
+							_n( '%s referral in total', '%s referrals in total', (int) $total_referrals, 'directorist-affiliate' ),
+							number_format_i18n( (int) $total_referrals )
 						)
 					);
 					?>
 				</span>
 			</div>
+
+			<div class="da-stat">
+				<span class="da-stat-label"><?php esc_html_e( 'Overall conversion', 'directorist-affiliate' ); ?></span>
+				<span class="da-stat-value"><?php echo esc_html( $da_show_rate( $da_rate ) ); ?></span>
+				<span class="da-stat-meta">
+					<?php
+					echo esc_html(
+						sprintf(
+							/* translators: 1: number of visits that converted, 2: total visits. */
+							_n( '%1$s of %2$s visit led to a referral', '%1$s of %2$s visits led to a referral', $da_visits, 'directorist-affiliate' ),
+							number_format_i18n( (int) $converted_visits ),
+							number_format_i18n( $da_visits )
+						)
+					);
+					?>
+				</span>
+			</div>
+
+			<div class="da-stat">
+				<span class="da-stat-label"><?php esc_html_e( 'Registration conversion', 'directorist-affiliate' ); ?></span>
+				<span class="da-stat-value"><?php echo esc_html( $da_show_rate( $da_type_rate( $da_registrations ) ) ); ?></span>
+				<span class="da-stat-meta">
+					<?php
+					echo esc_html(
+						sprintf(
+							/* translators: 1: a count with its noun, e.g. "3 listings". 2: a count of visits, e.g. "12 visits". */
+							__( '%1$s from %2$s', 'directorist-affiliate' ),
+							sprintf(
+								/* translators: %s: number of sign-ups. */
+								_n( '%s sign-up', '%s sign-ups', $da_registrations, 'directorist-affiliate' ),
+								number_format_i18n( $da_registrations )
+							),
+							$da_visits_text
+						)
+					);
+					?>
+				</span>
+			</div>
+
+			<div class="da-stat">
+				<span class="da-stat-label"><?php esc_html_e( 'Listing conversion', 'directorist-affiliate' ); ?></span>
+				<span class="da-stat-value"><?php echo esc_html( $da_show_rate( $da_type_rate( $da_listings ) ) ); ?></span>
+				<span class="da-stat-meta">
+					<?php
+					echo esc_html(
+						sprintf(
+							/* translators: 1: a count with its noun, e.g. "3 listings". 2: a count of visits, e.g. "12 visits". */
+							__( '%1$s from %2$s', 'directorist-affiliate' ),
+							sprintf(
+								/* translators: %s: number of listings. */
+								_n( '%s listing', '%s listings', $da_listings, 'directorist-affiliate' ),
+								number_format_i18n( $da_listings )
+							),
+							$da_visits_text
+						)
+					);
+					?>
+				</span>
+			</div>
+
+			<?php if ( ! empty( $plan_commission_on ) ) : ?>
+				<div class="da-stat">
+					<span class="da-stat-label"><?php esc_html_e( 'Pricing plan conversion', 'directorist-affiliate' ); ?></span>
+					<span class="da-stat-value"><?php echo esc_html( $da_show_rate( $da_type_rate( $da_plan_sales ) ) ); ?></span>
+					<span class="da-stat-meta">
+						<?php
+						echo esc_html(
+							sprintf(
+								/* translators: 1: a count with its noun, e.g. "3 listings". 2: a count of visits, e.g. "12 visits". */
+								__( '%1$s from %2$s', 'directorist-affiliate' ),
+								sprintf(
+									/* translators: %s: number of plan purchases. */
+									_n( '%s plan purchase', '%s plan purchases', $da_plan_sales, 'directorist-affiliate' ),
+									number_format_i18n( $da_plan_sales )
+								),
+								$da_visits_text
+							)
+						);
+						?>
+					</span>
+				</div>
+
+				<?php foreach ( $plan_rows as $da_plan ) : ?>
+					<div class="da-stat da-stat--plan">
+						<!-- The plan's own name, not a built phrase: these cards sit
+						under "Pricing plan conversion" and read as its breakdown. -->
+						<span class="da-stat-label"><?php echo esc_html( $da_plan['label'] ); ?></span>
+						<span class="da-stat-value"><?php echo esc_html( $da_show_rate( $da_type_rate( $da_plan['count'] ) ) ); ?></span>
+						<span class="da-stat-meta">
+							<?php
+							echo esc_html(
+								sprintf(
+									/* translators: 1: a count with its noun, e.g. "3 listings". 2: a count of visits, e.g. "12 visits". */
+									__( '%1$s from %2$s', 'directorist-affiliate' ),
+									sprintf(
+										/* translators: %s: number of purchases of this plan. */
+										_n( '%s purchase', '%s purchases', (int) $da_plan['count'], 'directorist-affiliate' ),
+										number_format_i18n( (int) $da_plan['count'] )
+									),
+									$da_visits_text
+								)
+							);
+							?>
+						</span>
+					</div>
+				<?php endforeach; ?>
+			<?php endif; ?>
 		</div>
 		</div>
 

@@ -38,6 +38,16 @@
 			return;
 		}
 
+		// No endpoint means the localized config never reached the page. Every
+		// request would resolve against the current URL and 404, so stand the
+		// builder down and leave the server-rendered referral link usable
+		// instead of blanking it and reporting failures the affiliate cannot act on.
+		if ( ! config.ajaxUrl ) {
+			typeSelect.disabled = true;
+
+			return;
+		}
+
 		var timer     = null;
 		var inFlight  = null;
 		var activeRow = -1;
@@ -82,7 +92,11 @@
 		 * @param {string} link Referral link, or '' to fall back to the home link.
 		 */
 		function showOutput( link ) {
-			var current = link || config.homeLink || '';
+			// The field is rendered server-side with the affiliate's own link.
+			// Falling back to it — rather than to '' — means a missing config
+			// degrades to "the builder does nothing" instead of wiping a link
+			// the affiliate could otherwise have copied.
+			var current = link || config.homeLink || outputInput.value || '';
 
 			outputInput.value = current;
 

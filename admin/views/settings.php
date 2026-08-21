@@ -137,6 +137,26 @@ $featured_on = $featured_available && absint( $settings['enable_featured_commiss
 
 				<div class="directorist-affiliate-field">
 					<div class="directorist-affiliate-field-label">
+						<label for="directorist-affiliate-registration-page"><?php esc_html_e( 'Application page', 'directorist-affiliate' ); ?></label>
+						<p class="description"><?php esc_html_e( 'The page holding the [directorist_affiliate_registration] shortcode. Used to point visitors at the application form — for example from the dashboard, when someone has not applied yet. Leave unset to hide those links.', 'directorist-affiliate' ); ?></p>
+					</div>
+					<div class="directorist-affiliate-field-control">
+						<?php
+						wp_dropdown_pages(
+							array(
+								'name'              => 'registration_page',
+								'id'                => 'directorist-affiliate-registration-page',
+								'selected'          => absint( $settings['registration_page'] ),
+								'show_option_none'  => __( '— Not set —', 'directorist-affiliate' ),
+								'option_none_value' => '0',
+							)
+						);
+						?>
+					</div>
+				</div>
+
+				<div class="directorist-affiliate-field">
+					<div class="directorist-affiliate-field-label">
 						<label for="directorist-affiliate-dashboard-page"><?php esc_html_e( 'Affiliate dashboard page', 'directorist-affiliate' ); ?></label>
 						<p class="description"><?php esc_html_e( 'The page holding the [directorist_affiliate_dashboard] shortcode. Affiliates who have already applied are sent here instead of the application form. Leave unset to use the Directorist user dashboard.', 'directorist-affiliate' ); ?></p>
 					</div>
@@ -616,6 +636,10 @@ $featured_on = $featured_available && absint( $settings['enable_featured_commiss
 					<li>
 						<code>[directorist_affiliate_dashboard]</code>
 						<span><?php esc_html_e( 'Affiliate dashboard: referral link, stats, and history.', 'directorist-affiliate' ); ?></span>
+					</li>
+					<li>
+						<code>[directorist_affiliate_link]</code>
+						<span><?php esc_html_e( 'A single referral link for the logged-in affiliate. Accepts page, text and url attributes.', 'directorist-affiliate' ); ?></span>
 					</li>
 				</ul>
 			</div>

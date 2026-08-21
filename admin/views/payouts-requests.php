@@ -103,7 +103,7 @@ $directorist_affiliate_notice = isset( $_GET['directorist_affiliate_notice'] ) ?
 							<?php
 							echo esc_html(
 								sprintf(
-									/* translators: %s: number of commissions. */
+									/* translators: %s: number of commissions covered by the payout. */
 									_n( '%s commission', '%s commissions', count( $covers ), 'directorist-affiliate' ),
 									number_format_i18n( count( $covers ) )
 								)

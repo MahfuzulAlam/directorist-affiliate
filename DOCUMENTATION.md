@@ -83,7 +83,7 @@ Go to **Directorist → Affiliate → Settings**. Enter a fixed amount for regis
 <!-- 📸 IMAGE PLACEHOLDER: Settings page, Registration + Listing commission sections filled, success notice visible -->
 
 **Step 2 — Publish a "Become an Affiliate" page.**
-Create a page and add the shortcode `[directorist_affiliate_registration]`.
+Create a page and add the shortcode `[directorist_affiliate_registration]`, then select it under **Settings → General → Application page**. Naming it here lets the plugin point people at it — someone who opens the affiliate dashboard without having applied gets an **Apply to the affiliate program** link instead of a dead end.
 
 **Step 3 — Publish an "Affiliate Area" page.**
 Create a second page with `[directorist_affiliate_dashboard]`, then select it under **Settings → General → Affiliate dashboard page**. Two things follow from that: affiliates who revisit your application page are sent straight to their dashboard, and the "already applied" message can link there. (The same dashboard also appears automatically as an **Affiliate** tab in the Directorist user dashboard, so the page is optional — but naming it makes the redirect land somewhere you chose.)
@@ -198,6 +198,7 @@ Covered in full in the next section.
 | **Cookie duration** | Days a referral is remembered (default 30) | Longer = more generous attribution window |
 | **Attribution model** | **First click** (default) or **Last click** | First click: the first affiliate keeps the credit until the cookie expires — referrals can't be "stolen". Last click: the newest link wins |
 | **Accept applications** | Whether the application form takes new submissions | Off = the form shows a friendly "applications are closed" notice; existing affiliates keep earning |
+| **Application page** | The page you put `[directorist_affiliate_registration]` on | Lets the plugin link people to your application form — most visibly from the affiliate dashboard, when someone hasn't applied yet. Leave it unset and those links are simply hidden; the form still works wherever you placed the shortcode |
 | **Affiliate dashboard page** | The page you put `[directorist_affiliate_dashboard]` on | Anyone who has already applied and lands on your application page is sent straight here, instead of seeing a form they can't use. Leave it unset and they go to the Directorist user dashboard instead |
 | **Require login to apply** | Applicants must already have an account | Off (default) = applying creates a WordPress account automatically. Turn **on** if you don't want your application page creating accounts |
 | **Anonymize visitor IP** | Strips the last IP octet in the Visits log | Turn on for GDPR-friendly logging |
@@ -297,6 +298,8 @@ Add `[directorist_affiliate_dashboard]` to a page — and/or rely on the **Affil
 ![Screenshot: Affiliate tab inside the Directorist user dashboard](docs/images/frontend-dashboard-tab.png)
 <!-- 📸 IMAGE PLACEHOLDER: Directorist user dashboard with the "Affiliate" tab (handshake icon) selected -->
 
+Because that tab appears for **everyone** on your site, most people opening it have not applied yet. They see *"You have not applied for the affiliate program yet."* — followed by an **Apply to the affiliate program** link once you have set your **Application page** in Settings. Without that setting the message is a dead end, so it is worth the thirty seconds.
+
 ---
 
 ## What your affiliates see
@@ -312,6 +315,11 @@ The dashboard is split into five tabs — **Summary** (where they land, showing 
 
 - **Their referral link, front and centre.** One section does the whole job: the link with a **Copy** button, controls to point it anywhere on the site, and one-tap sharing to WhatsApp, X, Facebook or email. A plain sentence tells them how long a click stays credited.
 - **"Ready to be paid" as the headline figure**, followed by pending, paid-to-date and traffic. If you have set a **minimum payout**, a progress bar shows how close they are and exactly how much more they need — this is the question affiliates ask most often, so it is answered without them having to write to you.
+- **How well their traffic converts.** Under the earnings figures sit conversion tiles: **Overall**, **Registration** and **Listing**, plus **Pricing plan** — and one tile per individual plan they have sold — when you have plan commissions switched on. Each divides by the visits they sent, and each spells out the raw numbers underneath ("3 listings from 12 visits").
+
+  Two of those numbers are counted differently, and it is worth knowing which. **Overall** answers *how many of their visits led to anything*, so it can never exceed 100%. The per-event tiles count **referrals**, and a single visitor can register, publish two listings and buy a plan on one visit — so those tiles can read above 100%. That is not a bug; it is why every tile shows its counts.
+
+  If a pricing plan is deleted after someone bought it, its sales still appear under **Removed plan** rather than vanishing, so the individual plan figures always add up to the pricing-plan total above them.
 - **Pointing the link somewhere specific** — inside that same section, they pick what they're linking to (**Home page, Page, Post, Listing, Category, Location** or **Custom link**). Home page is selected by default, so the link is ready to share the moment the page loads. Choosing anything else reveals a search box: type part of a title, pick from the list, and the link updates. Custom link lets them paste any address on your site — links to other websites are refused, because a referral can only be tracked on your own domain. **The share buttons always match the link they just built.**
 - **Referrals** — their referral history, on its own tab.
 - **Settings** (last tab) — where they choose how to be paid, from the methods you allow:

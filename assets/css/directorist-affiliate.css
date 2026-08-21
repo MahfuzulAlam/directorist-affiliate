@@ -310,6 +310,17 @@
 }
 
 .da-stat--lead .da-stat-value { font-size: 2.125rem; color: var(--da-accent); }
+
+/*
+ * Per-plan conversion breaks down the plan total above it, so it reads one
+ * level quieter: sunken rather than raised, and a smaller figure.
+ */
+.da-stat--plan {
+	background: var(--da-sunken);
+	box-shadow: none;
+}
+
+.da-stat--plan .da-stat-value { font-size: 1.375rem; }
 .da-stat-meta { color: var(--da-ink-soft); font-size: .8125rem; }
 
 .da-progress {

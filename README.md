@@ -6,7 +6,7 @@ Affiliate tracking and fixed-commission referral system for [Directorist](https:
 
 | Item | Value |
 | --- | --- |
-| Version | 1.14.0 (plugin) / 0.3.0 (DB schema) |
+| Version | 1.16.0 (plugin) / 0.3.0 (DB schema) |
 | Author | [wpXplore](https://wpxplore.com) |
 | Website | https://wpxplore.com/tools/directorist-affiliate/ |
 | Requires | WordPress 6.3+, PHP 7.4+ |
@@ -228,10 +228,10 @@ Tab rendering lives in `Directorist_Affiliate_Admin`; all mutations live in `Dir
 **Shortcodes**
 
 - `[directorist_affiliate_registration]` — Application form opening with a **"What you earn" panel built from live settings** (`Commission::program_terms()` — only events that are enabled *and* whose dependency is active, plus the cookie duration), so applicants can see the offer before committing. Fields are grouped into *About you* / *How you will promote us* / *Getting paid*, with an invisible **honeypot anti-spam field** (bot submissions are silently discarded). For visitors who aren't logged in it **creates a WordPress account** via the shared `Affiliate::register_user()` helper (username derived from the email local-part, random password, standard new-user email). If the email already belongs to an account, it asks them to log in first. One application per user.
-- `[directorist_affiliate_dashboard]` — For logged-in affiliates, split into five tabs. **Summary** (default) carries the earnings tiles — *Ready to be paid* leading, with a progress bar toward the payout minimum and the shortfall, then pending, paid-to-date, and traffic. The conversion rate is **converted visits ÷ visits**, not referrals ÷ visits — one visit can produce several referrals, so the latter can exceed 100%. **Your link** holds the referral link, the link builder and the share buttons in one block. **Referrals** lists their referral history. **Payouts** holds *How you get paid* (referral code, minimum, instructions), the **Request payout** button and payout history. **Settings** holds the payout method and its details. Tabs that would be empty are not rendered: an unapproved affiliate sees neither *Your link* nor *Settings*, and status-specific banners explain pending, suspended and rejected accounts instead.
+- `[directorist_affiliate_dashboard]` — For logged-in affiliates, split into five tabs. **Summary** (default) carries the earnings tiles — *Ready to be paid* leading, with a progress bar toward the payout minimum and the shortfall, then pending, paid-to-date, and traffic — followed by conversion tiles: *Overall*, *Registration*, *Listing*, and (when `enable_plan_commission` is on) *Pricing plan* plus one tile per plan sold. **Overall** is **converted visits ÷ visits**; the per-event tiles are **referrals of that type ÷ visits**, which can exceed 100% because one visit can produce several referrals — each carries its raw counts ("3 listings from 1 visit") so the figure is never read as a share of traffic. **Your link** holds the referral link, the link builder and the share buttons in one block. **Referrals** lists their referral history. **Payouts** holds *How you get paid* (referral code, minimum, instructions), the **Request payout** button and payout history. **Settings** holds the payout method and its details. Tabs that would be empty are not rendered: an unapproved affiliate sees neither *Your link* nor *Settings*, and status-specific banners explain pending, suspended and rejected accounts instead.
 - `[directorist_affiliate_link page="add-listing" text="Add your business"]` — Renders the current affiliate's referral link to a named Directorist page (`home`, `add-listing`, `all-listings`, `dashboard`, `checkout`) or an explicit same-site `url`. Outputs nothing for visitors who are not approved affiliates.
 
-**Directorist dashboard tab** — The same dashboard renders inside Directorist's user dashboard as an "Affiliate" tab (icon `las la-handshake`) via the `directorist_dashboard_tabs` filter.
+**Directorist dashboard tab** — The same dashboard renders inside Directorist's user dashboard as an "Affiliate" tab (icon `las la-handshake`) via the `directorist_dashboard_tabs` filter. That tab is visible to every logged-in user, so the shortcode's not-an-affiliate branch is a high-traffic path, not an edge case: it renders an **Apply to the affiliate program** link built from `registration_page` (via `Shortcodes::registration_url()`), suppressed when applications are closed, no page is set, or the visitor is already on that page.
 
 The registration shortcode also respects the application gates: it shows a "closed" notice when `enable_applications` is off and a login prompt when `applications_require_login` is on.
 
@@ -254,7 +254,7 @@ Custom URLs are validated server-side, since only the server knows what counts a
 
 The **Share via** buttons (WhatsApp, X, Facebook, email) are rebuilt in JavaScript whenever the link changes, so sharing always sends whatever was just built rather than the rendered home link. They are plain anchors, so they still work — pointed at the home referral link — without JavaScript.
 
-The builder's JavaScript lives in its own file (`assets/js/link-builder.js`) enqueued **only by the dashboard shortcode, and only for approved affiliates** — it never loads elsewhere on the site. The combobox implements the ARIA pattern (arrow keys, Enter, Escape), debounces at 300ms, and aborts superseded requests so a slow earlier search cannot overwrite a newer one.
+The builder's JavaScript lives in its own file (`assets/js/link-builder.js`) enqueued **only by the dashboard shortcode, and only for approved affiliates** — it never loads elsewhere on the site. Because Directorist builds its user-dashboard tabs *by rendering their content*, that enqueue can run before `wp_enqueue_scripts` — so `Shortcodes::enqueue_link_builder()` registers the assets on demand (via the container's `public_hooks` instance) when the handle isn't registered yet. `wp_enqueue_script()` tolerates the early call, but `wp_localize_script()` does not: it drops the data silently, which is what leaves the script on the page with no `ajaxUrl`. The combobox implements the ARIA pattern (arrow keys, Enter, Escape), debounces at 300ms, and aborts superseded requests so a slow earlier search cannot overwrite a newer one.
 
 ### Payout methods
 
@@ -290,7 +290,7 @@ Requesting is blocked — with the reason shown, not just a disabled button — 
 
 Admin-initiated bulk payouts (Payouts → Unpaid) are unchanged and still write `paid` rows directly.
 
-**Existing affiliates are redirected to their dashboard.** A logged-in user who already has an affiliate record and opens a page containing `[directorist_affiliate_registration]` is sent to the dashboard instead of being shown a form they cannot use. The redirect runs on `template_redirect` (priority 5) — a shortcode renders inside `the_content`, by which point headers are already sent — and bails on any of: no affiliate record, a POST in flight, a page that also hosts the dashboard shortcode, or no dashboard destination. The destination is `dashboard_page` if set, else Directorist's own user dashboard (which carries the Affiliate tab), and is filterable via `directorist_affiliate_dashboard_url`. When no destination exists the form falls back to an "already applied" notice, linking to the dashboard when one is known.
+**Existing affiliates are redirected to their dashboard.** A logged-in user who already has an affiliate record and opens a page containing `[directorist_affiliate_registration]` is sent to the dashboard instead of being shown a form they cannot use. The redirect runs on `template_redirect` (priority 5) — a shortcode renders inside `the_content`, by which point headers are already sent — and bails on any of: no affiliate record, a POST in flight, a page that also hosts the dashboard shortcode, no dashboard destination, a destination whose **path** matches the current page or request URI (compared by path so a scheme/host mismatch cannot make one page look like two), or a referer showing the visitor has just come from the destination. The destination is `dashboard_page` if set, else Directorist's own user dashboard (which carries the Affiliate tab), and is filterable via `directorist_affiliate_dashboard_url`. When no destination exists the form falls back to an "already applied" notice, linking to the dashboard when one is known.
 
 Views are rendered with a tiny `ob_start()`/`extract()` template loader. Assets: `assets/css/directorist-affiliate.css` (front end, registered as `directorist-affiliate`), `assets/css/directorist-affiliate-admin.css` (admin only), and one vanilla JS file shared by both, enqueued with `strategy => defer`.
 
@@ -323,6 +323,7 @@ Stored in one option, `directorist_affiliate_settings` (autoload off):
 | `ref_param` | `ref` | Query-string parameter for referral links |
 | `cookie_duration` | `30` | Cookie lifetime in days (clamped to 1–3650) |
 | `enable_applications` | `1` | Accept new affiliate applications (form shows a "closed" notice when off) |
+| `registration_page` | `0` | Page holding `[directorist_affiliate_registration]`. Used to link visitors to the application form; `0` hides those links |
 | `dashboard_page` | `0` | Page holding `[directorist_affiliate_dashboard]`. Existing affiliates who open the application page are redirected here; `0` falls back to Directorist's user dashboard |
 | `applications_require_login` | `0` | Require a WordPress account to apply; when off, applying creates one |
 | `enable_registration` | `1` | Pay commission on referred user registration |
@@ -379,11 +380,39 @@ Stored in one option, `directorist_affiliate_settings` (autoload off):
 
 Actions: `directorist_affiliate_created( $affiliate_id, $status )`, `directorist_affiliate_status_changed( $affiliate_id, $status )`, `directorist_affiliate_referral_created( $referral_id, $affiliate_id, $type )`, `directorist_affiliate_referral_reversed( $referral_id, $new_status, $order_status )`, `directorist_affiliate_payout_requested( $payout_id, $affiliate_id, $amount )`, `directorist_affiliate_payout_recorded( $payout_id, $affiliate_id, $amount, $referral_ids )`, `directorist_affiliate_payout_rejected( $payout_id, $affiliate_id )`.
 
-Filters: `directorist_affiliate_email_templates( $templates )` (default email wording and tokens), `directorist_affiliate_email_content( $email, $key, $tokens )` (rendered subject/body just before sending), `directorist_affiliate_link_types( $types )` (content types in the link builder), `directorist_affiliate_payout_methods( $methods )` (how affiliates can be paid), `directorist_affiliate_dashboard_url( $url )` (where existing affiliates are sent), `directorist_affiliate_program_terms( $terms )`, `directorist_affiliate_should_track( $should_track, $code )` (veto tracking, e.g. before cookie consent), `directorist_affiliate_visit_dedupe_window( $seconds )`, `directorist_affiliate_registration_commission( $amount )`, `directorist_affiliate_listing_commission( $amount, $trigger )`, `directorist_affiliate_plan_commission( $amount, $order_total )`, `directorist_affiliate_featured_commission( $amount, $order_total )`.
+Filters: `directorist_affiliate_email_templates( $templates )` (default email wording and tokens), `directorist_affiliate_email_content( $email, $key, $tokens )` (rendered subject/body just before sending), `directorist_affiliate_link_types( $types )` (content types in the link builder), `directorist_affiliate_payout_methods( $methods )` (how affiliates can be paid), `directorist_affiliate_dashboard_url( $url )` (where existing affiliates are sent), `directorist_affiliate_registration_url( $url )` (where visitors are sent to apply), `directorist_affiliate_program_terms( $terms )`, `directorist_affiliate_should_track( $should_track, $code )` (veto tracking, e.g. before cookie consent), `directorist_affiliate_visit_dedupe_window( $seconds )`, `directorist_affiliate_registration_commission( $amount )`, `directorist_affiliate_listing_commission( $amount, $trigger )`, `directorist_affiliate_plan_commission( $amount, $order_total )`, `directorist_affiliate_featured_commission( $amount, $order_total )`.
 
 Usage examples are in [DOCUMENTATION.md](DOCUMENTATION.md#developer-reference).
 
 ## Changelog
+
+### 1.16.0 — 2026-08-21
+
+**Fixes**
+- **The "existing affiliate" redirect can no longer send a page to itself.** Its self-check compared whole URL strings, but `dashboard_url()` is built from `home_url()` while the other side comes from `get_permalink()` — and the two disagree whenever a reverse proxy terminates TLS, the site answers on both www and non-www, or `siteurl` is stale. One page then looks like two URLs and gets redirected to itself until the browser gives up with `ERR_TOO_MANY_REDIRECTS`. Comparison is now by **path**, and it also checks the current `REQUEST_URI`, so scheme and host differences cannot defeat it.
+- Added a **loop breaker**: arriving at the application page *from* the dashboard means something else is sending the visitor back, so the redirect stands down and lets the page render rather than completing the cycle.
+
+**Conversion rates on the affiliate dashboard**
+- The **Summary** tab gained conversion tiles: **Overall**, **Registration** and **Listing**, plus — when plan commissions are enabled — **Pricing plan** and a tile per individual plan the affiliate has sold.
+- All of them divide by the same denominator, the visits that affiliate sent. *Overall* counts converted **visits** (the existing definition); the per-event tiles count **referrals**, which can exceed 100% since one visit can produce several. Each tile states its raw counts for that reason.
+- Plan tiles are gated on the `enable_plan_commission` **setting**, never on extension detection — the same rule the commission engine follows.
+- The per-plan breakdown resolves the plan from the order, because a referral row records the order and not the plan: `ref` on Directorist's orders table for current orders, `_fm_plans` post meta for legacy ones. Both are grouped in SQL — `Referral::count_by_plan()` — so a dashboard with ten plans costs two queries, not ten.
+- A plan deleted after it was sold still appears, as *Removed plan*, so the per-plan figures continue to add up to the plan total above them.
+- Added `Referral::count_by_type()` (one grouped query for all four referral types). Both aggregates share `build_where()` with `list()`/`count()`, so any filter added there applies to them and the numbers cannot drift.
+- `build_where()` takes an optional table alias, needed once an aggregate JOINs: `status` and `id` exist on Directorist's orders table too, and an unqualified column is an ambiguous-column error.
+- The Traffic tile no longer repeats the overall percentage now that it has its own tile; it shows the referral total instead.
+
+### 1.15.0 — 2026-08-21
+
+**Fixes**
+- **The link builder no longer breaks on the Directorist dashboard tab.** Directorist builds its user-dashboard tabs by rendering each tab's content, and a theme can do that before `wp_enqueue_scripts` fires. `wp_enqueue_script()` survives that — the queue resolves once the handle registers — but `wp_localize_script()` returns `false` and discards the data. The result was a script on the page with no config: searches POSTed to `<current-url>/undefined` and 404'd ("Something went wrong."), and `showOutput()` overwrote the server-rendered referral link with an empty string, so no link was displayed or generated. `enqueue_link_builder()` now registers the assets on demand when the handle isn't registered yet, so the data always has somewhere to attach.
+- `link-builder.js` no longer destroys a working link when its config is absent: `showOutput()` falls back to the field's own server-rendered value, and the builder stands down (leaving the link copyable) instead of firing requests at an undefined endpoint.
+
+**Application page setting**
+- New `registration_page` setting (Settings → Application page) records which page carries `[directorist_affiliate_registration]`, alongside the existing dashboard page picker. Until now the plugin knew where the dashboard lived but had no idea where the application form was.
+- `Shortcodes::registration_url()` resolves it — published pages only, filterable via `directorist_affiliate_registration_url`. Unlike the dashboard there is no fallback: Directorist has no application screen of its own, so unset means "no link" rather than a guess.
+- The dashboard's dead end is now a way in. A logged-in visitor who has not applied previously saw *"You have not applied for the affiliate program yet."* and nothing else — including on the Directorist user-dashboard **Affiliate** tab. It now carries an **Apply to the affiliate program** link when a page is configured, applications are open, and the visitor is not already on that page.
+- The settings screen's Shortcodes card lists `[directorist_affiliate_link]`, which it had always omitted.
 
 ### 1.14.0 — 2026-08-15
 
